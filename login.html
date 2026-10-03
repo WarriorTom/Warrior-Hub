@@ -1,0 +1,80 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><title>Warrior Hub — Sign in</title>
+<script>try{var t=localStorage.getItem("wl_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#f3f5fa;--card:#fff;--card2:#f5f7fc;--line:#e4e8f1;--line2:#cbd3e3;--text:#0f172a;--mute:#64748b;--faint:#94a3b8;--hover:#f1f4fb;
+--accent:#7C3AED;--accent2:#A855F7;--accent-soft:#F1EAFF;--accent-text:#6D28D9;--bad:#ef4444;--bad-text:#b91c1c;--ok:#16a34a;
+--shadow:0 1px 2px rgba(15,23,42,.05),0 6px 20px rgba(15,23,42,.05);--shadow-lg:0 10px 30px rgba(124,58,237,.28)}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#131a2e;--card2:#192238;--line:#243049;--line2:#34436a;--text:#e8ecf8;--mute:#93a0bf;--faint:#66739a;--hover:#18213a;
+--accent:#A855F7;--accent2:#7C3AED;--accent-soft:#2b1f4f;--accent-text:#C4B5FD;--bad:#f87171;--bad-text:#fca5a5;--ok:#34d399;
+--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);--shadow-lg:0 10px 30px rgba(168,85,247,.28)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+body{min-width:1100px}button{font-family:inherit}
+.topline{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.logo{width:44px;height:44px;border-radius:4px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:var(--shadow-lg);flex:none}
+
+body{min-height:100vh;display:grid;place-items:center;background:linear-gradient(160deg,#1E2023 0%,#1E2023 46%,#ECEDEF 46%,#E2D4F8 100%)}
+:root[data-theme="dark"] body{background:linear-gradient(160deg,#0b1020,#170f33)}
+.box{width:400px;background:var(--card);border-radius:4px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5);overflow:hidden;border:1px solid var(--line)}
+.hd{padding:30px 32px 22px;text-align:center;border-bottom:1px solid var(--line)}
+.hd .logo{margin:0 auto 14px;width:52px;height:52px;font-size:24px}
+.hd small{display:block;font-size:11px;letter-spacing:.16em;font-weight:700;color:var(--accent-text)}
+.hd h1{margin:4px 0 0;font-size:22px;letter-spacing:.02em;font-weight:800}
+.hd p{margin:8px 0 0;font-size:12.5px;color:var(--mute)}
+form{padding:24px 32px 26px}
+label{display:block;font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--mute);margin:0 0 6px;text-transform:uppercase}
+input{width:100%;height:42px;border:1px solid var(--line2);border-radius:4px;background:var(--card);color:var(--text);padding:0 12px;font:500 14px Inter,sans-serif;outline:none;margin-bottom:16px}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.16)}
+.go{width:100%;height:44px;border:0;border-radius:4px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:800;letter-spacing:.08em;font-size:12px;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.28)}
+.go:disabled{opacity:.55;cursor:default}
+.err{min-height:18px;margin:-4px 0 10px;font-size:12px;font-weight:600;color:var(--bad-text)}
+.ft{padding:0 32px 22px;text-align:center;font-size:11px;color:var(--faint);line-height:1.5}
+</style>
+<script>/*WL-ACCENT*/(function(){
+var P={'Purple':null,'Blue':[224,1.2,-.17],'Teal':[184,1.15,-.27],'Emerald':[152,1.15,-.3],'Red':[356,1.2,-.17],'Orange':[20,1.2,-.15],'Magenta':[332,1.2,-.16],'Navy':[210,1.15,-.28]};
+function conv(v,t){var r=parseInt(v.substr(0,2),16)/255,g=parseInt(v.substr(2,2),16)/255,b=parseInt(v.substr(4,2),16)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,h=0,s=0,d=mx-mn;
+if(d){s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx==r?((g-b)/d+(g<b?6:0)):mx==g?((b-r)/d+2):((r-g)/d+4);h*=60}
+if(h<244||h>288)return null;
+var nh=(((t[0]+(h-262))%360)+360)%360/360,nl=(l>.25&&l<.8)?Math.max(0,Math.min(1,l+t[2])):l,ns=(l>.25&&l<.8)?Math.min(1,s*t[1]):s;
+var q=nl<.5?nl*(1+ns):nl+ns-nl*ns,p=2*nl-q;function f(x){if(x<0)x+=1;if(x>1)x-=1;return x<1/6?p+(q-p)*6*x:x<.5?q:x<2/3?p+(q-p)*(2/3-x)*6:p}
+var o=ns?[f(nh+1/3),f(nh),f(nh-1/3)]:[nl,nl,nl];return o.map(function(c){return Math.round(c*255)});}
+function hex(a){return '#'+a.map(function(c){return ('0'+c.toString(16)).slice(-2)}).join('').toUpperCase()}
+function tr(txt,t){return txt.replace(/#([0-9a-fA-F]{6})\b/g,function(m,h){var c=conv(h,t);return c?hex(c):m}).replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/g,function(m,r,g,b,a){var c=conv(('0'+(+r).toString(16)).slice(-2)+('0'+(+g).toString(16)).slice(-2)+('0'+(+b).toString(16)).slice(-2),t);return c?'rgba('+c.join(',')+','+a+')':m})}
+function cur(){var n='Purple';try{n=localStorage.getItem('wl_accent')||'Purple'}catch(e){}var M={"Royal Blue": "Blue", "Ocean Teal": "Teal", "Warrior Red": "Red", "Sunset Orange": "Orange", "Rose Magenta": "Magenta", "Midnight Navy": "Navy"};if(M[n])n=M[n];return P[n]!==undefined?n:'Purple'}
+function apply(){var t=P[cur()];document.querySelectorAll('style').forEach(function(s){if(s.__o===undefined)s.__o=s.textContent;var nt=t?tr(s.__o,t):s.__o;if(s.textContent!==nt)s.textContent=nt});var ex=document.getElementById('wlEmX');if(t){if(!ex){ex=document.createElement('style');ex.id='wlEmX';ex.__o='';document.head.appendChild(ex)}var g=function(h){var c=conv(h.slice(1),t);return c?hex(c):h};ex.textContent='.wp-side{--pg2:color-mix(in srgb,var(--pg) 88%,#000)!important;--pg-mid:color-mix(in srgb,var(--pg) 96%,#000)!important}.sb-hero{background:linear-gradient(145deg,'+g('#5B21B6')+' 0%,'+g('#6D28D9')+' 55%,'+g('#7C3AED')+' 100%)!important}.wp-hero{background:linear-gradient(160deg,'+g('#6D28D9')+' 0%,'+g('#6D28D9')+' 50%,'+g('#7C3AED')+' 100%)!important}'}else if(ex)ex.remove()}
+window.wlSwatch=function(n){var t=P[n];return t?hex(conv('7C3AED',t)):'#7C3AED'};window.wlAccents=P;window.wlAccent=cur;window.wlSetAccent=function(n){try{localStorage.setItem('wl_accent',n)}catch(e){}apply()};
+apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListener('storage',function(e){if(e.key==='wl_accent')apply()});})();</script>
+</head><body><div class="topline"></div>
+<div class="box"><div class="hd"><div class="logo">W</div><small>WARRIOR LOGISTICS</small><h1 id="ttl">SIGN IN</h1><p id="sub">Enter your login to open Warrior Hub.</p></div>
+<form id="f" autocomplete="on"><div id="nw" style="display:none"><label for="fn">Full name</label><input id="fn" autocomplete="name" placeholder="e.g. Tom Jackson"></div><label for="u">Username</label><input id="u" autocomplete="username" autofocus>
+<label for="p">Password</label><input id="p" type="password" autocomplete="current-password">
+<div id="cw" style="display:none"><label for="c">Confirm password</label><input id="c" type="password" autocomplete="new-password"></div>
+<div class="err" id="err"></div><button class="go" id="go" type="submit">SIGN IN</button></form>
+<div class="ft">Logins are kept on this device for now. Online accounts (shared across devices) are switched on with Firebase.</div></div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)},USERS='wl_users',SESS='wl_session',TTL=12*3600*1000;
+function users(){try{return JSON.parse(localStorage.getItem(USERS)||'[]')}catch(e){return[]}}
+function nextPage(){var n=new URLSearchParams(location.search).get('next')||'index.html';return /^[\w.-]+\.html$/.test(n)&&n!=='login.html'?n:'index.html'}
+function sess(u,n){localStorage.setItem(SESS,JSON.stringify({u:u,name:n||u,exp:Date.now()+TTL}))}
+try{var s=JSON.parse(localStorage.getItem(SESS)||'null');if(s&&s.exp>Date.now()){location.replace(nextPage())}}catch(e){}
+function hex(buf){return Array.prototype.map.call(new Uint8Array(buf),function(b){return('0'+b.toString(16)).slice(-2)}).join('')}
+async function hash(pw,salt){var d=salt+':'+pw;if(window.crypto&&crypto.subtle){return hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(d)))}var h=5381;for(var i=0;i<d.length;i++)h=((h<<5)+h+d.charCodeAt(i))|0;return'x'+h}
+var setup=users().length===0;
+if(setup){$('ttl').textContent='CREATE YOUR LOGIN';$('sub').textContent='First time here — choose a username and password.';$('cw').style.display='block';$('nw').style.display='block';$('go').textContent='CREATE LOGIN';$('p').autocomplete='new-password'}
+var fails=0,lock=0;
+$('f').onsubmit=async function(e){e.preventDefault();var err=$('err');err.textContent='';var u=$('u').value.trim(),p=$('p').value;
+if(!u||!p){err.textContent='Enter a username and password.';return}
+if(Date.now()<lock){err.textContent='Too many attempts — wait '+Math.ceil((lock-Date.now())/1000)+'s.';return}
+$('go').disabled=true;
+try{
+if(setup){if(p.length<6){err.textContent='Password must be at least 6 characters.';return}if(p!==$('c').value){err.textContent='Passwords do not match.';return}
+var salt=hex(crypto.getRandomValues?crypto.getRandomValues(new Uint8Array(8)):[1,2,3,4,5,6,7,8]);
+var fn=$('fn').value.trim();if(!fn){err.textContent='Enter your full name.';return}localStorage.setItem(USERS,JSON.stringify([{u:u,n:fn,s:salt,h:await hash(p,salt)}]));sess(u,fn);location.replace(nextPage());return}
+var rec=users().filter(function(x){return x.u.toLowerCase()===u.toLowerCase()})[0];
+if(rec&&rec.h===await hash(p,rec.s)){sess(rec.u,rec.n);location.replace(nextPage());return}
+fails++;err.textContent='Username or password is incorrect.';if(fails>=5){lock=Date.now()+30000;fails=0}
+}finally{$('go').disabled=false}};
+})();
+</script></body></html>
