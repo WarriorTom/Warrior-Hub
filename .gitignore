@@ -1,3 +1,4 @@
 # never commit exported starter data or backups
 recruitment-data-*.json
 *.local.json
+dvla-data*.json

@@ -839,7 +839,15 @@ table.review-table th:nth-child(5),table.review-table td:nth-child(5),table.revi
 table.review-table th{overflow:hidden;text-overflow:clip}
 </style>
 <style id="wlSideFit">.wp-side{scrollbar-gutter:stable both-edges;padding-left:19px!important;padding-right:18px!important}</style>
-<style id="wlMainFit">html{scrollbar-gutter:stable;overflow-y:scroll}.shell{max-width:none!important;margin:0!important;padding-left:30px!important;padding-right:30px!important}</style>
+<style id="wlMainFit">html{scrollbar-gutter:stable;overflow-y:scroll}.shell{max-width:none!important;margin:0!important;padding-left:30px!important;padding-right:30px!important}
+.review-table-wrap,.review-table-wrap *{scrollbar-width:thin}
+
+/* thin themed scrollbar on every scroll area (drawers, lists, tables) */
+*{scrollbar-width:thin}
+
+/* generating screen: fills only the main window, side panel + rail stay visible */
+.transition-screen{left:448px!important;right:0!important;top:0!important;bottom:0!important;inset:auto!important;left:448px!important;top:0!important;right:0!important;bottom:0!important;z-index:90!important}
+</style>
 </head>
 <body>
 <div class="wl-topline"></div>
@@ -851,7 +859,8 @@ table.review-table th{overflow:hidden;text-overflow:clip}
     {label:'Daily Tasks',icon:'<circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',href:'daily-tasks.html'},
     {label:'Recruitment',icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',href:'recruitment.html'},
     {label:'Wave Plan',icon:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',href:'wave-plan-generator.html',current:true},
-    {label:'Posters',icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',href:'posters.html'}
+    {label:'Posters',icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',href:'posters.html'},
+    {label:'DVLA',icon:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h4"/>',href:'dvla.html'}
   ];
   document.getElementById('wlRail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+PAGES.map(function(p){
     return '<a href="'+p.href+'" class="'+(p.current?'on':'')+'" '+(p.current?'aria-current="page" ':'')+'title="'+p.label+'"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p.icon+'</svg><span>'+p.label+'</span></a>';

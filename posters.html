@@ -246,7 +246,10 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
 </style>
 <style id="wlRailHover">.wl-rail a:not(.on):hover,.wl-rail button:not(.on):hover,.rail a:not(.on):hover,.rail button:not(.on):hover{color:var(--accent)!important}.wl-rail a:not(.on):hover svg,.wl-rail button:not(.on):hover svg,.rail a:not(.on):hover svg,.rail button:not(.on):hover svg{color:var(--accent);stroke:var(--accent)}</style>
 <style id="wlSideFit">.wp-side{scrollbar-gutter:stable both-edges;padding-left:19px!important;padding-right:18px!important}</style>
-<style id="wlMainFit">.pg{padding-left:30px!important;padding-right:30px!important;margin:0!important;max-width:none!important}</style>
+<style id="wlMainFit">.pg{padding-left:30px!important;padding-right:30px!important;margin:0!important;max-width:none!important}
+/* thin themed scrollbar on every scroll area (drawers, lists, tables) */
+*{scrollbar-width:thin}
+</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -284,7 +287,8 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
     {label:'Daily Tasks',icon:'<circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',href:'daily-tasks.html'},
     {label:'Recruitment',icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',href:'recruitment.html'},
     {label:'Wave Plan',icon:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',href:'wave-plan-generator.html'},
-    {label:'Posters',icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',href:'posters.html',current:true}
+    {label:'Posters',icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',href:'posters.html',current:true},
+    {label:'DVLA',icon:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h4"/>',href:'dvla.html'}
   ];
   document.getElementById('wlRail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+PAGES.map(function(p){
     return '<a href="'+p.href+'" class="'+(p.current?'on':'')+'" '+(p.current?'aria-current="page" ':'')+'title="'+p.label+'"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p.icon+'</svg><span>'+p.label+'</span></a>';
@@ -318,6 +322,7 @@ let posters={};           // id -> {id,title,tag,message,img,by,created,updated}
 let q='', tagF='', openDD=false;
 let draft=null;           // poster being edited / created in the modal
 let viewId=null;
+const pend={};            // posters saved on screen but not yet confirmed by the database
 
 /* ---------- storage: Firestore `posters/{id}`, else this browser ---------- */
 const LS_KEY='wl_posters_v1';
@@ -337,8 +342,8 @@ const store={
   },
   persist(){ if(!lsSet(LS_KEY,JSON.stringify(posters))) toast('This browser is full – use Firebase to store more posters'); },
   async save(p){
-    if(this.mode==='firebase'){ const {fs,db}=this.fb; try{ await fs.setDoc(fs.doc(db,'posters',p.id),p); }catch(e){ console.error(e); toast('Could not save – image may be too large'); } return; }
-    this.persist();
+    if(this.mode==='firebase'){ const {fs,db}=this.fb; try{ await fs.setDoc(fs.doc(db,'posters',p.id),p); return true; }catch(e){ console.error(e); toast('Could not save – image may be too large'); return false; } }
+    this.persist(); return true;
   },
   async del(id,p){
     if(p&&p.hi) this.dropOriginal({...p.hi,id});
@@ -351,6 +356,7 @@ const store={
     if(this.mode==='firebase' && FIREBASE_CONFIG.storageBucket){
       try{
         const st=await import(this.fb.base+'firebase-storage.js'), s=st.getStorage(this.fb.app);
+        s.maxUploadRetryTime=7000; s.maxOperationRetryTime=7000;
         const path='posters/'+id+'/'+Date.now()+'_'+name, r=st.ref(s,path);
         await st.uploadBytes(r,file,{contentType:file.type||'image/png'});
         return {where:'storage',path,url:await st.getDownloadURL(r),name,mime:file.type,size:file.size};
@@ -507,14 +513,14 @@ async function save(){
   const p={ id:draft.id, title, tag:$('#fTag').value.trim(), message:$('#fMsg').value.replace(/\s+$/,''), img:draft.img,
             by:isNew?me():(draft.by||me()), created:draft.created||now, updated:now, editedBy:me() };
   if(old) p.hi=old;
-  posters[p.id]=p; close(); render(); toast(isNew?'Poster added':'Poster saved');
-  if(file){                                  // new / replaced image: keep the full-size original too
-    toast('Saving full-resolution original…');
+  posters[p.id]=p; pend[p.id]=p; close(); render(); toast(isNew?'Poster added':'Poster saved');
+  const ok=await store.save(p);              // save the poster FIRST so a refresh can never lose it
+  if(ok) delete pend[p.id];
+  if(file){                                  // then keep the full-size original in the background
     const hi=await store.putOriginal(p.id,file);
     if(old) store.dropOriginal({...old,id:p.id});
-    if(hi){ p.hi=hi; toast('Original saved – downloads will be full resolution'); } else delete p.hi;
+    if(hi){ p.hi=hi; if(posters[p.id]) posters[p.id].hi=hi; await store.save(p); } else if(p.hi){ delete p.hi; await store.save(p); }
   }
-  await store.save(p);
 }
 async function del(){
   const p=posters[draft.id]; if(!p) return;
@@ -560,7 +566,7 @@ function demoPosters(){
   ];
   const o={}; L.forEach((r,i)=>{ const id='demo'+i; o[id]={id,title:r[0],tag:r[1],message:r[2],img:mkSvg(r[6],r[7],r[3],r[4],r[5]),by:'Tom Jackson',created:now-i*864e5,updated:now-i*864e5}; }); return o;
 }
-store.init(o=>{ posters=o||{}; render(); }).then(()=>{ if(window.WL_DEMO&&!lsGet('wl_demo_seeded_po')&&!Object.keys(posters).length){ posters=demoPosters(); store.persist(); lsSet('wl_demo_seeded_po','1'); } render(); });
+store.init(o=>{ posters=o||{}; Object.keys(pend).forEach(k=>{ if(!posters[k]) posters[k]=pend[k]; }); render(); }).then(()=>{ if(window.WL_DEMO&&!lsGet('wl_demo_seeded_po')&&!Object.keys(posters).length){ posters=demoPosters(); store.persist(); lsSet('wl_demo_seeded_po','1'); } render(); });
 render();
 </script>
 </body>
