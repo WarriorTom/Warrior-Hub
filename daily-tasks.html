@@ -119,6 +119,7 @@ main{padding:26px 30px 60px;min-width:0}
 .me{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:5px 6px 5px 14px;box-shadow:var(--shadow)}
 .me span{font-size:10px;color:var(--mute);font-weight:700;letter-spacing:.1em;white-space:nowrap}
 .me select{width:190px;padding:7px 9px;border-color:transparent;background:var(--card2)}
+.me select:disabled{opacity:1;color:var(--text);font-weight:700;appearance:none;-webkit-appearance:none;cursor:default}
 .me.need{border-color:var(--warn);box-shadow:0 0 0 4px var(--warn-soft)}
 .pill{font-size:11px;font-weight:600;padding:8px 13px;border-radius:4px;border:1px solid var(--line);background:var(--card);color:var(--mute);white-space:nowrap}
 .pill.ok{color:var(--ok-text);background:var(--ok-soft);border-color:transparent}
@@ -598,7 +599,7 @@ const FIREBASE_CONFIG = window.WL_FB_CONFIG;
 
 const SITES = ['DLS4','HSA7','DXFL','JOYL'];
 // Team members shown in the "On duty" and "Signed in as" dropdowns. Add new names here.
-const TEAM = ['Tom Jackson','Jordan Arnold','Jordan Fullbrook','Samad Akram'];
+const TEAM = ['Tom Jackson','Andy Hattersley','Jordan Arnold','Jordan Fullbrook','Samad Akram'];
 // Weekdays: Early / Handover / Late. Saturday/Sunday: Early / Late.
 const SLOTS_WEEKDAY = [['am','Early',''],['mid','Handover',''],['pm','Late','']];
 const SLOTS_WEEKEND = [['am','Early',''],['pm','Late','']];
@@ -766,7 +767,7 @@ let days = {};            // { date: { done:{key:{t,by}}, owners:{am,mid,pm} } }
 let extras = {};          // { id: {id,text,date,rollover,by,created,doneDate,doneAt,doneBy} }
 let cur = today();
 let editMode = false;
-let me = lsGet('wl_name') || '';
+let me = window.WL_DEMO ? (lsGet('wl_name') || '') : (window.WL_USER || lsGet('wl_name') || '');
 const openKeys = new Set();
 const newSites = {};      // add-task chips per group
 const newText = {};       // add-task text per group
@@ -1131,7 +1132,7 @@ function render(){
   $('#syncPill').textContent=store.mode==='firebase'?'● Synced':'Local only — add Firebase to share';
   $('#syncPill').className='pill'+(store.mode==='firebase'?' ok':'');
   $('#editBtn').className='btn'+(editMode?' on':''); $('#editBtn').innerHTML=editMode?icon('tick',16)+' Finish editing':icon('edit',16)+' Edit task list';
-  if(document.activeElement!==$('#meIn')) $('#meIn').innerHTML=nameOptions(me,'Select your name…',today());
+  if(document.activeElement!==$('#meIn')) $('#meIn').innerHTML=nameOptions(me,'Select your name…',today()); $('#meIn').disabled=!window.WL_DEMO;
   $('#names').innerHTML=allNames().map(n=>`<option value="${esc(n)}">`).join('');
 
   // week strip
