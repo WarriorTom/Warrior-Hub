@@ -543,9 +543,9 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
   ];
   document.getElementById('wlRail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+PAGES.map(function(p){
     return '<a href="'+p.href+'" class="'+(p.current?'on':'')+'" '+(p.current?'aria-current="page" ':'')+'title="'+p.label+'"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p.icon+'</svg><span>'+p.label+'</span></a>';
-  }).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button><button type="button" id="wlOut" title="Sign out"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>';
+  }).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button>';
   window.wlRailInit();
-  document.getElementById('wlOut').onclick=function(){window.wlSignOut()};
+  
   var mb=document.getElementById('wlMute');
   function paintMute(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off'}catch(e){}mb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(on?'<path d="M11 5L6 9H2v6h4l5 4zM19 5a9 9 0 0 1 0 14M15.5 8.5a5 5 0 0 1 0 7"/>':'<path d="M11 5L6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/>')+'</svg><span>'+(on?'Mute':'Unmute')+'</span>'}
   mb.onclick=function(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off';localStorage.setItem('wl_sound',on?'off':'on')}catch(e){}paintMute()};paintMute();
@@ -605,8 +605,9 @@ if(!lsGet('wl_recruit_mods_mig')){L.forEach(c=>{if(c.v&&(c.v.cdone||['GENERATE C
 L.forEach(c=>{if(!c.onb&&!['NEW STARTER','ONBOARDING','REJECTED'].includes(c.status))c.onb=new Date(c.created||Date.now()).toLocaleDateString('en-CA');if(c.status==='ONBOARDING'&&!c.onb)c.status='NEW STARTER';if(c.status==='CLASSROOM')c.status='AMIIGO TRAINING';if(c.onb==='-')c.onb='2026-10-03';byFromOsm(c)});save();
 let STATIONS; try{STATIONS=JSON.parse(lsGet(SK)||'null')}catch(e){STATIONS=null} if(!Array.isArray(STATIONS)||!STATIONS.length)STATIONS=['DLS4','HSA7','DXFL','JOYL'];
 L.forEach(c=>{if(c.site&&!STATIONS.includes(c.site))STATIONS.push(c.site)});
-const OBK='wl_recruit_onbby';let ONBY;try{ONBY=JSON.parse(lsGet(OBK)||'null')}catch(e){ONBY=null}if(!Array.isArray(ONBY))ONBY=['Tom Jackson','Jordan Arnold','Jordan Fullbrook','Samad Akram'];
-const saveBy=()=>lsSet(OBK,JSON.stringify(ONBY));
+const OBK='wl_recruit_onbby';let ONBY;try{ONBY=JSON.parse(lsGet(OBK)||'null')}catch(e){ONBY=null}if(!Array.isArray(ONBY))ONBY=['Tom Jackson','Andy Hattersley','Jordan Arnold','Jordan Fullbrook','Samad Akram'];if(!lsGet('wl_recruit_andy_mig')){if(!ONBY.includes('Andy Hattersley'))ONBY.splice(1,0,'Andy Hattersley');lsSet('wl_recruit_andy_mig','1');lsSet(OBK,JSON.stringify(ONBY))}
+const saveBy=()=>{lsSet(OBK,JSON.stringify(ONBY));fbLists()};
+function saveSt(){lsSet(SK,JSON.stringify(STATIONS));fbLists()}
 function save(){lsSet(KEY,JSON.stringify(L));fbPush()}
 /* ---- Firebase sync (shared recruitment data) ---- */
 var FBR=null,FBLAST={},FBINIT='wl_recruit_fbinit';
@@ -615,11 +616,18 @@ async function fbPush(){if(!FBR)return;const {fs,db}=FBR,cur={};L.forEach(c=>{if
 Object.keys(cur).forEach(id=>{if(FBLAST[id]!==cur[id])ops.push(['s',id])});Object.keys(FBLAST).forEach(id=>{if(!(id in cur))ops.push(['d',id])});if(!ops.length)return;
 const snapL=L.slice();FBLAST=Object.assign({},cur);
 try{for(let i=0;i<ops.length;i+=400){const b=fs.writeBatch(db);ops.slice(i,i+400).forEach(o=>{const r=fs.doc(db,'recruits',o[1]);if(o[0]==='s')b.set(r,fbClean(snapL.find(c=>c.id===o[1])));else b.delete(r)});await b.commit()}}catch(e){console.error(e);toast('Could not save to the shared database - check your connection')}}
+async function fbLists(){if(!FBR)return;try{await FBR.fs.setDoc(FBR.fs.doc(FBR.db,'config','recruitment'),{onby:ONBY.slice(),stations:STATIONS.slice()})}catch(e){console.error(e);toast('Could not save lists to the shared database')}}
 function fbSetPill(t,ok){const p=document.getElementById('datapill');if(p)p.title=t}
 if(!window.WL_DEMO){window.wlFirebase().then(({fs,db})=>{let first=true;fs.onSnapshot(fs.collection(db,'recruits'),snap=>{
 if(snap.metadata.hasPendingWrites&&FBR)return;const arr=[];snap.forEach(d=>arr.push(d.data()));
 if(first&&!arr.length&&L.length&&!lsGet(FBINIT)){FBR={fs,db};FBLAST={};first=false;lsSet(FBINIT,'1');fbPush();return}
-first=false;FBR={fs,db};FBLAST={};arr.forEach(c=>{FBLAST[c.id]=JSON.stringify(c)});L=arr;L.forEach(byFromOsm);lsSet(KEY,JSON.stringify(L));if(typeof render==='function')render();fbSetPill('Shared database connected')},e=>{console.error(e);toast('Shared database error - check Firestore rules and sign-in')})}).catch(e=>console.error(e))}
+first=false;FBR={fs,db};FBLAST={};arr.forEach(c=>{FBLAST[c.id]=JSON.stringify(c)});L=arr;L.forEach(byFromOsm);lsSet(KEY,JSON.stringify(L));if(typeof render==='function')render();fbSetPill('Shared database connected')},e=>{console.error(e);toast('Shared database error - check Firestore rules and sign-in')});
+let firstL=true;fs.onSnapshot(fs.doc(db,'config','recruitment'),sn=>{if(sn.metadata.hasPendingWrites&&!firstL)return;
+if(!sn.exists()){FBR={fs,db};firstL=false;fbLists();return}
+firstL=false;const d=sn.data();let ch=false;
+if(Array.isArray(d.onby)&&d.onby.length&&JSON.stringify(d.onby)!==JSON.stringify(ONBY)){ONBY=d.onby.slice();lsSet(OBK,JSON.stringify(ONBY));ch=true}
+if(Array.isArray(d.stations)&&d.stations.length&&JSON.stringify(d.stations)!==JSON.stringify(STATIONS)){STATIONS=d.stations.slice();L.forEach(c=>{if(c.site&&!STATIONS.includes(c.site))STATIONS.push(c.site)});lsSet(SK,JSON.stringify(STATIONS));ch=true}
+if(ch&&typeof render==='function')render()},e=>console.error(e))}).catch(e=>console.error(e))}
 let view=(lsGet('wl_recruit_view2')==='grid')?'grid':'list',openDD=null,q='',stF='ALL',osmF='ALL',dbsF='ALL',sort='attn';
 const dv=c=>c.dbs||'';
 const nDone=(c,g)=>GROUPS[g].items.filter(it=>done(c,it)).length;
@@ -889,7 +897,7 @@ function detail(id){const c=L.find(x=>x.id===id);if(!c)return;
     const o=document.createElement('div');o.className='ov';o.id='mov';
     o.innerHTML='<div class="bk"></div><div class="box mpo byp"><div class="vbar"></div><div class="mhd"><b>Add station</b><button class="x" id="mxx">'+ic(I.x,16)+'</button></div><div class="byb"><div class="ma"><input class="fld" id="dnew" placeholder="New station name (e.g. DXS1)"><button class="btn pri sm" id="dadd">ADD</button></div></div><div class="mft"><button class="btn" id="mcl">Cancel</button></div></div>';
     $('#modal').appendChild(o);
-    const add=()=>{const n=$('#dnew').value.trim().toUpperCase();if(!n){$('#dnew').focus();return}if(!STATIONS.includes(n)){STATIONS.push(n);lsSet(SK,JSON.stringify(STATIONS))}c.site=n;save();$('#dsub').innerHTML=sub();drawSel();render();o.remove();toast('Station '+n+' added')};
+    const add=()=>{const n=$('#dnew').value.trim().toUpperCase();if(!n){$('#dnew').focus();return}if(!STATIONS.includes(n)){STATIONS.push(n);saveSt()}c.site=n;save();$('#dsub').innerHTML=sub();drawSel();render();o.remove();toast('Station '+n+' added')};
     o.querySelector('.bk').onclick=o.querySelector('#mxx').onclick=o.querySelector('#mcl').onclick=()=>o.remove();
     o.querySelector('#dadd').onclick=add;o.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.id==='dnew'){ev.preventDefault();add()}});setTimeout(()=>$('#dnew').focus(),50)}
   $('#dsite').onchange=siteChange;

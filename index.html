@@ -37,7 +37,7 @@ window.wlFirebase().then(function(f){if(!f.auth.currentUser){try{localStorage.re
 --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);--shadow-lg:0 10px 30px rgba(168,85,247,.28)}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
 body{min-width:1100px}button{font-family:inherit}
-.topline{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.topline{position:fixed;top:0;left:0;right:0;height:4px;z-index:950;pointer-events:none;background:linear-gradient(90deg,var(--accent),var(--accent2))}
 .logo{width:44px;height:44px;border-radius:4px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:var(--shadow-lg);flex:none}
 
 /* ---------- page rail (same as the other pages) ---------- */
@@ -60,6 +60,7 @@ body{padding-left:76px}
 .btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:4px;background:var(--card);color:var(--text);font-size:11px;font-weight:700;letter-spacing:.08em;box-sizing:border-box}
 .btn:hover{border-color:var(--accent);color:var(--accent-text)}
 .who{font-size:12px;color:var(--mute);font-weight:600;margin-right:6px}.who b{color:var(--text)}
+.so{height:32px;padding:0 14px;border:1px solid var(--line2);border-radius:4px;background:var(--card);color:var(--text);font:800 11px Inter,sans-serif;letter-spacing:.1em;cursor:pointer;margin-left:6px}.so:hover{border-color:var(--accent);color:var(--accent-text)}
 .hero{position:relative;overflow:hidden;border-radius:4px;color:#fff;padding:34px 36px;background:linear-gradient(160deg,#7C3AED 0%,#8F47F2 50%,#A855F7 100%);box-shadow:0 12px 24px -14px rgba(76,29,149,.7);margin-bottom:28px}
 .hero::after{content:"";position:absolute;right:-60px;top:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.09)}
 .hero small{font-size:11px;letter-spacing:.16em;font-weight:700;opacity:.85}.hero h1{margin:8px 0 6px;font-size:34px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}.hero p{margin:0;font-size:13px;opacity:.9;letter-spacing:.06em;font-weight:600}
@@ -103,7 +104,7 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
 </head><body><div class="topline"></div>
 <div class="wrap">
 <div class="top"><div class="nm"><small>WARRIOR LOGISTICS</small><b>WARRIOR HUB</b></div><div class="grow"></div>
-<span class="who">Signed in as <b id="who"></b></span></div>
+<span class="who">Signed in as <b id="who"></b></span><button type="button" id="so" class="so">SIGN OUT</button></div>
 <div class="hero"><small id="dt"></small><h1 id="hi">Welcome back</h1><p>DLS4 · HSA7 · DXFL · JOYL</p></div>
 <div class="sec">YOUR TOOLS</div><div class="tiles"><a class="tile" href="daily-tasks.html"><div class="ti"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></div><h2>Daily Tasks</h2><p>Daily checks, bookings and the end-of-day report for every site.</p><span class="op">OPEN <i>→</i></span></a><a class="tile" href="recruitment.html"><div class="ti"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div><h2>Recruitment</h2><p>New starter pipeline, compliance, training and driver setup.</p><span class="op">OPEN <i>→</i></span></a><a class="tile" href="wave-plan-generator.html"><div class="ti"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><h2>Wave Plan</h2><p>Build and export the daily wave plan from routes, vans and rota.</p><span class="op">OPEN <i>→</i></span></a><a class="tile" href="posters.html"><div class="ti"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><h2>Posters</h2><p>Driver poster library — find, preview and share.</p><span class="op">OPEN <i>→</i></span></a></div>
 <div class="sec">BRAND COLOUR</div>
@@ -131,9 +132,9 @@ paint();
   ];
   document.getElementById('wlRail').innerHTML='<div class="rl-logo on" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+PAGES.map(function(p){
     return '<a href="'+p.href+'" class="'+(p.current?'on':'')+'" '+(p.current?'aria-current="page" ':'')+'title="'+p.label+'"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p.icon+'</svg><span>'+p.label+'</span></a>';
-  }).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button><button type="button" id="wlOut" title="Sign out"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>';
+  }).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button>';
   window.wlRailInit();
-  document.getElementById('wlOut').onclick=function(){window.wlSignOut()};
+  document.getElementById('so').onclick=function(){window.wlSignOut()};
   var mb=document.getElementById('wlMute');
   function paintMute(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off'}catch(e){}mb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(on?'<path d="M11 5L6 9H2v6h4l5 4zM19 5a9 9 0 0 1 0 14M15.5 8.5a5 5 0 0 1 0 7"/>':'<path d="M11 5L6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/>')+'</svg><span>'+(on?'Mute':'Unmute')+'</span>'}
   mb.onclick=function(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off';localStorage.setItem('wl_sound',on?'off':'on')}catch(e){}paintMute()};paintMute();

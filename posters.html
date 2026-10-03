@@ -288,9 +288,9 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
   ];
   document.getElementById('wlRail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+PAGES.map(function(p){
     return '<a href="'+p.href+'" class="'+(p.current?'on':'')+'" '+(p.current?'aria-current="page" ':'')+'title="'+p.label+'"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p.icon+'</svg><span>'+p.label+'</span></a>';
-  }).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button><button type="button" id="wlOut" title="Sign out"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>';
+  }).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button>';
   window.wlRailInit();
-  document.getElementById('wlOut').onclick=function(){window.wlSignOut()};
+  
   var mb=document.getElementById('wlMute');
   function paintMute(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off'}catch(e){}mb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(on?'<path d="M11 5L6 9H2v6h4l5 4zM19 5a9 9 0 0 1 0 14M15.5 8.5a5 5 0 0 1 0 7"/>':'<path d="M11 5L6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/>')+'</svg><span>'+(on?'Mute':'Unmute')+'</span>'}
   mb.onclick=function(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off';localStorage.setItem('wl_sound',on?'off':'on')}catch(e){}paintMute()};paintMute();
@@ -354,7 +354,7 @@ const store={
         const path='posters/'+id+'/'+Date.now()+'_'+name, r=st.ref(s,path);
         await st.uploadBytes(r,file,{contentType:file.type||'image/png'});
         return {where:'storage',path,url:await st.getDownloadURL(r),name,mime:file.type,size:file.size};
-      }catch(e){ console.error(e); toast('Original could not be uploaded – check Firebase Storage'); return null; }
+      }catch(e){ console.error(e); toast('Full-size original kept on this device only (Firebase Storage is not switched on)'); }
     }
     try{ await idb.put(id,file); return {where:'idb',name,mime:file.type,size:file.size}; }
     catch(e){ console.error(e); toast('Original could not be kept on this device'); return null; }

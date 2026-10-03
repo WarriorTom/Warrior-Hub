@@ -63,8 +63,8 @@ window.wlFirebase().then(function(f){if(!f.auth.currentUser){try{localStorage.re
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
 button,input,select{font-family:inherit}
-.topbar{height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.app{min-width:1356px;display:grid;grid-template-columns:76px 372px minmax(0,1fr);min-height:calc(100vh - 4px)}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:950;pointer-events:none;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.app{min-width:1356px;display:grid;grid-template-columns:76px 372px minmax(0,1fr);min-height:100vh}
 
 /* ---------- sidebar ---------- */
 .side{position:sticky;top:0;height:100vh;overflow-x:hidden;overflow-y:auto;background:var(--side);border-right:1px solid var(--line);padding:30px 22px 28px}
@@ -1040,10 +1040,10 @@ const NAV_PAGES = [
   { label:'Posters',       icon:'image', href:'posters.html' }
 ];
 function renderRail(){
-  $('#rail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+NAV_PAGES.map(p=>`<a href="${esc(p.href)}" class="${p.current?'on':''}" ${p.current?'aria-current="page"':''} title="${esc(p.label)}">${icon(p.icon,22)}<span>${esc(p.label)}</span></a>`).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button><button type="button" id="wlOut" title="Sign out"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Sign out</span></button>';
+  $('#rail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+NAV_PAGES.map(p=>`<a href="${esc(p.href)}" class="${p.current?'on':''}" ${p.current?'aria-current="page"':''} title="${esc(p.label)}">${icon(p.icon,22)}<span>${esc(p.label)}</span></a>`).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button>';
   const paintMute=()=>{ $('#wlMute').innerHTML=icon(soundOn?'volume':'volumeOff',22)+'<span>'+(soundOn?'Mute':'Unmute')+'</span>'; };
   $('#wlMute').onclick=()=>{ soundOn=!soundOn; lsSet('wl_sound',soundOn?'on':'off'); paintMute(); tickSound(); };
-  $('#wlOut').onclick=()=>window.wlSignOut();
+  
   window.wlRailInit();
   paintMute();
 }
