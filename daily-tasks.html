@@ -24,7 +24,13 @@ window.wlRailInit=function(){var t=document.getElementById('wlTheme'),d=document
 document.addEventListener('DOMContentLoaded',function(){if(!on)return;var b=document.createElement('div');b.id='wlDemoBar';b.innerHTML='<b>DEMO MODE</b><span>Sample data only - your real data is untouched</span><button type="button" id="wlDemoRs">Reset demo</button><button type="button" id="wlDemoEx">Exit demo</button>';document.body.appendChild(b);document.getElementById('wlDemoRs').onclick=window.wlDemoReset;document.getElementById('wlDemoEx').onclick=window.wlDemoExit});
 })();</script>
 <style>#wlDemoBar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:960;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:4px;background:#1E2023;color:#fff;font:600 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px -8px rgba(0,0,0,.55);border:1px solid #494A4F}#wlDemoBar b{letter-spacing:.14em;font-size:11px;color:#fff;background:linear-gradient(160deg,#7C3AED,#A855F7);padding:4px 9px;border-radius:3px}#wlDemoBar span{color:#B9BCC3}#wlDemoBar button{all:unset;cursor:pointer;padding:6px 11px;border-radius:3px;background:rgba(255,255,255,.1);font-weight:700;font-size:11px}#wlDemoBar button:hover{background:#fff;color:#1E2023}.wl-rail button.demoon,.rail button.demoon{background:linear-gradient(160deg,#7C3AED,#A855F7);color:#fff;box-shadow:0 8px 18px -8px rgba(124,58,237,.8)}</style>
-<script>/*WL-GUARD*/(function(){var REQUIRE_LOGIN=false;/* set to true to switch the sign-in page back on */window.wlSignOut=function(){try{localStorage.removeItem('wl_session')}catch(e){}location.href='login.html'};if(!REQUIRE_LOGIN){window.WL_USER='Tom Jackson';document.documentElement.classList.add('wl-off');var st=document.createElement('style');st.textContent='html.wl-off #wlOut,html.wl-off #so{display:none!important}';document.head.appendChild(st);return}try{var s=JSON.parse(localStorage.getItem('wl_session')||'null');if(!s||!s.exp||s.exp<Date.now())throw 0;window.WL_USER=s.name||s.u}catch(e){var n=(location.pathname.split('/').pop()||'index.html');location.replace('login.html?next='+encodeURIComponent(n))}})();</script>
+<script>/*WL-GUARD*/(function(){var SES='wl_session';window.WL_FB_CONFIG={apiKey:"AIzaSyCuLjPnex47FaoL0j7W8awVraVR6aZbeJ4",authDomain:"warrior-hub-e44a9.firebaseapp.com",projectId:"warrior-hub-e44a9",storageBucket:"warrior-hub-e44a9.firebasestorage.app",messagingSenderId:"942187494063",appId:"1:942187494063:web:981079cbd0fb173195b25a"};
+window.wlFirebase=function(){if(window.__wlfb)return window.__wlfb;return window.__wlfb=(async function(){var b='https://www.gstatic.com/firebasejs/10.12.2/';var m=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);var app=m[0].initializeApp(window.WL_FB_CONFIG);var auth=m[1].getAuth(app);await auth.authStateReady();return{app:app,auth:auth,au:m[1],fs:m[2],db:m[2].getFirestore(app),base:b}})()};
+window.wlSignOut=function(){var d=0,go=function(){if(d)return;d=1;try{localStorage.removeItem(SES)}catch(e){}location.href='login.html'};if(window.WL_DEMO){go();return}window.wlFirebase().then(function(f){return f.au.signOut(f.auth)}).then(go,go);setTimeout(go,2500)};
+if(window.WL_DEMO){window.WL_USER='Demo';document.documentElement.classList.add('wl-off');var st=document.createElement('style');st.textContent='html.wl-off #wlOut,html.wl-off #so{display:none!important}';document.head.appendChild(st);return}
+var n=(location.pathname.split('/').pop()||'index.html');
+try{var s=JSON.parse(localStorage.getItem(SES)||'null');if(!s||!s.exp||s.exp<Date.now())throw 0;window.WL_USER=s.name||s.u}catch(e){location.replace('login.html?next='+encodeURIComponent(n));return}
+window.wlFirebase().then(function(f){if(!f.auth.currentUser){try{localStorage.removeItem(SES)}catch(e){}location.replace('login.html?next='+encodeURIComponent(n))}}).catch(function(){});})();</script>
 <title>Warrior Daily Tasks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -588,7 +594,7 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
    ===================================================================== */
 // Paste your Firebase web-app config to turn on cloud sync (see README).
 // Leave apiKey empty and the page runs in "Local only" mode (this browser only).
-const FIREBASE_CONFIG = { apiKey:"", authDomain:"", projectId:"", appId:"" };
+const FIREBASE_CONFIG = window.WL_FB_CONFIG;
 
 const SITES = ['DLS4','HSA7','DXFL','JOYL'];
 // Team members shown in the "On duty" and "Signed in as" dropdowns. Add new names here.
@@ -827,9 +833,7 @@ const store = {
     this.h=h;
     if(FIREBASE_CONFIG.apiKey&&!window.WL_DEMO){
       try{
-        const base='https://www.gstatic.com/firebasejs/10.12.2/';
-        const [{initializeApp},fs]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js')]);
-        const db=fs.getFirestore(initializeApp(FIREBASE_CONFIG));
+        const {fs,db}=await window.wlFirebase();
         this.fb={fs,db}; this.mode='firebase';
         const err=e=>{ console.error(e); toast('Sync error – check Firestore rules'); };
         fs.onSnapshot(fs.collection(db,'days'),snap=>{ const o={}; snap.forEach(d=>{const x=d.data(); o[d.id]={done:x.done||{},owners:x.owners||{}};}); h.days(o); },err);

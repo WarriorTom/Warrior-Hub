@@ -29,6 +29,7 @@ input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.16)
 .go{width:100%;height:44px;border:0;border-radius:4px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:800;letter-spacing:.08em;font-size:12px;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.28)}
 .go:disabled{opacity:.55;cursor:default}
 .err{min-height:18px;margin:-4px 0 10px;font-size:12px;font-weight:600;color:var(--bad-text)}
+.fg{display:block;text-align:center;margin-top:14px;font-size:12px;font-weight:600;color:var(--accent-text);text-decoration:none}.fg:hover{text-decoration:underline}
 .ft{padding:0 32px 22px;text-align:center;font-size:11px;color:var(--faint);line-height:1.5}
 </style>
 <script>/*WL-ACCENT*/(function(){
@@ -46,35 +47,34 @@ function apply(){var t=P[cur()];document.querySelectorAll('style').forEach(funct
 window.wlSwatch=function(n){var t=P[n];return t?hex(conv('7C3AED',t)):'#7C3AED'};window.wlAccents=P;window.wlAccent=cur;window.wlSetAccent=function(n){try{localStorage.setItem('wl_accent',n)}catch(e){}apply()};
 apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListener('storage',function(e){if(e.key==='wl_accent')apply()});})();</script>
 </head><body><div class="topline"></div>
-<div class="box"><div class="hd"><div class="logo">W</div><small>WARRIOR LOGISTICS</small><h1 id="ttl">SIGN IN</h1><p id="sub">Enter your login to open Warrior Hub.</p></div>
-<form id="f" autocomplete="on"><div id="nw" style="display:none"><label for="fn">Full name</label><input id="fn" autocomplete="name" placeholder="e.g. Tom Jackson"></div><label for="u">Username</label><input id="u" autocomplete="username" autofocus>
+<div class="box"><div class="hd"><div class="logo">W</div><small>WARRIOR LOGISTICS</small><h1 id="ttl">SIGN IN</h1><p id="sub">Sign in with your work email to open Warrior Hub.</p></div>
+<form id="f" autocomplete="on"><label for="u">Email</label><input id="u" type="email" autocomplete="username" autofocus>
 <label for="p">Password</label><input id="p" type="password" autocomplete="current-password">
-<div id="cw" style="display:none"><label for="c">Confirm password</label><input id="c" type="password" autocomplete="new-password"></div>
-<div class="err" id="err"></div><button class="go" id="go" type="submit">SIGN IN</button></form>
-<div class="ft">Logins are kept on this device for now. Online accounts (shared across devices) are switched on with Firebase.</div></div>
-<script>
-(function(){
-var $=function(i){return document.getElementById(i)},USERS='wl_users',SESS='wl_session',TTL=12*3600*1000;
-function users(){try{return JSON.parse(localStorage.getItem(USERS)||'[]')}catch(e){return[]}}
-function nextPage(){var n=new URLSearchParams(location.search).get('next')||'index.html';return /^[\w.-]+\.html$/.test(n)&&n!=='login.html'?n:'index.html'}
-function sess(u,n){localStorage.setItem(SESS,JSON.stringify({u:u,name:n||u,exp:Date.now()+TTL}))}
-try{var s=JSON.parse(localStorage.getItem(SESS)||'null');if(s&&s.exp>Date.now()){location.replace(nextPage())}}catch(e){}
-function hex(buf){return Array.prototype.map.call(new Uint8Array(buf),function(b){return('0'+b.toString(16)).slice(-2)}).join('')}
-async function hash(pw,salt){var d=salt+':'+pw;if(window.crypto&&crypto.subtle){return hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(d)))}var h=5381;for(var i=0;i<d.length;i++)h=((h<<5)+h+d.charCodeAt(i))|0;return'x'+h}
-var setup=users().length===0;
-if(setup){$('ttl').textContent='CREATE YOUR LOGIN';$('sub').textContent='First time here — choose a username and password.';$('cw').style.display='block';$('nw').style.display='block';$('go').textContent='CREATE LOGIN';$('p').autocomplete='new-password'}
-var fails=0,lock=0;
-$('f').onsubmit=async function(e){e.preventDefault();var err=$('err');err.textContent='';var u=$('u').value.trim(),p=$('p').value;
-if(!u||!p){err.textContent='Enter a username and password.';return}
-if(Date.now()<lock){err.textContent='Too many attempts — wait '+Math.ceil((lock-Date.now())/1000)+'s.';return}
-$('go').disabled=true;
+<div class="err" id="err"></div><button class="go" id="go" type="submit">SIGN IN</button>
+<a href="#" id="fg" class="fg">Forgot password?</a></form>
+<div class="ft">Access is by invitation only. To get an account, ask Tom.</div></div>
+<script type="module">
+const $=i=>document.getElementById(i),SES='wl_session',TTL=14*24*3600*1000;
+const CFG={apiKey:"AIzaSyCuLjPnex47FaoL0j7W8awVraVR6aZbeJ4",authDomain:"warrior-hub-e44a9.firebaseapp.com",projectId:"warrior-hub-e44a9",storageBucket:"warrior-hub-e44a9.firebasestorage.app",messagingSenderId:"942187494063",appId:"1:942187494063:web:981079cbd0fb173195b25a"};
+function nextPage(){const n=new URLSearchParams(location.search).get('next')||'index.html';return /^[\w.-]+\.html$/.test(n)&&n!=='login.html'?n:'index.html'}
+function pretty(em){return em.split('@')[0].split(/[._-]+/).filter(Boolean).map(w=>w[0].toUpperCase()+w.slice(1)).join(' ')}
+function msg(e){const c=(e&&e.code)||'';if(/invalid-credential|wrong-password|user-not-found|invalid-email/.test(c))return'Email or password is incorrect.';if(/too-many/.test(c))return'Too many attempts. Wait a few minutes or reset your password.';if(/network/.test(c))return'No connection. Check your internet and try again.';if(/permission/.test(c))return'Your account is not set up yet. Ask Tom to approve it.';return'Could not sign in ('+(c||'error')+').'}
+let A,fb;
 try{
-if(setup){if(p.length<6){err.textContent='Password must be at least 6 characters.';return}if(p!==$('c').value){err.textContent='Passwords do not match.';return}
-var salt=hex(crypto.getRandomValues?crypto.getRandomValues(new Uint8Array(8)):[1,2,3,4,5,6,7,8]);
-var fn=$('fn').value.trim();if(!fn){err.textContent='Enter your full name.';return}localStorage.setItem(USERS,JSON.stringify([{u:u,n:fn,s:salt,h:await hash(p,salt)}]));sess(u,fn);location.replace(nextPage());return}
-var rec=users().filter(function(x){return x.u.toLowerCase()===u.toLowerCase()})[0];
-if(rec&&rec.h===await hash(p,rec.s)){sess(rec.u,rec.n);location.replace(nextPage());return}
-fails++;err.textContent='Username or password is incorrect.';if(fails>=5){lock=Date.now()+30000;fails=0}
-}finally{$('go').disabled=false}};
-})();
+const b='https://www.gstatic.com/firebasejs/10.12.2/';
+const [ap,au,fs]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
+const app=ap.initializeApp(CFG),auth=au.getAuth(app),db=fs.getFirestore(app);A={au,auth};fb={fs,db};
+await auth.authStateReady();
+async function approve(user){const em=(user.email||'').toLowerCase();const d=await fs.getDoc(fs.doc(db,'allowed',em));
+if(!d.exists()||d.data().ok===false){await au.signOut(auth);try{localStorage.removeItem(SES)}catch(e){}return null}
+const nm=d.data().name||user.displayName||pretty(em);localStorage.setItem(SES,JSON.stringify({u:em,name:nm,exp:Date.now()+TTL}));return nm}
+if(auth.currentUser){try{if(await approve(auth.currentUser))location.replace(nextPage())}catch(e){}}
+$('f').onsubmit=async e=>{e.preventDefault();const err=$('err');err.textContent='';const u=$('u').value.trim(),p=$('p').value;if(!u||!p){err.textContent='Enter your email and password.';return}
+$('go').disabled=true;
+try{const cr=await au.signInWithEmailAndPassword(auth,u,p);const nm=await approve(cr.user);if(!nm){err.textContent='This account has not been approved for Warrior Hub. Ask Tom.';return}location.replace(nextPage())}
+catch(x){err.textContent=msg(x)}finally{$('go').disabled=false}};
+$('fg').onclick=async e=>{e.preventDefault();const err=$('err'),u=$('u').value.trim();if(!u){err.style.color='';err.textContent='Type your email above first, then click Forgot password.';return}
+try{await au.sendPasswordResetEmail(auth,u)}catch(x){}
+err.style.color='var(--ok)';err.textContent='If that email has an account, a reset link is on its way. Check your spam folder too.'}
+}catch(x){console.error(x);$('err').textContent='Could not reach the sign-in service. Check your internet connection and reload.'}
 </script></body></html>
