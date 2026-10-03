@@ -708,7 +708,7 @@ const dispG=(c,gi)=>gi===1?{d:trainD(c),n:NMOD,p:trainD(c)/NMOD,txt:trainD(c)+'/
 const total=c=>{let d=0,t=0;GROUPS.forEach((g,gi)=>{d+=nDone(c,gi);t+=g.items.length});return d/t};
 const complete=c=>GROUPS.every((g,gi)=>nDone(c,gi)===g.items.length);
 const stageFor=c=>['NEW STARTER','AMIIGO TRAINING','GENERATE CONNECT','DRIVER SETUP','DRIVER SETUP'][Math.max(0,GROUPS.findIndex((g,gi)=>nDone(c,gi)<g.items.length))];
-{let ch=0;L.forEach(c=>{if(c.status==='ACTIVE'&&!complete(c)){c.status=stageFor(c);ch=1}});if(ch)save()}
+/* legacy Active starters are left as they are */
 const next=c=>{for(const g of GROUPS){const it=g.items.find(x=>!done(c,x));if(it)return it.l}return null};
 const ini=n=>n.split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 const isStat=(c,k)=>k==='ALL'||(k==='PIPE'?(c.status!=='ACTIVE'&&c.status!=='REJECTED'):k==='WEEK'?!!(c.created&&c.created>=Date.now()-7*864e5):c.status===k);
@@ -962,8 +962,8 @@ function detail(id){const c=L.find(x=>x.id===id);if(!c)return;
   $('#dg').innerHTML='<div id="stp"></div><div class="cb sbody" id="sb"></div>';
   let act=0;
   const steps=()=>'<div class="steps'+(complete(c)?' all':'')+'">'+GROUPS.map((g,gi)=>{const p=pctG(c,gi),r=20,C=2*Math.PI*r;return '<div class="stp'+(gi===act?' on':'')+(p>=1?' dn':'')+'" data-step="'+gi+'"><div class="sc"><svg class="rg" viewBox="0 0 44 44"><circle cx="22" cy="22" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="4"/><circle cx="22" cy="22" r="'+r+'" fill="none" stroke="'+(p>=1?'var(--ok)':'var(--accent)')+'" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+(C*p).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 22 22)"/></svg><span class="gi">'+ic(p>=1?I.tick:I[g.i],17,p>=1?3:2)+'</span></div><div class="sn">'+g.n+'</div><div class="sk">'+(gi===1?trainD(c)+' of '+NMOD:nDone(c,gi)+' of '+g.items.length)+'</div></div>'}).join('')+'</div>';
-  const syncActive=()=>{const ok=complete(c),o=[...$('#dst').options].find(x=>x.value==='ACTIVE');if(o){o.disabled=!ok;o.textContent=ok?'ACTIVE':'ACTIVE (needs all checks)'}
-    if(c.status==='ACTIVE'&&!ok){c.status=stageFor(c);$('#dst').value=c.status;save();render();toast('Moved back to '+c.status+' — Active needs every check complete')}};
+  let prevOk=complete(c);const syncActive=()=>{const ok=complete(c),o=[...$('#dst').options].find(x=>x.value==='ACTIVE');if(o){o.disabled=!ok;o.textContent=ok?'ACTIVE':'ACTIVE (needs all checks)'}
+    const wasOk=prevOk;prevOk=ok;if(c.status==='ACTIVE'&&!ok&&wasOk){c.status=stageFor(c);$('#dst').value=c.status;save();render();toast('Moved back to '+c.status+' — Active needs every check complete')}};
   const markCopied=k=>{c.copied=c.copied||{};c.copied[k]=1;save();const b=$('#dg [data-act="'+k+'"]');if(b){b.classList.add('ok');const em=b.querySelector('em');if(em)em.innerHTML=ic(I.tick,12,3)+' COPIED'}};
   const cpd=k=>c.copied&&c.copied[k];
   const advance=()=>{if(pctG(c,act)<1||complete(c))return;const n=GROUPS.length;for(let k=1;k<=n;k++){const g=(act+k)%n;if(pctG(c,g)<1){act=g;paint();return}}};
