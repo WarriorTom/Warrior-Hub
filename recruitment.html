@@ -726,13 +726,15 @@ const dispG=(c,gi)=>gi===1?{d:trainD(c),n:NMOD,p:trainD(c)/NMOD,txt:trainD(c)+'/
 const total=c=>{let d=0,t=0;GROUPS.forEach((g,gi)=>{d+=nDone(c,gi);t+=g.items.length});return d/t};
 const complete=c=>GROUPS.every((g,gi)=>nDone(c,gi)===g.items.length);
 const stageFor=c=>['NEW STARTER','AMIIGO TRAINING','GENERATE CONNECT','DRIVER SETUP','FILE COMPLIANCE'][Math.max(0,GROUPS.findIndex((g,gi)=>nDone(c,gi)<g.items.length))];
-L.forEach(c=>{if(c.status==='DRIVER SETUP'&&GROUPS.slice(0,4).every((g,gi)=>nDone(c,gi)===g.items.length))c.status='FILE COMPLIANCE'});/* legacy Active starters are left as they are */
+const advStage=c=>{const o=['GENERATE CONNECT','DRIVER SETUP','FILE COMPLIANCE'],i=STAGES.indexOf(c.status);if(!(c.status==='AMIIGO TRAINING'||o.includes(c.status)))return false;let t=null;if(GROUPS.slice(0,4).every((g,gi)=>nDone(c,gi)===g.items.length))t='FILE COMPLIANCE';else if(GROUPS.slice(0,3).every((g,gi)=>nDone(c,gi)===g.items.length))t='DRIVER SETUP';else if(GROUPS.slice(0,2).every((g,gi)=>nDone(c,gi)===g.items.length))t='GENERATE CONNECT';if(t&&STAGES.indexOf(t)>i){c.status=t;return true}return false};
+{let ch=0;L.forEach(c=>{if(advStage(c))ch=1});if(ch)save()}/* legacy Active starters are left as they are */
 const next=c=>{for(const g of GROUPS){const it=g.items.find(x=>!done(c,x));if(it)return it.l}return null};
 const ini=n=>n.split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 const isStat=(c,k)=>k==='ALL'||(k==='PIPE'?(c.status!=='ACTIVE'&&c.status!=='REJECTED'):k==='WEEK'?!!(c.created&&c.created>=Date.now()-7*864e5):c.status===k);
 function match(c){ if(!isStat(c,stF))return false; if(osmF!=='ALL'&&c.osm!==osmF)return false; if(dbsF!=='ALL'&&dv(c)!==(dbsF==='NONE'?'':dbsF))return false; if(q){const s=(c.name+' '+c.phone+' '+c.email).toLowerCase(); if(!s.includes(q))return false} return true}
 function ring(p,col){const r=16,C=2*Math.PI*r;return '<div class="ring"><svg width="38" height="38" viewBox="0 0 38 38"><circle cx="19" cy="19" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="4"/><circle cx="19" cy="19" r="'+r+'" fill="none" stroke="'+(p>=1?'var(--ok)':'var(--accent)')+'" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+(C*p).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 19 19)"/></svg><em>'+Math.round(p*100)+'%</em></div>'}
 function render(){
+  {let ch=0;L.forEach(c=>{if(advStage(c))ch=1});if(ch)save()}
   const act=L.filter(c=>c.status==='ACTIVE');
   const dn=d=>L.filter(c=>dv(c)===d).length;
   const sn=x=>L.filter(c=>c.status===x).length,wk=Date.now()-7*864e5;
@@ -983,7 +985,7 @@ function detail(id){const c=L.find(x=>x.id===id);if(!c)return;
   let act=0;
   const steps=()=>'<div class="steps'+(complete(c)?' all':'')+'">'+GROUPS.map((g,gi)=>{const p=pctG(c,gi),r=20,C=2*Math.PI*r;return '<div class="stp'+(gi===act?' on':'')+(p>=1?' dn':'')+'" data-step="'+gi+'"><div class="sc"><svg class="rg" viewBox="0 0 44 44"><circle cx="22" cy="22" r="'+r+'" fill="none" stroke="var(--track)" stroke-width="4"/><circle cx="22" cy="22" r="'+r+'" fill="none" stroke="'+(p>=1?'var(--ok)':'var(--accent)')+'" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+(C*p).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 22 22)"/></svg><span class="gi">'+ic(p>=1?I.tick:I[g.i],17,p>=1?3:2)+'</span></div><div class="sn">'+g.n+'</div><div class="sk">'+(gi===1?trainD(c)+' of '+NMOD:nDone(c,gi)+' of '+g.items.length)+'</div></div>'}).join('')+'</div>';
   let prevOk=complete(c);const syncActive=()=>{const ok=complete(c),o=[...$('#dst').options].find(x=>x.value==='ACTIVE');if(o){o.disabled=!ok;o.textContent=ok?'ACTIVE':'ACTIVE (needs all checks)'}
-    const wasOk=prevOk;prevOk=ok;if(c.status==='ACTIVE'&&!ok&&wasOk){c.status=stageFor(c);$('#dst').value=c.status;save();render();toast('Moved back to '+c.status+' — Active needs every check complete')}};
+    if(advStage(c)){const d=$('#dst');if(d)d.value=c.status;const dt=$('.det');if(dt)dt.dataset.st=sk(c.status);save();render()}const wasOk=prevOk;prevOk=ok;if(c.status==='ACTIVE'&&!ok&&wasOk){c.status=stageFor(c);$('#dst').value=c.status;save();render();toast('Moved back to '+c.status+' — Active needs every check complete')}};
   const markCopied=k=>{c.copied=c.copied||{};c.copied[k]=1;save();const b=$('#dg [data-act="'+k+'"]');if(b){b.classList.add('ok');const em=b.querySelector('em');if(em)em.innerHTML=ic(I.tick,12,3)+' COPIED'}};
   const cpd=k=>c.copied&&c.copied[k];
   const advance=()=>{if(pctG(c,act)<1||complete(c))return;const n=GROUPS.length;for(let k=1;k<=n;k++){const g=(act+k)%n;if(pctG(c,g)<1){act=g;paint();return}}};
