@@ -1043,10 +1043,10 @@ function numCell(k,e,wide){
    href = the page's file name or full URL (same tab). Put this same rail in each tool so you can hop between them. */
 const NAV_PAGES = [
   { label:'Daily Tasks',   icon:'check', href:'daily-tasks.html',               current:true },
-  { label:'Recruitment',  icon:'users', href:'recruitment.html' },
   { label:'Wave Plan',     icon:'truck', href:'wave-plan-generator.html' },
-  { label:'Posters',       icon:'image', href:'posters.html' },
-  { label:'DVLA',          icon:'card',  href:'dvla.html' }
+  { label:'Recruitment',  icon:'users', href:'recruitment.html' },
+  { label:'DVLA',          icon:'card',  href:'dvla.html' },
+  { label:'Posters',       icon:'image', href:'posters.html' }
 ];
 function renderRail(){
   $('#rail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+NAV_PAGES.map(p=>`<a href="${esc(p.href)}" class="${p.current?'on':''}" ${p.current?'aria-current="page"':''} title="${esc(p.label)}">${icon(p.icon,22)}<span>${esc(p.label)}</span></a>`).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button>';
