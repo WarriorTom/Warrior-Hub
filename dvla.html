@@ -412,6 +412,14 @@ html{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 45%,tr
 .dr.dvx{width:min(1040px,100vw)!important}
 .dr.dvx .dhn{flex:1 1 auto;min-width:0}.dr.dvx .dh .sp{display:none}
 .dr.dvx .dhn b{white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
+.cm .dh.bnr.isdue,.dr.dvx.cm .dh.bnr.isdue{background:#B91C1C!important;border-bottom:1px solid #7F1D1D!important}.dr.dvx.cm .dh.bnr.isdue .av{background:rgba(255,255,255,.22)}
+.dr.dvx .dh.bnr.isnew{background:#E4E6EA!important;color:#1E2023!important;border-bottom:1px solid #C9CDD3!important}
+.dr.dvx .dh.bnr.isnew .av{background:#fff;color:#1E2023;border:1px solid #C9CDD3}
+.dr.dvx .dh.bnr.isnew .dhn small{opacity:.75}
+.dr.dvx .dh.bnr.isnew .fld,.dr.dvx .dh.bnr.isnew .pillro{background:#fff;border:1px solid #C2C6CD;color:#1E2023}
+.dr.dvx .dh.bnr.isnew .x{color:#1E2023}.dr.dvx .dh.bnr.isnew .x:hover{background:rgba(0,0,0,.08)}
+.dr.dvx .dh.bnr.isnew{background:linear-gradient(120deg,#F6F7F9 0%,#E4E6EA 55%,#CBCFD6 100%)!important}
+.cm .dh.bnr.isdue,.dr.dvx.cm .dh.bnr.isdue{background:linear-gradient(120deg,#7F1D1D 0%,#B91C1C 55%,#EF4444 100%)!important}
 </style>
 <body>
 <div class="topline"></div>
@@ -593,8 +601,8 @@ document.addEventListener('input',function(e){dvAuto(e);if(e.target.closest&&e.t
 document.addEventListener('change',function(e){dvAuto(e);if(e.target.closest&&e.target.closest('#modal .dvx'))dvMiss()});
 function dvPost(){var bx=document.querySelector('#modal .dvx');if(!bx)return;dvMiss();bx.querySelectorAll('.dvc').forEach(function(c){var t=c.querySelector('.dvch').textContent;if(/Driver$|Dates/.test(t))c.classList.add('grid4');if(/Driver$/.test(t))c.classList.add('g3')})}
 function dvIC(k,s){return ic(I[k]||k,s||16)}
-function dvHead(c,title,sub,pills){var st=stat(c),ini=((String(c.first||'')[0]||'')+(String(c.last||'')[0]||'')).toUpperCase();
- return '<div class="dh bnr" data-k2="'+st.k+'"><div class="av">'+(ini||'+')+'</div><div class="dhn"><b>'+title+'</b><small>'+sub+'</small></div><div class="sp"></div>'+(pills||'')+'<button class="x" data-close="1" aria-label="Close">'+ic(I.x,16)+'</button></div>'}
+function dvHead(c,title,sub,pills,due){var st=stat(c),ini=((String(c.first||'')[0]||'')+(String(c.last||'')[0]||'')).toUpperCase();
+ return '<div class="dh bnr'+(due===2?' isnew':due&&isDue(st)?' isdue':'')+'" data-k2="'+st.k+'"><div class="av">'+(ini||'+')+'</div><div class="dhn"><b>'+title+'</b><small>'+sub+'</small></div><div class="sp"></div>'+(pills||'')+'<button class="x" data-close="1" aria-label="Close">'+ic(I.x,16)+'</button></div>'}
 function dvStrip(c){var st=stat(c),due=st.due||'';return '<div class="dvsd"><div><span class="lbl9">Status</span><b class="chip '+st.k+'">'+esc(st.t)+'</b></div><div><span class="lbl9">Last check</span><b>'+(c.lastCheck?fmt(c.lastCheck):'—')+'</b></div><div><span class="lbl9">Next due</span><b>'+(due?fmt(due):'—')+'</b></div><div><span class="lbl9">Points</span><b>'+(c.points==null?'—':c.points)+'</b></div></div>'}
 function dvCard(t,b,cls){return '<div class="dvc '+(cls||'')+'"><div class="dvch">'+t+'</div><div class="dvcb">'+b+'</div></div>'}
 function editModal(id){
@@ -612,7 +620,7 @@ function editModal(id){
   +dvCard('<i class="ci">'+IC1('d')+'</i>Dates & points',R(f('DL valid date',inp('dlValid','date')),f('DL expiry date',inp('dlExpiry','date')))+R(f('Last DVLA check',inp('lastCheck','date')),f('Check due','<input class="fld" data-k="dueOverride" type="date" data-auto="'+(c.dueOverride?'0':'1')+'" value="'+esc(c.dueOverride||auto||'')+'">'))+'<div class="hint" id="dueHint">'+(c.dueOverride?'Check due set by hand. Clear it to use last check + '+CHECK_DAYS+' days.':auto?'Check due is automatic: '+fmt(auto)+' (last check + '+CHECK_DAYS+' days)':'Check due is automatic once a check date is entered.')+'</div>'+R(f('Points','<input class="fld" data-k="points" type="number" min="0" max="99" value="'+(c.points==null?'':c.points)+'">'),f('N/A','<label class="chkrow"><input type="checkbox" data-k="na"'+(c.na?' checked':'')+'> No check needed</label>')));
  var B=dvCard('<i class="ci">'+IC1('f')+'</i>DVLA checks folder','<div class="cp"><input class="fld" data-k="folder" value="'+esc(c.folder||'')+'" placeholder="Paste the folder link"><button class="fo" type="button" data-openf="1">'+ic('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',15)+' OPEN</button></div>')
   +dvCard('<i class="ci">'+IC1('n')+'</i>Notes & history',f('Notes','<textarea class="fld" data-k="note">'+esc(c.note||'')+'</textarea>')+(hist?'<div class="hist"><h4>Check history</h4>'+hist+'</div>':''));
- $('#modal').innerHTML='<div class="ov drw"><div class="bk" data-close="1"></div><aside class="box dr dvx v1 w2">'+dvHead(c,isNew?'ADD DRIVER':esc(full(c)||'Driver').toUpperCase(),isNew?'Fill in the details, then save':'DRIVERS LICENSE DETAILS',pills)+'<div class="db"><div class="cola">'+A+'</div><div class="colb">'+B+'</div></div><div class="ft">'+(isNew?'':'<button class="btn bad" data-del="'+esc(c.id)+'">Delete</button>')+'<span class="sp"></span><button class="btn" data-close="1">Cancel</button><button class="btn pri" data-save="'+esc(c.id)+'" data-new="'+(isNew?1:0)+'">Save</button></div></aside></div>';
+ $('#modal').innerHTML='<div class="ov drw"><div class="bk" data-close="1"></div><aside class="box dr dvx v1 w2">'+dvHead(c,isNew?'ADD DRIVER':esc(full(c)||'Driver').toUpperCase(),isNew?'Fill in the details, then save':'DRIVERS LICENSE DETAILS',pills,isNew?2:0)+'<div class="db"><div class="cola">'+A+'</div><div class="colb">'+B+'</div></div><div class="ft">'+(isNew?'':'<button class="btn bad" data-del="'+esc(c.id)+'">Delete</button>')+'<span class="sp"></span><button class="btn" data-close="1">Cancel</button><button class="btn pri" data-save="'+esc(c.id)+'" data-new="'+(isNew?1:0)+'">Save</button></div></aside></div>';
  dvPost();
 }
 function readFields(c){document.querySelectorAll('#modal [data-k]').forEach(el=>{const k=el.dataset.k;let v=el.type==='checkbox'?el.checked:el.value.trim();
@@ -629,7 +637,7 @@ function checkModal(id){
   +dvCard('<i class="ci">'+IC1('d')+'</i>Log this check',row(D('cDate','Check date','date',today()),'<div><label class="lbl">Checker</label><select class="fld" id="cBy">'+opt(checkers(),c.checker||me(),'—')+'</select></div>',D('cPts','Points found','number',c.points==null?'0':c.points,'min="0" max="99"')));
  var B=dvCard('<i class="ci">'+IC1('f')+'</i>DVLA checks folder'+(c.folder?'':' <span class="req">required — none saved yet</span>'),'<div class="cp"><input class="fld" id="cFolder" value="'+esc(c.folder||'')+'" placeholder="Paste the link to the folder holding this driver’s DVLA checks"><button class="fo" type="button" data-openf2="1">'+FI+' OPEN</button></div>')
   +'<button class="upl" id="cUp" type="button" data-up="1"><i>'+TI+'</i><span>Check uploaded to folder</span><em>CLICK TO CONFIRM</em></button><div class="hint">Next check will be due 30 days after this date.</div>';
- $('#modal').innerHTML='<div class="ov drw"><div class="bk" data-close="1"></div><aside class="box dr cm dvx v1 w2">'+dvHead(c,esc(full(c)).toUpperCase(),'DVLA CHECK'+(c.site?' · '+esc(c.site):''),pills)+'<div class="db"><div class="cola">'+A+'</div><div class="colb">'+B+'</div></div><div class="ft"><span class="sp"></span><button class="btn" data-close="1">Cancel</button><button class="btn pri" data-log="'+esc(c.id)+'">Save check</button></div></aside></div>';
+ $('#modal').innerHTML='<div class="ov drw"><div class="bk" data-close="1"></div><aside class="box dr cm dvx v1 w2">'+dvHead(c,esc(full(c)).toUpperCase(),'DVLA CHECK'+(c.site?' · '+esc(c.site):''),pills,1)+'<div class="db"><div class="cola">'+A+'</div><div class="colb">'+B+'</div></div><div class="ft"><span class="sp"></span><button class="btn" data-close="1">Cancel</button><button class="btn pri" data-log="'+esc(c.id)+'">Save check</button></div></aside></div>';
  dvPost();
 }
 
