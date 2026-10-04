@@ -585,6 +585,14 @@ html:has(#modal .ov),html:has(#modal .ov) body{overflow:hidden!important}
 .det .dh.bnr .nmcp{overflow:hidden;text-overflow:ellipsis}
 
 .dvgo.off{background:var(--track,#E2E5EA)!important;color:var(--mute,#8A8F98)!important;opacity:1!important;border:1px solid var(--line,#D5D9DF)}
+
+/* percentage column: more room, aligned digits */
+.lr{grid-template-columns:50px minmax(150px,1.4fr) minmax(120px,.9fr) minmax(120px,.9fr) 350px 92px 84px!important;min-width:1070px!important;gap:12px!important}
+.lr .pc2{text-align:right!important;font-variant-numeric:tabular-nums;letter-spacing:.01em;padding-right:14px;white-space:nowrap}
+.chd b{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* percentage: solid colour block */
+.lr .pc2{background:var(--sc);color:#fff!important;width:84px;height:46px;border-radius:5px;display:flex;align-items:center;justify-content:center;text-align:center!important;padding:0!important;font-size:19px;font-weight:800;justify-self:center}
 </style>
 </head>
 <body>
@@ -770,10 +778,10 @@ function lrow(c){const t=total(c),n=next(c),rej=c.status==='REJECTED';
   '<div class="lc"><span class="spl">'+c.status+'</span></div>'+
   '<div class="lc"><div class="dsh d-'+(dv(c)||'NONE')+'"><div class="sh"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8 3v6c0 5.5-3.8 9-8 11-4.2-2-8-5.5-8-11V5z"/></svg><span class="in">'+dshGlyph(dv(c)||'NONE')+'</span></div><div><small>DBS</small><b>'+(dv(c)||'NOT STARTED')+'</b></div></div></div>'+
   '<div class="lc tk">'+GROUPS.map((g,gi)=>{const d=nDone(c,gi),dg=dispG(c,gi),f=dg.d>=dg.n;return '<div class="sp '+(f?'f':d>0?'p':'')+'"><div class="nd">'+(f?ic(I.tick,12,3):dg.d>0?dg.d+'/'+dg.n:0)+'</div>'+SEC4[gi].toUpperCase()+'</div>'}).join('')+'</div>'+
-  '<div class="lc pc2">'+(rej?100:Math.round(t*100))+'%</div>'+
+  '<div class="lc pc2">'+Math.round(t*100)+'%</div>'+
   '<div class="lc"><button class="cpb fbig'+(c.folder?'':' off')+'" data-folderbtn="'+c.id+'" title="'+(c.folder?'Open driver folder':'No folder link yet — click to add one')+'">'+ic(I.file,13)+'FOLDER</button></div></div>'}function card(c){const t=total(c),n=next(c);
   const rej=c.status==='REJECTED';
-  return '<div class="rc '+sk(c.status)+(rej?' rej':'')+'" data-id="'+c.id+'"><div class="chd '+sk(c.status)+'"><span>'+c.status+'</span><b>'+(rej?100:Math.round(t*100))+'%</b></div>'+dbsBadge(c)+'<div class="cbd"><div class="top"><div class="av">'+esc(ini(c.name))+'</div><div class="nm"><b>'+esc(c.name)+'</b><small>'+esc(c.site)+' · '+esc(c.by||c.osm)+'</small></div>'+'</div>'+
+  return '<div class="rc '+sk(c.status)+(rej?' rej':'')+'" data-id="'+c.id+'"><div class="chd '+sk(c.status)+'"><span>'+c.status+'</span><b>'+Math.round(t*100)+'%</b></div>'+dbsBadge(c)+'<div class="cbd"><div class="top"><div class="av">'+esc(ini(c.name))+'</div><div class="nm"><b>'+esc(c.name)+'</b><small>'+esc(c.site)+' · '+esc(c.by||c.osm)+'</small></div>'+'</div>'+
   GROUPS.map((g,gi)=>'<div class="sr'+(dispG(c,gi).p>=1?' f':'')+'"><span>'+g.n+'</span><b>'+dispG(c,gi).txt+'</b><i><u class="'+(dispG(c,gi).p>=1?'f':'')+'" style="width:'+dispG(c,gi).p*100+'%"></u></i></div>').join('')+
   '<div class="ft"><span>'+(rej?'<b style="color:var(--bad-text)">Rejected — progress frozen</b>':n?'Next: <b>'+esc(n)+'</b>':'<b style="color:var(--ok)">All checks complete</b>')+'</span><div class="cp"><button class="cpb fbig'+(c.folder?'':' off')+'" data-folderbtn="'+c.id+'" title="'+(c.folder?'Open driver folder':'No folder link yet — click to add one')+'">'+ic(I.file,13)+'FOLDER</button></div></div></div></div>'}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2200)}
