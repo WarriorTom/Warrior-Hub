@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="en"><head><meta name="referrer" content="no-referrer"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><title>Warrior Hub — Sign in</title>
 <script>/*m-sysdefault*/try{if(innerWidth<=820&&!localStorage.getItem('wl_theme')){localStorage.setItem('wl_theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}}catch(e){}</script>
@@ -68,7 +68,7 @@ const app=ap.initializeApp(CFG),auth=au.getAuth(app),db=fs.getFirestore(app);A={
 await auth.authStateReady();
 async function approve(user){const em=(user.email||'').toLowerCase();const d=await fs.getDoc(fs.doc(db,'allowed',em));
 if(!d.exists()||d.data().ok===false){await au.signOut(auth);try{localStorage.removeItem(SES)}catch(e){}return null}
-const nm=d.data().name||user.displayName||pretty(em);localStorage.setItem(SES,JSON.stringify({u:em,name:nm,exp:Date.now()+TTL}));return nm}
+const dm=d.data().demo===true;const nm=d.data().name||user.displayName||(dm?'Demo':pretty(em));if(dm)localStorage.setItem('wl_demo','1');else localStorage.removeItem('wl_demo');localStorage.setItem(SES,JSON.stringify({u:em,name:nm,demo:dm,exp:Date.now()+TTL}));return nm}
 if(auth.currentUser){try{if(await approve(auth.currentUser))location.replace(nextPage())}catch(e){}}
 $('f').onsubmit=async e=>{e.preventDefault();const err=$('err');err.textContent='';const u=$('u').value.trim(),p=$('p').value;if(!u||!p){err.textContent='Enter your email and password.';return}
 $('go').disabled=true;

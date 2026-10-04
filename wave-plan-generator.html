@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script>/*m-sysdefault*/try{if(innerWidth<=820&&!localStorage.getItem('wl_theme')){localStorage.setItem('wl_theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}}catch(e){}</script>
+<head><meta name="referrer" content="no-referrer"><script>/*m-sysdefault*/try{if(innerWidth<=820&&!localStorage.getItem('wl_theme')){localStorage.setItem('wl_theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}}catch(e){}</script>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wave Plan Generator</title>
-<script>/*WL-CARRY*/(function(){try{var q=new URLSearchParams(location.search),ch=false;['wl_demo','wl_theme','wl_accent'].forEach(function(k){var v=q.get(k);if(v!==null){if(v==='')localStorage.removeItem(k);else localStorage.setItem(k,v);q.delete(k);ch=true}});if(ch&&history.replaceState){var s=q.toString();history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash)}}catch(e){}
-function url(h){try{var u=new URL(h,location.href);if(u.protocol!==location.protocol||!/\.html$/.test(u.pathname)||u.pathname.split('/').pop()==='login.html')return h;['wl_demo','wl_theme','wl_accent'].forEach(function(k){var v=localStorage.getItem(k);u.searchParams.set(k,v===null?'':v)});return u.href}catch(e){return h}}
+<script>/*WL-CARRY*/(function(){try{var q=new URLSearchParams(location.search),ch=false;['wl_theme','wl_accent'].forEach(function(k){var v=q.get(k);if(v!==null){if(v==='')localStorage.removeItem(k);else localStorage.setItem(k,v);q.delete(k);ch=true}});if(ch&&history.replaceState){var s=q.toString();history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash)}}catch(e){}
+function url(h){try{var u=new URL(h,location.href);if(u.protocol!==location.protocol||!/\.html$/.test(u.pathname)||u.pathname.split('/').pop()==='login.html')return h;['wl_theme','wl_accent'].forEach(function(k){var v=localStorage.getItem(k);u.searchParams.set(k,v===null?'':v)});return u.href}catch(e){return h}}
 window.wlGo=function(h){location.href=url(h)};
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||a.target==='_blank')return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#')return;var n=url(h);if(n!==h)a.setAttribute('href',n)},true);})();</script>
 <script>try{var t=localStorage.getItem("wl_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="light"}</script>
-<script>/*WL-DEMO*/(function(){var on=false;try{on=localStorage.getItem('wl_demo')==='1'}catch(e){}window.WL_DEMO=on;
+<script>/*WL-DEMO*/(function(){var on=false;var lock=false;try{var ss=JSON.parse(localStorage.getItem('wl_session')||'null');lock=!!(ss&&ss.demo&&ss.exp>Date.now())}catch(e){}
+if(lock){on=true;window.WL_DEMOLOCK=true;try{localStorage.setItem('wl_demo','1')}catch(e){}document.documentElement.classList.add('wl-lock')}else{try{localStorage.removeItem('wl_demo')}catch(e){}}
+window.WL_DEMO=on;
 var S=Storage.prototype,g=S.getItem,s=S.setItem,r=S.removeItem,PASS=/^(wl_theme|wl_accent|wl_sound|wl_demo|wl_session|wl_name)$/;
 if(on){var m=function(t,k){return t===localStorage&&!PASS.test(k)?'demo:'+k:k};S.getItem=function(k){return g.call(this,m(this,k))};S.setItem=function(k,v){return s.call(this,m(this,k),v)};S.removeItem=function(k){return r.call(this,m(this,k))}}
 function clear(){try{var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('demo:')===0)ks.push(k)}ks.forEach(function(k){r.call(localStorage,k)})}catch(e){}}
 function svg(p){return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'}
 var SUN='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',MOON='<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',PLAY='<circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4z"/>';
-window.wlDemoExit=function(){clear();try{r.call(localStorage,'wl_demo')}catch(e){}location.reload()};
+window.wlDemoExit=function(){if(lock){window.wlSignOut&&window.wlSignOut();return}clear();try{r.call(localStorage,'wl_demo')}catch(e){}location.reload()};
 window.wlDemoReset=function(){clear();location.reload()};
 window.wlRailInit=function(){var t=document.getElementById('wlTheme'),d=document.getElementById('wlDemo');
  function pt(){var dk=document.documentElement.dataset.theme==='dark';t.innerHTML=svg(dk?SUN:MOON)+'<span>'+(dk?'Light':'Dark')+'</span>';t.title=dk?'Switch to light mode':'Switch to dark mode'}
  if(t){t.onclick=function(){var n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('wl_theme',n)}catch(e){}pt()};pt()}
- if(d){d.className=on?'demoon':'';d.innerHTML=svg(PLAY)+'<span>'+(on?'Demo on':'Demo')+'</span>';d.title=on?'Demo mode is on - click to exit':'Fill every page with sample data to see how it works';d.onclick=function(){if(on)window.wlDemoExit();else{try{localStorage.setItem('wl_demo','1')}catch(e){}location.reload()}}}};
+ if(d)d.style.setProperty('display','none','important');if(d){d.className=on?'demoon':'';d.innerHTML=svg(PLAY)+'<span>'+(on?'Demo on':'Demo')+'</span>';d.title=on?'Demo mode is on - click to exit':'Fill every page with sample data to see how it works';d.onclick=function(){if(on)window.wlDemoExit();else{try{localStorage.setItem('wl_demo','1')}catch(e){}location.reload()}}}};
 document.addEventListener('DOMContentLoaded',function(){if(!on)return;var b=document.createElement('div');b.id='wlDemoBar';b.innerHTML='<b>DEMO MODE</b><span>Sample data only - your real data is untouched</span><button type="button" id="wlDemoRs">Reset demo</button><button type="button" id="wlDemoEx">Exit demo</button>';document.body.appendChild(b);document.getElementById('wlDemoRs').onclick=window.wlDemoReset;document.getElementById('wlDemoEx').onclick=window.wlDemoExit});
 })();</script>
-<style>#wlDemoBar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:960;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:4px;background:#1E2023;color:#fff;font:600 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px -8px rgba(0,0,0,.55);border:1px solid #494A4F}#wlDemoBar b{letter-spacing:.14em;font-size:11px;color:#fff;background:linear-gradient(160deg,#7C3AED,#A855F7);padding:4px 9px;border-radius:3px}#wlDemoBar span{color:#B9BCC3}#wlDemoBar button{all:unset;cursor:pointer;padding:6px 11px;border-radius:3px;background:rgba(255,255,255,.1);font-weight:700;font-size:11px}#wlDemoBar button:hover{background:#fff;color:#1E2023}.wl-rail button.demoon,.rail button.demoon{background:linear-gradient(160deg,#7C3AED,#A855F7);color:#fff;box-shadow:0 8px 18px -8px rgba(124,58,237,.8)}</style>
+<style>#wlDemoBar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:960;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:4px;background:#1E2023;color:#fff;font:600 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px -8px rgba(0,0,0,.55);border:1px solid #494A4F}#wlDemoBar b{letter-spacing:.14em;font-size:11px;color:#fff;background:linear-gradient(160deg,#7C3AED,#A855F7);padding:4px 9px;border-radius:3px}#wlDemoBar span{color:#B9BCC3}#wlDemoBar button{all:unset;cursor:pointer;padding:6px 11px;border-radius:3px;background:rgba(255,255,255,.1);font-weight:700;font-size:11px}#wlDemoBar button:hover{background:#fff;color:#1E2023}:root:root:root:root:root:root #wlDemo,:root:root:root:root:root:root #mmDemo,:root:root:root:root:root:root #wlRail #wlDemo{display:none!important}html.wl-lock #wlDemoEx{display:none!important}.wl-rail button.demoon,.rail button.demoon{background:linear-gradient(160deg,#7C3AED,#A855F7);color:#fff;box-shadow:0 8px 18px -8px rgba(124,58,237,.8)}</style>
 <script>/*WL-GUARD*/(function(){var SES='wl_session';window.WL_FB_CONFIG={apiKey:"AIzaSyCuLjPnex47FaoL0j7W8awVraVR6aZbeJ4",authDomain:"warrior-hub-e44a9.firebaseapp.com",projectId:"warrior-hub-e44a9",storageBucket:"warrior-hub-e44a9.firebasestorage.app",messagingSenderId:"942187494063",appId:"1:942187494063:web:981079cbd0fb173195b25a"};
 window.wlFirebase=function(){if(window.__wlfb)return window.__wlfb;return window.__wlfb=(async function(){var b='https://www.gstatic.com/firebasejs/10.12.2/';var m=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);var app=m[0].initializeApp(window.WL_FB_CONFIG);var auth=m[1].getAuth(app);await auth.authStateReady();return{app:app,auth:auth,au:m[1],fs:m[2],db:m[2].getFirestore(app),base:b}})()};
-window.wlSignOut=function(){var d=0,go=function(){if(d)return;d=1;try{localStorage.removeItem(SES)}catch(e){}location.href='login.html'};if(window.WL_DEMO){go();return}window.wlFirebase().then(function(f){return f.au.signOut(f.auth)}).then(go,go);setTimeout(go,2500)};
-if(window.WL_DEMO){window.WL_USER='Demo';document.documentElement.classList.add('wl-off');var st=document.createElement('style');st.textContent='html.wl-off #wlOut,html.wl-off #so{display:none!important}';document.head.appendChild(st);return}
+window.wlSignOut=function(){var d=0,go=function(){if(d)return;d=1;try{localStorage.removeItem(SES);if(window.WL_DEMOLOCK)localStorage.removeItem('wl_demo')}catch(e){}location.href='login.html'};if(window.WL_DEMO&&!window.WL_DEMOLOCK){go();return}window.wlFirebase().then(function(f){return f.au.signOut(f.auth)}).then(go,go);setTimeout(go,2500)};
+if(window.WL_DEMO&&!window.WL_DEMOLOCK){window.WL_USER='Demo';document.documentElement.classList.add('wl-off');var st=document.createElement('style');st.textContent='html.wl-off #wlOut,html.wl-off #so{display:none!important}';document.head.appendChild(st);return}
 var n=(location.pathname.split('/').pop()||'index.html');
 try{var s=JSON.parse(localStorage.getItem(SES)||'null');if(!s||!s.exp||s.exp<Date.now())throw 0;window.WL_USER=s.name||s.u}catch(e){location.replace('login.html?next='+encodeURIComponent(n));return}
 window.wlFirebase().then(function(f){if(!f.auth.currentUser){try{localStorage.removeItem(SES)}catch(e){}location.replace('login.html?next='+encodeURIComponent(n))}}).catch(function(){});})();</script>
@@ -1543,8 +1545,8 @@ function addWaveRowEl(label='', time=''){
   row.className = 'row-inline';
   row.style.marginBottom = '8px';
   row.innerHTML = `
-    <div><input type="text" class="wave-label" placeholder="WAVE 1" value="${label.replace(/"/g,'&quot;')}"></div>
-    <div><input type="text" class="wave-time" placeholder="10:10" value="${time.replace(/"/g,'&quot;')}"></div>
+    <div><input type="text" class="wave-label" placeholder="WAVE 1" value="${escH(label)}"></div>
+    <div><input type="text" class="wave-time" placeholder="10:10" value="${escH(time)}"></div>
     <div style="flex:0 0 auto;"><button type="button" class="secondary remove-wave-row">Remove</button></div>
   `;
   row.querySelector('.remove-wave-row').onclick = () => row.remove();
@@ -2751,20 +2753,20 @@ function renderReviewErrors(issues){
     conflicts.forEach(c => {
       if(c.type === 'pipe_driver'){
         html += `<div class="conflict" data-conflict>
-          <h4>Two drivers listed on one route — ${(c.route||'').toString().replace(/^CA_/,'')}</h4>
-          <div class="hint">Raw: ${c.raw}</div>
+          <h4>Two drivers listed on one route — ${escH((c.route||'').toString().replace(/^CA_/,''))}</h4>
+          <div class="hint">Raw: ${escH(c.raw)}</div>
           <label>Which driver actually ran this route?</label>
-          <select data-type="pipe_driver" data-route="${c.route}">
-            ${c.candidates.map(name => `<option value="${name}">${name}</option>`).join('')}
+          <select data-type="pipe_driver" data-route="${escH(c.route)}">
+            ${c.candidates.map(name => `<option value="${escH(name)}">${escH(name)}</option>`).join('')}
           </select>
         </div>`;
       }else{
         html += `<div class="conflict" data-conflict>
-          <h4>Same driver on multiple routes — ${c.driver}</h4>
-          <div class="hint">Routes: ${c.routes.map(r => r.toString().replace(/^CA_/,'')).join(', ')}</div>
+          <h4>Same driver on multiple routes — ${escH(c.driver)}</h4>
+          <div class="hint">Routes: ${c.routes.map(r => escH(r.toString().replace(/^CA_/,''))).join(', ')}</div>
           <label>Which route is the real one? (the others will be dropped)</label>
-          <select data-type="duplicate_driver" data-routes="${c.routes.join(',')}">
-            ${c.routes.map(r => `<option value="${r}">${r.toString().replace(/^CA_/,'')}</option>`).join('')}
+          <select data-type="duplicate_driver" data-routes="${escH(c.routes.join(','))}">
+            ${c.routes.map(r => `<option value="${escH(r)}">${escH(r.toString().replace(/^CA_/,''))}</option>`).join('')}
           </select>
         </div>`;
       }
@@ -2782,21 +2784,21 @@ function renderReviewErrors(issues){
   if(issues.noVan.length){
     html += `<h3>${issues.noVan.length} driver(s) with no van match</h3><ul>`;
     issues.noVan.forEach(([route,driver]) => {
-      html += `<li>${(route||'').toString().replace(/^CA_/,'')} — ${driver}</li>`;
+      html += `<li>${escH((route||'').toString().replace(/^CA_/,''))} — ${escH(driver)}</li>`;
     });
     html += '</ul>';
   }
   if(issues.noRoute.length){
     html += `<h3>${issues.noRoute.length} driver(s) on the roster with no matching route</h3><ul>`;
     issues.noRoute.forEach(([van,driver]) => {
-      html += `<li>Van ${van} — ${driver}</li>`;
+      html += `<li>Van ${escH(van)} — ${escH(driver)}</li>`;
     });
     html += '</ul>';
   }
   if(issues.noWave.length){
     html += `<h3>${issues.noWave.length} route(s) with no matching wave/staging time</h3><ul>`;
     issues.noWave.forEach(([route,driver]) => {
-      html += `<li>${(route||'').toString().replace(/^CA_/,'')} — ${driver}</li>`;
+      html += `<li>${escH((route||'').toString().replace(/^CA_/,''))} — ${escH(driver)}</li>`;
     });
     html += '</ul>';
   }
@@ -2813,6 +2815,7 @@ function reviewRowHasIssue(r){
   return !isBlankReviewRow(r) && ((r.van==null || r.van==='') || r.wave === 'WAVE ?');
 }
 
+function escH(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
 function renderReviewTable(built){
   // Rows with an unresolved issue (no van match / no wave match) float to
   // the top so they're impossible to miss — everything else keeps its
@@ -2832,17 +2835,17 @@ function renderReviewTable(built){
     const r = built[i];
     const hasIssue = reviewRowHasIssue(r);
     html += `<tr data-idx="${i}"${hasIssue ? ' class="row-error"' : ''}>
-      <td contenteditable="true" data-field="route">${(r.route||'').toString().replace(/^CA_/,'')}</td>
-      <td contenteditable="true" data-field="stage">${r.stage||''}</td>
-      <td contenteditable="true" data-field="wave">${r.wave||''}</td>
-      <td contenteditable="true" data-field="time">${r.time||''}</td>
-      <td contenteditable="true" data-field="driver">${r.driver||''}</td>
-      <td contenteditable="true" data-field="van">${r.van ?? ''}</td>
-      <td contenteditable="true" data-field="reg">${r.reg||''}</td>
-      <td contenteditable="true" data-field="high_value">${r.high_value||0}</td>
-      <td contenteditable="true" data-field="collection">${r.collection||0}</td>
-      <td contenteditable="true" data-field="arrival">${r.arrival||''}</td>
-      <td contenteditable="true" data-field="ride_along_trainee">${r.ride_along_trainee||''}</td>
+      <td contenteditable="true" data-field="route">${escH((r.route||'').toString().replace(/^CA_/,''))}</td>
+      <td contenteditable="true" data-field="stage">${escH(r.stage||'')}</td>
+      <td contenteditable="true" data-field="wave">${escH(r.wave||'')}</td>
+      <td contenteditable="true" data-field="time">${escH(r.time||'')}</td>
+      <td contenteditable="true" data-field="driver">${escH(r.driver||'')}</td>
+      <td contenteditable="true" data-field="van">${escH(r.van ?? '')}</td>
+      <td contenteditable="true" data-field="reg">${escH(r.reg||'')}</td>
+      <td contenteditable="true" data-field="high_value">${escH(r.high_value||0)}</td>
+      <td contenteditable="true" data-field="collection">${escH(r.collection||0)}</td>
+      <td contenteditable="true" data-field="arrival">${escH(r.arrival||'')}</td>
+      <td contenteditable="true" data-field="ride_along_trainee">${escH(r.ride_along_trainee||'')}</td>
       <td${r.ride_along_trainee ? ' contenteditable="true"' : ''} data-field="ride_along_day" title="1st day trainees get a fixed 10:30 arrival on the training notice; 2nd day trainees use their real arrival time. Enter 1 or 2.">${r.ride_along_trainee ? (parseInt(r.ride_along_day,10)===2 ? '2' : '1') : ''}</td>
       <td class="row-actions-cell"><button type="button" class="row-del-btn" data-idx="${i}" title="Remove this row">${WIC('x',12)}</button></td>
     </tr>`;
@@ -3046,7 +3049,7 @@ function triggerDownloadAndOpen(blob, filename){
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  window.open(url, '_blank');
+  window.open(url, '_blank', 'noopener,noreferrer');
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 // Flashes a copy button for feedback, then puts it back exactly as it was.
@@ -4446,7 +4449,7 @@ document.getElementById('copyWaveBlueprintImageBtn').onclick = async (e) => {
 function buildXlsxPreviewHtml(built, station, planDate){
   const headerRow = ["ROUTE","DRIVER NAME","STAGE","WAVE","TIME","ARRIVAL","HIGH VALUE","COLLECTION","VAN","REG","RIDE ALONG TRAINEE","RIDE ALONG DAY"];
   let html = `<table style="width:100%; border-collapse:collapse; font-size:12.5px; font-family:'IBM Plex Mono',monospace; background:#fff; color:#111;">`;
-  html += `<caption style="caption-side:top; text-align:left; padding:10px 12px; font-weight:700; font-family:'Space Grotesk',system-ui,sans-serif; background:#eee;">${station} WAVE PLAN — ${planDate}</caption>`;
+  html += `<caption style="caption-side:top; text-align:left; padding:10px 12px; font-weight:700; font-family:'Space Grotesk',system-ui,sans-serif; background:#eee;">${escH(station)} WAVE PLAN — ${escH(planDate)}</caption>`;
   html += '<thead><tr>' + headerRow.map(h => `<th style="border:1px solid #444; padding:7px 9px; background:#1b1b1b; color:#fff; position:sticky; top:0; white-space:nowrap;">${h}</th>`).join('') + '</tr></thead><tbody>';
   built.forEach((r, i) => {
     const cells = [
@@ -4456,7 +4459,7 @@ function buildXlsxPreviewHtml(built, station, planDate){
       r.ride_along_trainee || '', r.ride_along_trainee ? (r.ride_along_day || '') : '',
     ];
     const bg = i % 2 ? '#f2f2f2' : '#fff';
-    html += `<tr>` + cells.map(c => `<td style="border:1px solid #ddd; padding:5px 9px; text-align:center; white-space:nowrap; background:${bg};">${c}</td>`).join('') + '</tr>';
+    html += `<tr>` + cells.map(c => `<td style="border:1px solid #ddd; padding:5px 9px; text-align:center; white-space:nowrap; background:${bg};">${escH(c)}</td>`).join('') + '</tr>';
   });
   html += '</tbody></table>';
   return html;
@@ -5259,8 +5262,8 @@ function init(){document.querySelectorAll('.review-table-wrap,.wp-side,.review-e
 init();new MutationObserver(init).observe(document.documentElement,{childList:true,subtree:true});
 })();</script>
 <script>/*sample-rail*/(function(){
-var IC={dt:'<circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',wp:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',rc:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',dv:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h4"/>',po:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',ki:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',nr:'<path d="M3.3 17a9 9 0 1 1 17.4 0"/><path d="M12 14l4-5"/><circle cx="12" cy="14" r="1.3"/>',mt:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 15l2 2 4-4"/>'};
-var P=[['dt','Daily Tasks','daily-tasks.html'],['wp','Wave Plan','wave-plan-generator.html'],['rc','Recruitment','recruitment.html'],['dv','DVLA','dvla.html'],['po','Posters','posters.html'],['ki','Kinesis','#',1],['nr','Netradyne','#',1],['mt','MOT Tracker','#',1]];
+var IC={ca:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/>',dt:'<circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',wp:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',rc:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',dv:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h4"/>',po:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',ki:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',nr:'<path d="M3.3 17a9 9 0 1 1 17.4 0"/><path d="M12 14l4-5"/><circle cx="12" cy="14" r="1.3"/>',mt:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 15l2 2 4-4"/>'};
+var P=[['dt','Daily Tasks','daily-tasks.html'],['ca','Calendar','calendar.html'],['wp','Wave Plan','wave-plan-generator.html'],['rc','Recruitment','recruitment.html'],['dv','DVLA','dvla.html'],['po','Posters','posters.html'],['ki','Kinesis','#',1],['nr','Netradyne','#',1],['mt','MOT Tracker','#',1]];
 var RW={1:88,2:76,3:88,4:176,5:88,6:88};
 function sv(k,s){return '<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC[k]+'</svg>'}
 var rv=2,act='wp';
@@ -5335,6 +5338,7 @@ img,canvas,video{max-width:100%}
 #wlDemoBar{left:8px!important;right:8px!important;bottom:66px!important;transform:none!important;width:auto!important;min-width:0!important}
 }
 </style>
+<style>/*rail-w*/@media (min-width:821px){:root:root:root:root:root:root #wlRail,:root:root:root:root:root:root .wl-rail{width:76px!important;min-width:76px!important;max-width:76px!important;box-sizing:border-box}:root:root:root:root:root:root #wlRail .rit,:root:root:root:root:root:root #wlRail .rlg,:root:root:root:root:root:root #wlRail .rut{margin-left:0;margin-right:0}}</style>
 <style>/*m-ctl*/
 .mctl{display:none}
 @media (max-width:820px){

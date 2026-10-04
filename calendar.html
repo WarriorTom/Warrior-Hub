@@ -34,7 +34,7 @@ if(window.WL_DEMO&&!window.WL_DEMOLOCK){window.WL_USER='Demo';document.documentE
 var n=(location.pathname.split('/').pop()||'index.html');
 try{var s=JSON.parse(localStorage.getItem(SES)||'null');if(!s||!s.exp||s.exp<Date.now())throw 0;window.WL_USER=s.name||s.u}catch(e){location.replace('login.html?next='+encodeURIComponent(n));return}
 window.wlFirebase().then(function(f){if(!f.auth.currentUser){try{localStorage.removeItem(SES)}catch(e){}location.replace('login.html?next='+encodeURIComponent(n))}}).catch(function(){});})();</script>
-<title>Warrior Posters</title>
+<title>Warrior Calendar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -485,6 +485,94 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
 :root:root:root:root:root:root #wlRail #wlDemo.demoon{background:linear-gradient(160deg,#7C3AED,#A855F7)!important;border-radius:0!important;box-shadow:none!important;width:100%!important;align-self:stretch;min-height:clamp(24px,3.6vh,32px);padding:0!important;display:flex!important;align-items:center;justify-content:center;color:#fff!important}
 :root:root:root:root:root:root #wlRail #wlDemo.demoon svg,:root:root:root:root:root:root #wlRail #wlDemo.demoon span{display:none!important}
 :root:root:root:root:root:root #wlRail #wlDemo.demoon::before{content:"DEMO";font:800 11px Inter,system-ui,sans-serif;letter-spacing:.14em;color:#fff}
+/*cal-page*/
+.cbar{gap:8px}.cbar .ctitle{font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 8px}
+.cbar .sp{flex:1}.seg{display:flex;gap:4px}
+.cwrap{padding:18px 22px 24px}
+.mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.mdow{padding:9px 8px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);background:var(--card2);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mc{position:relative;min-height:122px;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:3px;min-width:0}
+.mc.dim{background:var(--card2)}.mc.dim .dn{color:var(--faint)}
+.mc.today{background:color-mix(in srgb,var(--accent) 7%,var(--card))}
+.mch{display:flex;align-items:center;justify-content:space-between}
+.dn{all:unset;cursor:pointer;min-width:26px;height:26px;box-sizing:border-box;display:grid;place-items:center;border-radius:4px;font-size:12.5px;font-weight:700;color:var(--text);padding:0 4px}
+.dn:hover{background:var(--hover)}.mc.today .dn{background:var(--accent);color:#fff}
+.plus{all:unset;cursor:pointer;width:22px;height:22px;display:grid;place-items:center;border-radius:4px;color:var(--mute);font-size:15px;opacity:0;transition:.12s}
+.mc:hover .plus,.wcol:hover .plus{opacity:1}.plus:hover{background:var(--accent-soft);color:var(--accent-text)}
+@media (hover:none){.plus{opacity:.7}}
+.bchip{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:6px;width:100%;min-width:0;padding:3px 6px;border-radius:3px;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 12%,var(--card));font-size:11px;font-weight:600;color:var(--text);overflow:hidden}
+.bchip:hover{background:color-mix(in srgb,var(--c) 22%,var(--card))}
+.bchip i{font-style:normal;font-weight:800;font-size:10px;color:var(--c);flex:none;font-variant-numeric:tabular-nums}
+.bchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.bchip.done{opacity:.55}.bchip.done span{text-decoration:line-through}
+.bchip.over i{color:var(--bad)}.bchip.over{border-left-color:var(--bad)}
+.more{all:unset;cursor:pointer;font-size:10.5px;font-weight:700;color:var(--accent-text);padding:2px 6px}
+.more:hover{text-decoration:underline}
+.wgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.wcol{border:1px solid var(--line);border-radius:4px;background:var(--card);min-height:340px;display:flex;flex-direction:column;min-width:0}
+.wcol.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.wh{display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid var(--line);background:var(--card2)}
+.wh b{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.wh .wd{font-size:18px;font-weight:800}
+.wcol.today .wh .wd{color:var(--accent-text)}.wh .plus{margin-left:auto}
+.wb{padding:8px;display:flex;flex-direction:column;gap:6px}
+.wcard{all:unset;cursor:pointer;box-sizing:border-box;display:block;padding:8px 9px;border-radius:4px;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 11%,var(--card));font-size:12px;font-weight:600;line-height:1.35}
+.wcard:hover{background:color-mix(in srgb,var(--c) 20%,var(--card))}.wcard i{display:block;font-style:normal;font-size:10.5px;font-weight:800;color:var(--c);margin-bottom:2px}
+.wcard.done{opacity:.55;text-decoration:line-through}.wcard.over i{color:var(--bad)}
+.wempty{color:var(--faint);font-size:12px;text-align:center;padding:14px 0}
+.dlist{display:flex;flex-direction:column;gap:8px}
+.drow{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:4px;background:var(--card)}
+.drow.done{opacity:.6}.drow.done .dt{text-decoration:line-through}
+.drow .tm{flex:none;width:64px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--c);font-variant-numeric:tabular-nums}
+.drow.over .tm{color:var(--bad)}
+.drow .dt{flex:1;min-width:0;font-size:14px;font-weight:700}
+.drow .by{font-size:11px;color:var(--mute);white-space:nowrap}
+.tick{all:unset;cursor:pointer;flex:none;width:28px;height:28px;box-sizing:border-box;display:grid;place-items:center;border:2px solid var(--line2);border-radius:4px;color:#fff;font-size:10px;font-weight:800}
+.tick:hover{border-color:var(--accent)}.tick.on{background:var(--ok);border-color:var(--ok)}
+.ib{all:unset;cursor:pointer;width:30px;height:30px;display:grid;place-items:center;border-radius:4px;color:var(--mute)}
+.ib:hover{background:var(--hover);color:var(--text)}.ib.bad:hover{background:var(--bad-soft);color:var(--bad-text)}
+.agh{margin:18px 0 8px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:10px}.agh::after{content:"";flex:1;height:1px;background:var(--line)}
+.agh.today{color:var(--accent-text)}.agh:first-child{margin-top:0}
+.cempty{padding:46px 10px;text-align:center;color:var(--mute)}.cempty b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+.box.cb{width:min(520px,100%);display:block;padding:20px}
+.cb .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cb .mh{margin-bottom:16px}
+.cb select.fld{appearance:auto}
+@media (max-width:820px){
+.cwrap{padding:10px 8px 16px}.cbar{padding:10px 12px!important}.cbar .ctitle{order:5;flex:1 1 100%;margin:4px 0 0}
+.mc{min-height:70px;padding:3px}.mc .bchip{padding:2px 3px;font-size:9.5px}.mc .bchip i{display:none}.mdow{padding:6px 2px;font-size:9px;text-align:center}
+.plus{display:none}.wgrid{grid-template-columns:1fr}.wcol{min-height:0}
+.drow{flex-wrap:wrap}.drow .tm{width:auto}.cb .row2{grid-template-columns:1fr}
+}
+
+</style>
+<style>/*cal-d*/
+.mgrid3{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.mdow3{padding:2px 4px 6px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.mc3{position:relative;min-height:98px;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;border-radius:4px;border:0;min-width:0;background:color-mix(in srgb,var(--accent) calc(var(--l)*20%),var(--card2));color:var(--text)}
+.mc3[style*="--l:4"],.mc3[style*="--l:5"]{background:linear-gradient(160deg,var(--accent),var(--accent2));color:#fff}
+.mc3[style*="--l:4"] .plus,.mc3[style*="--l:5"] .plus{color:#fff}
+.mc3.dim{opacity:.45}.mc3.today{outline:3px solid var(--text);outline-offset:-3px}
+.m3t{display:flex;justify-content:space-between;align-items:flex-start}.m3b{display:flex;justify-content:space-between;align-items:flex-end;gap:6px}
+.mc3 .num{font-size:24px;font-weight:800;line-height:1}.mc3 .cnt{font-size:11px;font-weight:700;white-space:nowrap}.mc3 .segs{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}.mc3 .segs i{width:8px;height:8px;border-radius:2px;background:var(--c)}
+.mc3 .plus{all:unset;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:4px;font-size:16px;opacity:0;color:var(--mute)}.mc3:hover .plus{opacity:1}.mc3 .plus:hover{background:rgba(255,255,255,.35)}
+@media (hover:none){.mc3 .plus{opacity:.7}}
+.legend3{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--mute);margin-top:12px}.legend3 i{width:24px;height:12px;border-radius:2px;background:color-mix(in srgb,var(--accent) calc(var(--l)*20%),var(--card2));border:1px solid var(--line)}
+.wrows{display:flex;flex-direction:column;gap:8px}
+.wr{display:grid;grid-template-columns:112px 1fr;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--card)}.wr.today{box-shadow:0 0 0 3px var(--text)}
+.wl{padding:12px 14px;display:flex;flex-direction:column;gap:2px;background:linear-gradient(160deg,var(--accent),var(--accent2));color:#fff;filter:saturate(calc(.4 + var(--l)*.16))}
+.wl .dow{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85}.wl b{font-size:28px;line-height:1.05}.wl em{font-style:normal;font-size:11px;font-weight:700;opacity:.85}
+.wp{padding:10px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:stretch}
+.pl{all:unset;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:84px;padding:10px 12px;border-radius:4px;background:var(--c);color:#fff;box-shadow:0 4px 10px -6px var(--c);min-width:0}
+.pl:hover{filter:brightness(1.07)}.pl i{font-style:normal;font-weight:800;font-size:12px;letter-spacing:.03em}
+.pl .pt{font-size:13px;font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.pl .pn{font-size:11px;font-weight:500;line-height:1.3;opacity:.9;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-style:italic}
+.pl .pf{margin-top:auto;display:flex;gap:6px;flex-wrap:wrap;padding-top:4px}.pl em{font-style:normal;font-size:8.5px;font-weight:800;letter-spacing:.08em;padding:3px 6px;border-radius:3px;background:rgba(255,255,255,.25)}.pl u{text-decoration:none;font-size:8.5px;font-weight:800;letter-spacing:.08em;padding:3px 0}
+.pl.done{opacity:.5}.pl.done .pt{text-decoration:line-through}.pl.over i{color:#FECACA}.pl.over{box-shadow:inset 0 0 0 2px #FCA5A5}
+.pl.addslot{background:transparent;color:var(--mute);border:1.5px dashed var(--line2);box-shadow:none;align-items:center;justify-content:center;text-align:center;font-size:11.5px;font-weight:700;gap:2px}
+.pl.addslot b{font-size:20px;line-height:1;color:var(--accent-text)}.pl.addslot:hover{border-color:var(--accent);background:var(--accent-soft);filter:none}
+.drow .dt b{display:block;font-size:14px}.drow .dt .nt{display:block;margin-top:4px;font-size:12.5px;font-weight:500;color:var(--mute);white-space:pre-wrap;line-height:1.4}
+.drow.done .dt{text-decoration:none}.drow.done .dt b{text-decoration:line-through}
+#fNotes{min-height:84px}
+@media (max-width:820px){.mgrid3{gap:3px}.mc3{min-height:62px;padding:6px}.mc3 .num{font-size:16px}.mc3 .cnt,.mc3 .segs,.mc3 .plus{display:none}.wr{grid-template-columns:70px 1fr}.wl b{font-size:20px}.wp{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -495,334 +583,269 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
   <div class="wp-hero"><i class="h4-c1"></i><i class="h4-c2"></i>
     <div class="wp-top">
       <div class="wp-brandrow">
-      
-      <div class="wp-title"><small>WARRIOR LOGISTICS</small><h1>POSTERS</h1></div>
+      <div class="wp-title"><small>WARRIOR LOGISTICS</small><h1>CALENDAR</h1></div>
       </div>
-      <div class="wp-sub">GROUP CHAT AWARENESS POSTERS</div>
+      <div class="wp-sub">ALL BOOKINGS IN ONE PLACE</div>
     </div>
     <div class="wp-body">
-      <button class="wp-btn wp-new" id="newBtn">＋ NEW POSTER</button>
-      <input class="wp-search" id="search" type="search" placeholder="Search posters…">
+      <button class="wp-btn wp-new" id="newBtn">＋ NEW BOOKING</button>
+      <input class="wp-search" id="search" type="search" placeholder="Search bookings…">
     </div>
   </div>
-  <div class="sb-h">Tags</div><div class="sb-card" id="stats"></div>
+  <div class="sb-h">Sites</div><div class="sb-card" id="siteStats"></div>
+  <div class="sb-h">Overview</div><div class="sb-card" id="stats"></div>
   <div class="wp-sync"><span class="pill" id="sync">Local only — add Firebase to share</span></div>
 </aside>
 
 <main class="pg">
-  <section class="rpanel"><div class="rbar" id="rbar"></div>
-  <div class="grid" id="grid"></div></section>
+  <section class="rpanel"><div class="rbar cbar" id="rbar"></div>
+  <div class="cwrap" id="cal"></div></section>
 </main>
 
 <div id="modal"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-/* page rail: add a tool by adding a line here (keep this list identical in every tool) */
-(function(){
-  var PAGES=[
-    {label:'Daily Tasks',icon:'<circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',href:'daily-tasks.html'},
-    {label:'Wave Plan',icon:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',href:'wave-plan-generator.html'},
-    {label:'Recruitment',icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',href:'recruitment.html'},
-    {label:'DVLA',icon:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h4"/>',href:'dvla.html'},
-    {label:'Posters',icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',href:'posters.html',current:true}
-  ];
-  document.getElementById('wlRail').innerHTML='<div class="rl-logo" title="Home" style="cursor:pointer" onclick="wlGo(&quot;index.html&quot;)">W</div>'+PAGES.map(function(p){
-    return '<a href="'+p.href+'" class="'+(p.current?'on':'')+'" '+(p.current?'aria-current="page" ':'')+'title="'+p.label+'"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p.icon+'</svg><span>'+p.label+'</span></a>';
-  }).join('')+'<div class="rl-sp"></div><button type="button" id="wlMute" title="Sound on / off"></button><button type="button" id="wlTheme"></button><button type="button" id="wlDemo"></button>';
-  window.wlRailInit();
-  
-  var mb=document.getElementById('wlMute');
-  function paintMute(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off'}catch(e){}mb.classList.toggle('muted',!on);mb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(on?'<path d="M11 5L6 9H2v6h4l5 4zM19 5a9 9 0 0 1 0 14M15.5 8.5a5 5 0 0 1 0 7"/>':'<path d="M11 5L6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/>')+'</svg><span>'+(on?'Mute':'Unmute')+'</span>'}
-  mb.onclick=function(){var on=true;try{on=localStorage.getItem('wl_sound')!=='off';localStorage.setItem('wl_sound',on?'off':'on')}catch(e){}paintMute()};paintMute();
-})();
-</script>
-
-<script>
 /* =====================================================================
-   SETTINGS — paste the same Firebase web-app config you use in index.html
-   (leave apiKey empty and posters are kept in this browser only)
+   CALENDAR — shows every booking from the Daily Tasks diary on one page.
+   Same shared data: bookings/{id}: {id,title,date,time,site,repeat:''|'weekly',by,created,done:{date:{t,by}}}
    ===================================================================== */
-/* storageBucket (e.g. "your-project.appspot.com") is where the full-resolution originals are kept.
-   Cards show a compressed preview; DOWNLOAD and COPY IMAGE always use the original. */
 const FIREBASE_CONFIG = window.WL_FB_CONFIG;
-
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const lsGet=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } };
 const lsSet=(k,v)=>{ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } };
-const uid=()=>'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const me=()=>lsGet('wl_name')||'';
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const addDays=(s,n)=>{ const d=parse(s); d.setDate(d.getDate()+n); return ymd(d); };
+const today=()=>ymd(new Date());
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const fmtLong=s=>parse(s).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fmtShort=s=>parse(s).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const nowHM=()=>{ const d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+const minsOf=t=>{ const [h,m]=t.split(':').map(Number); return h*60+m; };
+const initials=n=>{ const p=String(n||'').trim().split(/\s+/).filter(Boolean); if(!p.length) return ''; return ((p[0][0]||'')+((p.length>1?p[p.length-1][0]:p[0][1])||'')).toUpperCase(); };
+const me=()=>window.WL_USER||lsGet('wl_name')||'';
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2600); }
 
-let posters={};           // id -> {id,title,tag,message,img,by,created,updated}
-let q='', tagF='', openDD=false;
-let draft=null;           // poster being edited / created in the modal
-let viewId=null;
-const pend={};            // posters saved on screen but not yet confirmed by the database
+const SITES=['DLS4','HSA7','DXFL','JOYL'];
+const SITE_COL={DLS4:'#7C3AED',HSA7:'#0891B2',DXFL:'#EA580C',JOYL:'#16A34A','':'#64748B'};
+const colOf=b=>SITE_COL[b.site]||SITE_COL[''];
+const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const VIEWS=[['day','Day'],['week','Week'],['month','Month'],['agenda','Agenda']];
 
-/* ---------- storage: Firestore `posters/{id}`, else this browser ---------- */
-const LS_KEY='wl_posters_v1';
+let bookings={};
+let view='day';   /* always opens on Day view */
+let cursor=today(), siteF='', q='', draft=null;
+try{const _d=new URLSearchParams(location.search).get('date');if(/^\d{4}-\d{2}-\d{2}$/.test(_d||''))cursor=_d;}catch(e){}
+
+/* ---------- storage: Firestore if configured, else this browser (shared with Daily Tasks) ---------- */
+const LS_KEY='wl_daily_tasks_v2';
 const store={
   mode:'local', fb:null,
-  async init(on){
-    if(FIREBASE_CONFIG.apiKey&&!window.WL_DEMO){
+  async init(){
+    if(FIREBASE_CONFIG.apiKey && !window.WL_DEMO){
       try{
-        const {fs,db,app,base}=await window.wlFirebase();
-        this.fb={fs,db,app,base}; this.mode='firebase';
-        fs.onSnapshot(fs.collection(db,'posters'),snap=>{ const o={}; snap.forEach(d=>{o[d.id]=d.data();}); on(o); },e=>{ console.error(e); toast('Sync error – check Firestore rules'); });
+        const {fs,db}=await window.wlFirebase(); this.fb={fs,db}; this.mode='firebase';
+        fs.onSnapshot(fs.collection(db,'bookings'),snap=>{ const o={}; snap.forEach(d=>{ o[d.id]=d.data(); }); bookings=o; renderAll(); },
+          e=>{ console.error(e); toast('Sync error – check Firestore rules'); });
         return;
-      }catch(e){ console.error(e); toast('Firebase failed – using this browser only'); }
+      }catch(e){ console.error(e); toast('Firebase failed – using local mode'); }
     }
     this.mode='local';
-    try{ on(JSON.parse(lsGet(LS_KEY)||'{}')); }catch(e){ on({}); }
+    try{ bookings=(JSON.parse(lsGet(LS_KEY)||'{}')).bookings||{}; }catch(e){ bookings={}; }
+    if(window.WL_DEMO) seedDemo();
+    renderAll();
   },
-  persist(){ if(!lsSet(LS_KEY,JSON.stringify(posters))) toast('This browser is full – use Firebase to store more posters'); },
-  async save(p){
-    if(this.mode==='firebase'){ const {fs,db}=this.fb; try{ await fs.setDoc(fs.doc(db,'posters',p.id),p); return true; }catch(e){ console.error(e); toast('Could not save – image may be too large'); return false; } }
-    this.persist(); return true;
+  persist(){ let o={}; try{ o=JSON.parse(lsGet(LS_KEY)||'{}')||{}; }catch(e){} o.bookings=bookings; lsSet(LS_KEY,JSON.stringify(o)); },
+  async save(b){
+    if(this.mode==='firebase'){ const {fs,db}=this.fb; try{ await fs.setDoc(fs.doc(db,'bookings',b.id),b); }catch(e){ console.error(e); toast('Could not save – check your connection'); } }
+    else this.persist();
   },
-  async del(id,p){
-    if(p&&p.hi) this.dropOriginal({...p.hi,id});
-    if(this.mode==='firebase'){ const {fs,db}=this.fb; try{ await fs.deleteDoc(fs.doc(db,'posters',id)); }catch(e){ console.error(e); toast('Could not delete'); } return; }
-    this.persist();
-  },
-  /* ----- full-resolution originals: Firebase Storage when synced, else IndexedDB on this device ----- */
-  async putOriginal(id,file){
-    const name=(file.name||'poster').replace(/[^\w.\- ]+/g,'_');
-    if(this.mode==='firebase' && FIREBASE_CONFIG.storageBucket){
-      try{
-        const st=await import(this.fb.base+'firebase-storage.js'), s=st.getStorage(this.fb.app);
-        s.maxUploadRetryTime=7000; s.maxOperationRetryTime=7000;
-        const path='posters/'+id+'/'+Date.now()+'_'+name, r=st.ref(s,path);
-        await st.uploadBytes(r,file,{contentType:file.type||'image/png'});
-        return {where:'storage',path,url:await st.getDownloadURL(r),name,mime:file.type,size:file.size};
-      }catch(e){ console.error(e); toast('Full-size original kept on this device only (Firebase Storage is not switched on)'); }
-    }
-    try{ await idb.put(id,file); return {where:'idb',name,mime:file.type,size:file.size}; }
-    catch(e){ console.error(e); toast('Original could not be kept on this device'); return null; }
-  },
-  async getOriginal(p){
-    const h=p&&p.hi; if(!h) return null;
-    try{
-      if(h.where==='idb') return await idb.get(p.id);
-      if(h.where==='storage'){ const r=await fetch(h.url); if(!r.ok) throw new Error(r.status); return await r.blob(); }
-    }catch(e){ console.error(e); }
-    return null;
-  },
-  async dropOriginal(h){
-    try{
-      if(h.where==='idb') await idb.del(h.id||'');
-      if(h.where==='storage' && this.fb){ const st=await import(this.fb.base+'firebase-storage.js'); await st.deleteObject(st.ref(st.getStorage(this.fb.app),h.path)); }
-    }catch(e){ console.warn(e); }
+  async del(id){
+    if(this.mode==='firebase'){ const {fs,db}=this.fb; try{ await fs.deleteDoc(fs.doc(db,'bookings',id)); }catch(e){ console.error(e); toast('Could not delete – check your connection'); } }
+    else this.persist();
   }
 };
-/* originals kept on this device when Firebase Storage is not set up */
-const idb={
-  _db:null,
-  open(){ return this._db||(this._db=new Promise((res,rej)=>{ const r=indexedDB.open('wl_posters_hi',1); r.onupgradeneeded=()=>r.result.createObjectStore('f'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); },
-  async tx(m,fn){ const db=await this.open(); return new Promise((res,rej)=>{ const t=db.transaction('f',m), rq=fn(t.objectStore('f')); t.oncomplete=()=>res(rq&&rq.result); t.onerror=()=>rej(t.error); }); },
-  put(id,b){ return this.tx('readwrite',s=>s.put(b,id)); },
-  get(id){ return this.tx('readonly',s=>s.get(id)); },
-  del(id){ return this.tx('readwrite',s=>s.delete(id)); }
+function seedDemo(){
+  if(lsGet('wl_demo_seeded_cal')) return;
+  const t=today(), nm=['Tom Jackson','Andy Hattersley','Jordan Arnold'];
+  const S=[['Van collection - Fleet team','09:30','DLS4',0,''],['Safety walk with Amazon','14:00','HSA7',1,''],['Weekly new starter induction','10:00','',2,'weekly'],
+   ['DVLA licence check batch','11:00','DLS4',3,''],['Halfords - collect vans','08:30','DXFL',4,''],['Driver 1-2-1s','13:30','JOYL',5,''],['MOT - VX21 ABC','09:00','DLS4',6,''],
+   ['Amazon station audit','10:30','HSA7',8,''],['Team briefing','07:45','DLS4',-1,'weekly'],['Fuel card review','15:00','',9,''],['Recruitment open day','10:00','JOYL',11,''],
+   ['Tyre change - 3 vans','08:00','DXFL',13,''],['Monthly safety meeting','14:30','',16,''],['Van inspection day','09:00','HSA7',-3,''],['New starter induction','09:30','DLS4',-5,'']];
+  const NOTES={0:'Meet at the yard gate. Bring the van keys and the signed collection sheet.',3:'Batch of 12 drivers - licences must be checked before Friday.',6:'Book in under VX21 ABC. Courtesy van arranged until 3pm.',1:'Ask for the site manager on arrival. Hi-vis and safety boots required.'};
+  S.forEach(([title,time,site,off,repeat],i)=>{ const id=uid('b'); bookings[id]={id,title,date:addDays(t,off),time,site,repeat,notes:NOTES[off]||'',by:nm[i%nm.length],created:new Date().toISOString(),done:off<0&&!repeat?{[addDays(t,off)]:{t:new Date().toISOString(),by:nm[0]}}:{}}; });
+  store.persist(); lsSet('wl_demo_seeded_cal','1');
+}
+
+/* ---------- data helpers ---------- */
+function occursOn(b,date){ return b.date===date || (b.repeat==='weekly' && b.date<date && parse(b.date).getDay()===parse(date).getDay()); }
+function matches(b){
+  if(siteF && b.site!==siteF) return false;
+  const n=q.trim().toLowerCase(); if(!n) return true;
+  return ((b.title||'')+' '+(b.site||'')+' '+(b.by||'')+' '+(b.notes||'')).toLowerCase().includes(n);
+}
+function bookingsFor(date){
+  return Object.values(bookings).filter(b=>occursOn(b,date)&&matches(b))
+    .sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99')||(a.created||'').localeCompare(b.created||''));
+}
+const isDone=(b,d)=>!!(b.done||{})[d];
+function stateOf(b,d){
+  if(d!==today()||!b.time||isDone(b,d)) return '';
+  return minsOf(b.time)<minsOf(nowHM())?'over':'';
+}
+const mondayOf=s=>{ const off=(parse(s).getDay()+6)%7; return addDays(s,-off); };
+
+/* ---------- rendering ---------- */
+const IC={
+ cal:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+ pin:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ rep:'<path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+ alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>'
 };
+const svg=(k,s)=>`<svg width="${s||16}" height="${s||16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
 
-/* ---------- images ---------- */
-const loadImg=src=>new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src; });
-const readFile=f=>new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); });
-const MAX_CHARS=900000;   // keeps each poster under Firestore's 1 MiB document limit
-async function prepImage(file){
-  const raw=await readFile(file), img=await loadImg(raw);
-  const big=Math.max(img.width,img.height);
-  if(file.type==='image/png' && raw.length<MAX_CHARS && big<=1800) return raw;     // keep sharp small PNGs untouched
-  let scale=Math.min(1,1800/big);
-  for(let attempt=0;attempt<8;attempt++){
-    const c=document.createElement('canvas'); c.width=Math.max(1,Math.round(img.width*scale)); c.height=Math.max(1,Math.round(img.height*scale));
-    const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height);
-    for(const qv of [.9,.8,.7,.6]){ const d=c.toDataURL('image/jpeg',qv); if(d.length<MAX_CHARS) return d; }
-    scale*=.8;
-  }
-  throw new Error('too big');
-}
-async function pngBlob(src){
-  const img=await loadImg(src), c=document.createElement('canvas'); c.width=img.width; c.height=img.height;
-  c.getContext('2d').drawImage(img,0,0); return new Promise(r=>c.toBlob(r,'image/png'));
-}
-const slug=s=>(String(s||'poster').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'poster');
-
-/* ---------- actions ---------- */
-async function copyText(t){
-  try{ await navigator.clipboard.writeText(t); return true; }
-  catch(e){ try{ const a=document.createElement('textarea'); a.value=t; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); const ok=document.execCommand('copy'); a.remove(); return ok; }catch(e2){ return false; } }
-}
-async function actCopyMsg(p){ if(!p.message){ toast('This poster has no message yet'); return false; } const ok=await copyText(p.message); toast(ok?'Message copied – paste it into WhatsApp':'Could not copy – select the text and copy it'); return ok; }
-async function srcFor(p){ const b=await store.getOriginal(p); return b?URL.createObjectURL(b):p.img; }   // original if we have it, else the preview
-async function actCopyImg(p){
-  try{
-    await navigator.clipboard.write([new ClipboardItem({'image/png':srcFor(p).then(pngBlob)})]);
-    toast('Image copied – paste it into WhatsApp'); return true;
-  }catch(e){ console.error(e); toast('Your browser would not copy the image – use Download instead'); return false; }
-}
-async function actDownload(p){
-  const b=await store.getOriginal(p), a=document.createElement('a');
-  let ext=/^data:image\/png/.test(p.img)?'png':'jpg';
-  if(b){ const m=(b.type||p.hi.mime||'').split('/')[1]; ext=({jpeg:'jpg','svg+xml':'svg'}[m])||m||ext; a.href=URL.createObjectURL(b); }
-  else if(p.hi&&p.hi.url){ window.open(p.hi.url,'_blank','noopener,noreferrer'); return toast('Opening the original in a new tab'); }
-  else a.href=p.img;
-  a.download=slug(p.title)+'.'+ext; document.body.appendChild(a); a.click(); a.remove(); toast('Downloading '+a.download);
-  if(b) setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-}
-function flashTick(el){ if(!el||el._tk) return; el._tk=1; const h=el.innerHTML; el.classList.add('tkok'); el.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'; setTimeout(()=>{ el.innerHTML=h; el.classList.remove('tkok'); el._tk=0; },2200); }
-/* ---------- render ---------- */
-const sorted=()=>Object.values(posters).sort((a,b)=>(b.created||0)-(a.created||0));
-function render(){
-  $('#sync').textContent=store.mode==='firebase'?'● Synced':'Local only — add Firebase to share';
+function renderAll(){ renderSide(); renderBar(); renderMain(); }
+function renderSide(){
+  $('#sync').textContent=store.mode==='firebase'?'● Synced':(window.WL_DEMO?'Demo data':'Local only — add Firebase to share');
   $('#sync').className='pill'+(store.mode==='firebase'?' ok':'');
-  const all=sorted(), norm=t=>(t||'').trim().toLowerCase();
-  const tmap=new Map(); all.forEach(p=>{const k=norm(p.tag); if(k&&!tmap.has(k)) tmap.set(k,(p.tag||'').trim());});
-  const tags=[...tmap.entries()].sort((a,b)=>a[1].localeCompare(b[1]));
-  const cnt=k=>all.filter(p=>norm(p.tag)===k).length;
-  if(tagF && !tmap.has(tagF)) tagF='';
-  const PAL=['var(--accent)','#2563EB','#0891B2','#C026D3','#EA580C','#15803D','#B91C1C','#475569'];
-  const TAGIC='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0L3 13V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>';
-  const trow=(lab,key,n)=>`<div class="sb-row${tagF===key?' on':''}" data-tag="${esc(key)}"><span class="sb-ic">${TAGIC}</span><span class="sb-lb">${esc(lab)}</span><b class="sb-n">${n}</b></div>`;
-  const sc=$('#stats'); if(sc) sc.innerHTML=trow('All posters','',all.length)+tags.map(([k,tx])=>trow(tx,k,cnt(k))).join('');
-  $('#rbar').innerHTML='<b style="font-size:13px;letter-spacing:.14em;margin-right:6px">POSTERS</b>'+(tagF?`<button class="bt3 clr" data-clear="1">Clear filter</button>`:'');
-  const needle=q.trim().toLowerCase();
-  const list=all.filter(p=>(!tagF||norm(p.tag)===tagF) && (!needle||((p.title||'')+' '+(p.tag||'')+' '+(p.message||'')).toLowerCase().includes(needle)));
-  $('#grid').innerHTML=list.length?list.map(card).join(''):
-    all.length?`<div class="empty"><b>No posters match</b>Try a different search or tag.</div>`:
-    `<div class="empty"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><b>No posters yet</b>Add your first poster with the message that goes with it.<br><br><button class="btn pri" data-new="1">＋ NEW POSTER</button></div>`;
+  const all=Object.values(bookings), t=today();
+  const row=(lab,n,attr,on,ic)=>`<div class="sb-row${on?' on':''}" ${attr}><span class="sb-ic">${svg(ic)}</span><span class="sb-lb">${esc(lab)}</span><b class="sb-n">${n}</b></div>`;
+  $('#siteStats').innerHTML=row('All sites',all.length,'data-site=""',!siteF,'pin')+SITES.map(s=>row(s,all.filter(b=>b.site===s).length,`data-site="${s}"`,siteF===s,'pin')).join('')+row('No site',all.filter(b=>!b.site).length,'data-site="-"',siteF==='-','pin');
+  const m0=t.slice(0,7);
+  let wk=0; for(let i=0;i<7;i++) wk+=bookingsFor(addDays(mondayOf(t),i)).length;
+  let mo=0; const dim=new Date(parse(t).getFullYear(),parse(t).getMonth()+1,0).getDate(); for(let i=1;i<=dim;i++) mo+=bookingsFor(m0+'-'+pad(i)).length;
+  const od=bookingsFor(t).filter(b=>stateOf(b,t)==='over').length;
+  $('#stats').innerHTML=`<div class="sb-row" data-today="1" style="cursor:pointer"><span class="sb-ic">${svg('clock')}</span><span class="sb-lb">Today</span><b class="sb-n">${bookingsFor(t).length}</b></div>
+   <div class="sb-row"><span class="sb-ic">${svg('cal')}</span><span class="sb-lb">This week</span><b class="sb-n">${wk}</b></div>
+   <div class="sb-row"><span class="sb-ic">${svg('cal')}</span><span class="sb-lb">This month</span><b class="sb-n">${mo}</b></div>
+   <div class="sb-row"><span class="sb-ic">${svg('rep')}</span><span class="sb-lb">Weekly repeats</span><b class="sb-n">${all.filter(b=>b.repeat==='weekly').length}</b></div>
+   <div class="sb-row"><span class="sb-ic">${svg('alert')}</span><span class="sb-lb">Overdue today</span><b class="sb-n">${od}</b></div>`;
 }
-function card(p){
-  return `<article class="pc" data-id="${p.id}">
-    <div class="ph"><div class="pt"><h3>${esc(p.title)}</h3></div></div>
-    <button class="pimg" data-view="${p.id}" title="View bigger"><img src="${p.img}" alt="${esc(p.title)}" loading="lazy">${p.tag?`<span class="tag ptag">${esc(p.tag)}</span>`:''}</button>
-    <button class="btn pedit" data-edit="${p.id}" title="Edit this poster"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-    <div class="pb">
-      ${actions(p)}
-      <div class="meta">${p.by?'Added by '+esc(p.by):''}</div>
-    </div></article>`;
+function titleText(){
+  const d=parse(cursor);
+  if(view==='month') return d.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  if(view==='week'){ const m=mondayOf(cursor), e=addDays(m,6); return fmtShort(m)+' – '+fmtShort(e)+' '+parse(e).getFullYear(); }
+  if(view==='day') return fmtLong(cursor);
+  return 'Upcoming from '+fmtShort(cursor);
 }
-const actions=p=>`<div class="pa"><button class="dl" data-act="dl" data-id="${p.id}">DOWNLOAD</button><button class="sq" data-act="msg" data-id="${p.id}" title="Copy message" aria-label="Copy message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button><button class="sq" data-act="img" data-id="${p.id}" title="Copy image" aria-label="Copy image"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button></div>`;
+function renderBar(){
+  $('#rbar').innerHTML=`<button class="btn sm" data-nav="-1" aria-label="Previous">‹</button><button class="btn sm" data-nav="1" aria-label="Next">›</button><button class="btn sm" data-today="1">Today</button><b class="ctitle">${esc(titleText())}</b><span class="sp"></span><div class="seg">${VIEWS.map(v=>`<button class="chip${view===v[0]?' on':''}" data-view="${v[0]}">${v[1]}</button>`).join('')}</div>`;
+}
+const timeLbl=b=>b.time?esc(b.time):'ALL DAY';
+function chip(b,d){ const st=stateOf(b,d); return `<button class="bchip${isDone(b,d)?' done':''}${st?' '+st:''}" style="--c:${colOf(b)}" data-edit="${b.id}" data-date="${d}" title="${esc((b.time||'All day')+' · '+b.title+(b.site?' · '+b.site:''))}"><i>${b.time?esc(b.time):'ALL'}</i><span>${esc(b.title)}</span></button>`; }
+function renderMain(){
+  const el=$('#cal'); const td=today();
+  const pill=(b,d)=>{const st=stateOf(b,d);return `<button class="pl${isDone(b,d)?' done':''}${st?' '+st:''}" style="--c:${colOf(b)}" data-edit="${b.id}" data-date="${d}" title="${esc(b.notes||'')}"><i>${b.time?esc(b.time):'ALL DAY'}</i><span class="pt">${esc(b.title)}</span>${b.notes?`<small class="pn">${esc(b.notes)}</small>`:''}<span class="pf">${b.site?`<em>${esc(b.site)}</em>`:''}${b.repeat?'<u>↻ WEEKLY</u>':''}</span></button>`;};
+  if(view==='month'){
+    const c=parse(cursor), y=c.getFullYear(), mo=c.getMonth(), first=ymd(new Date(y,mo,1));
+    const off=(new Date(y,mo,1).getDay()+6)%7, dim=new Date(y,mo+1,0).getDate(), rows=Math.ceil((off+dim)/7);
+    const start=addDays(first,-off); let h=DOW.map(x=>`<div class="mdow3">${x}</div>`).join('');
+    for(let i=0;i<rows*7;i++){
+      const d=addDays(start,i), L=bookingsFor(d), other=parse(d).getMonth()!==mo, n=L.length;
+      const segs=L.slice(0,8).map(b=>`<i style="--c:${colOf(b)}"></i>`).join('');
+      h+=`<div class="mc3${other?' dim':''}${d===td?' today':''}" style="--l:${Math.min(n,5)}" data-goday="${d}"><div class="m3t"><span class="num">${parse(d).getDate()}</span><button class="plus" data-new="${d}" title="Add booking">＋</button></div><div class="m3b"><span class="cnt">${n?n+(n>1?' bookings':' booking'):'Free'}</span><span class="segs">${segs}</span></div></div>`;
+    }
+    el.innerHTML=`<div class="mgrid3">${h}</div><div class="legend3">Quiet <i style="--l:0"></i><i style="--l:1"></i><i style="--l:2"></i><i style="--l:3"></i><i style="--l:5"></i> Busy</div>`;
+  }else if(view==='week'){
+    const m=mondayOf(cursor); let h='';
+    for(let i=0;i<7;i++){
+      const d=addDays(m,i), L=bookingsFor(d);
+      h+=`<div class="wr${d===td?' today':''}" style="--l:${Math.min(L.length,5)}"><div class="wl"><span class="dow">${DOW[i]}</span><b>${parse(d).getDate()}</b><em>${L.length?L.length+' booked':'Free'}</em></div><div class="wp">${L.map(b=>pill(b,d)).join('')}${L.length<6?`<button class="pl addslot" data-new="${d}"><b>＋</b><span>${L.length?'Add booking':'Nothing booked — add one'}</span></button>`:''}</div></div>`;
+    }
+    el.innerHTML=`<div class="wrows">${h}</div>`;
+  }else if(view==='day'){
+    const L=bookingsFor(cursor);
+    el.innerHTML=(L.length?`<div class="dlist">${L.map(b=>drow(b,cursor)).join('')}</div>`:`<div class="cempty"><b>Nothing booked for this day</b>Use the button below to add a booking.</div>`)+`<div style="margin-top:16px"><button class="btn pri" data-new="${cursor}">＋ ADD BOOKING FOR THIS DAY</button></div>`;
+  }else{
+    let h='',n=0;
+    for(let i=0;i<90;i++){ const d=addDays(cursor,i), L=bookingsFor(d); if(!L.length) continue; n+=L.length; h+=`<div class="agh${d===td?' today':''}">${d===td?'Today · ':''}${esc(fmtLong(d))}</div><div class="dlist">${L.map(b=>drow(b,d)).join('')}</div>`; }
+    el.innerHTML=h||`<div class="cempty"><b>No upcoming bookings</b>Nothing in the next 90 days${siteF||q?' for this filter':''}.</div>`;
+  }
+}
+function drow(b,d){
+  const dn=(b.done||{})[d], st=stateOf(b,d);
+  return `<div class="drow${dn?' done':''}${st?' '+st:''}" style="--c:${colOf(b)}"><button class="tick${dn?' on':''}" data-tick="${b.id}" data-date="${d}" title="${dn?'Click to undo':'Mark as done'}">${dn?esc(initials(dn.by)||'✓'):''}</button><span class="tm">${timeLbl(b)}</span><span class="dt"><b>${esc(b.title)}</b>${b.notes?`<small class="nt">${esc(b.notes)}</small>`:''}</span>${b.site?`<span class="tag">${esc(b.site)}</span>`:''}${b.repeat==='weekly'?'<span class="tag">↻ WEEKLY</span>':''}${st==='over'?'<span class="tag" style="background:var(--bad-soft);color:var(--bad-text)">OVERDUE</span>':''}<span class="by">${dn?esc(initials(dn.by)||'')+' · done':'added by '+esc(b.by||'?')}</span><button class="ib" data-edit="${b.id}" data-date="${d}" title="Edit">✎</button><button class="ib bad" data-del="${b.id}" title="Delete">✕</button></div>`;
+}
 
-/* ---------- modals ---------- */
-const close=()=>{ $('#modal').innerHTML=''; draft=null; viewId=null; };
-function openEdit(id){
-  draft=id?{...posters[id]}:{id:uid(),title:'',tag:'',message:'',img:'',isNew:true};
-  const tags=[...new Set(Object.values(posters).map(p=>(p.tag||'').trim()).filter(Boolean))];
-  $('#modal').innerHTML=`<div class="ov"><div class="bk" data-close="1"></div><div class="box edit" role="dialog" aria-label="${draft.isNew?'New poster':'Edit poster'}">
-    <div class="mh"><b>${draft.isNew?'New poster':'Edit poster'}</b><button class="x" data-close="1" aria-label="Close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-    <div>
-      <span class="lbl">Poster image</span>
-      <div class="drop" id="drop" tabindex="0">${draft.img?`<img src="${draft.img}" alt="">`:`<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg><b>Drop an image here</b><span>or click to choose a file (PNG or JPG)</span>`}
-        ${draft.img?`<span class="btn sm re">Replace image</span>`:''}</div>
-      <input type="file" id="file" accept="image/*" hidden>
-      <div class="hint">Big images are shrunk automatically so they save to the shared database.</div>
-    </div>
-    <div>
-      <div class="ff"><label class="lbl" for="fTitle">Title</label><input class="fld" id="fTitle" maxlength="80" value="${esc(draft.title)}" placeholder="e.g. Seatbelts on, every stop"></div>
-      <div class="ff"><label class="lbl" for="fTag">Tag <span style="font-weight:500;letter-spacing:0;text-transform:none">(optional – used to filter)</span></label><input class="fld" id="fTag" list="tagList" maxlength="30" value="${esc(draft.tag)}" placeholder="e.g. Safety"><datalist id="tagList">${tags.map(t=>`<option value="${esc(t)}">`).join('')}</datalist></div>
-      <div class="ff"><div class="fmrow"><label class="lbl" for="fMsg">WhatsApp message</label><div class="fmtb"><button type="button" class="fmb" data-fmt="*" title="Bold (*text*)"><b>B</b></button><button type="button" class="fmb" data-fmt="_" title="Italic (_text_)"><i>I</i></button><button type="button" class="fmb" data-fmt="~" title="Strikethrough (~text~)"><s>S</s></button></div></div><textarea class="fld" id="fMsg" placeholder="The text that goes with this poster…">${esc(draft.message)}</textarea><div class="hint">WhatsApp formatting works: *bold*, _italic_, ~strike~.</div></div>
-    </div>
-    <div class="mf">${draft.isNew?'':`<button class="btn bad" data-del="1">Delete poster</button>`}<span class="sp"></span><button class="btn" data-close="1">Cancel</button><button class="btn pri" data-save="1">${draft.isNew?'ADD POSTER':'SAVE CHANGES'}</button></div>
+/* ---------- add / edit modal ---------- */
+function openModal(id,date){
+  const b=id?bookings[id]:null; if(id&&!b) return;
+  draft=b?{...b,_occ:date||b.date,isNew:false}:{id:uid('b'),title:'',date:date||cursor,time:'',site:'',repeat:'',by:me(),created:new Date().toISOString(),done:{},_occ:date||cursor,isNew:true};
+  const siteOpts='<option value="">All sites / none</option>'+SITES.map(x=>`<option ${draft.site===x?'selected':''}>${x}</option>`).join('');
+  const dn=draft.isNew?null:(draft.done||{})[draft._occ];
+  $('#modal').innerHTML=`<div class="ov"><div class="bk" data-close="1"></div><div class="box cb" role="dialog" aria-label="${draft.isNew?'New booking':'Edit booking'}">
+    <div class="mh"><b>${draft.isNew?'New booking':'Edit booking'}</b><button class="x" data-close="1" aria-label="Close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="ff"><label class="lbl" for="fTitle">What is booked</label><input class="fld" id="fTitle" maxlength="120" value="${esc(draft.title)}" placeholder="e.g. Collect van from Halfords"></div>
+    <div class="row2"><div class="ff"><label class="lbl" for="fDate">Date</label><input class="fld" type="date" id="fDate" value="${esc(draft.date)}"></div>
+    <div class="ff"><label class="lbl" for="fTime">Time</label><input class="fld" type="time" id="fTime" value="${esc(draft.time)}"><div class="hint">Leave empty for all day</div></div></div>
+    <div class="row2"><div class="ff"><label class="lbl" for="fSite">Site</label><select class="fld" id="fSite">${siteOpts}</select></div>
+    <div class="ff"><label class="lbl" for="fRep">Repeat</label><select class="fld" id="fRep"><option value="">One-off</option><option value="weekly" ${draft.repeat==='weekly'?'selected':''}>Every week</option></select></div></div>
+    <div class="ff"><label class="lbl" for="fNotes">Notes</label><textarea class="fld" id="fNotes" maxlength="500" placeholder="Anything people need to know on the day (shows on the Day view and in Daily Tasks)…">${esc(draft.notes||'')}</textarea></div>
+    ${draft.isNew?'':`<div class="hint" style="margin:-4px 0 4px">${draft.repeat==='weekly'?'This repeats weekly from '+esc(fmtShort(draft.date))+'. Changes apply to every week. ':''}Added by ${esc(draft.by||'?')}.</div>
+    <button class="btn sm" data-done="1" style="margin-top:6px">${dn?'✓ Done on '+esc(fmtShort(draft._occ))+' — click to undo':'Mark done for '+esc(fmtShort(draft._occ))}</button>`}
+    <div class="mf">${draft.isNew?'':`<button class="btn bad" data-del="${draft.id}">Delete</button>`}<span class="sp"></span><button class="btn" data-close="1">Cancel</button><button class="btn pri" data-save="1">${draft.isNew?'ADD BOOKING':'SAVE CHANGES'}</button></div>
   </div></div>`;
   setTimeout(()=>{ const t=$('#fTitle'); t&&t.focus(); },30);
 }
-function openView(id){
-  const p=posters[id]; if(!p) return; viewId=id;
-  $('#modal').innerHTML=`<div class="ov"><div class="bk" data-close="1"></div><div class="box view" role="dialog" aria-label="${esc(p.title)}">
-    <div class="vbar"></div>
-    <div class="vh"><b>${esc(p.title)}</b><button class="x" data-close="1" aria-label="Close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-    <div class="vi"><img src="${p.img}" alt="${esc(p.title)}"></div>
-    <div class="vf">${p.tag?`<span class="tag">${esc(p.tag)}</span>`:'<span></span>'}<em>CLICK OUTSIDE TO CLOSE</em></div>
-  </div></div>`;
+function closeModal(){ draft=null; $('#modal').innerHTML=''; }
+async function saveDraft(){
+  const title=$('#fTitle').value.trim(), date=$('#fDate').value;
+  if(!title){ $('#fTitle').focus(); return; } if(!date){ $('#fDate').focus(); return; }
+  const b={...draft}; delete b._occ; delete b.isNew;
+  b.title=title; b.date=date; b.time=$('#fTime').value||''; b.site=$('#fSite').value; b.repeat=$('#fRep').value; b.notes=$('#fNotes').value.trim(); b.by=b.by||me();
+  const was=draft.isNew; bookings[b.id]=b; closeModal(); renderAll(); toast(was?'Booking added for '+fmtShort(b.date):'Booking saved'); await store.save(b);
 }
-async function setFile(file){
-  if(!file || !draft) return;
-  if(!/^image\//.test(file.type)) return toast('Please choose an image file');
-  try{ draft.img=await prepImage(file); draft.file=file; }catch(e){ return toast('That image is too big to save – try a smaller one'); }
-  const dr=$('#drop'); if(dr) dr.innerHTML=`<img src="${draft.img}" alt=""><span class="btn sm re">Replace image</span>`;
-  const t=$('#fTitle'); if(t && !t.value.trim()){ t.value=file.name.replace(/\.[a-z0-9]+$/i,'').replace(/[-_]+/g,' ').trim(); }
+async function toggleDone(id,date){
+  const b=bookings[id]; if(!b) return; b.done=b.done||{};
+  if(b.done[date]) delete b.done[date]; else b.done[date]={t:new Date().toISOString(),by:me()};
+  renderAll(); await store.save(b);
 }
-async function save(){
-  const title=$('#fTitle').value.trim(); if(!title){ $('#fTitle').focus(); return toast('Give the poster a title'); }
-  if(!draft.img) return toast('Add a poster image first');
-  const now=Date.now(), isNew=draft.isNew, file=draft.file, old=draft.hi||null;
-  const p={ id:draft.id, title, tag:$('#fTag').value.trim(), message:$('#fMsg').value.replace(/\s+$/,''), img:draft.img,
-            by:isNew?me():(draft.by||me()), created:draft.created||now, updated:now, editedBy:me() };
-  if(old) p.hi=old;
-  posters[p.id]=p; pend[p.id]=p; close(); render(); toast(isNew?'Poster added':'Poster saved');
-  const ok=await store.save(p);              // save the poster FIRST so a refresh can never lose it
-  if(ok) delete pend[p.id];
-  if(file){                                  // then keep the full-size original in the background
-    const hi=await store.putOriginal(p.id,file);
-    if(old) store.dropOriginal({...old,id:p.id});
-    if(hi){ p.hi=hi; if(posters[p.id]) posters[p.id].hi=hi; await store.save(p); } else if(p.hi){ delete p.hi; await store.save(p); }
-  }
-}
-async function del(){
-  const p=posters[draft.id]; if(!p) return;
-  if(!(await wlAsk('Delete “'+p.title+'”? This removes it for everyone.',{title:'Delete poster',ok:'Delete'}))) return;
-  delete posters[p.id]; close(); render(); toast('Poster deleted'); await store.del(p.id,p);
+async function deleteBooking(id){
+  const b=bookings[id]; if(!b) return;
+  if(!(await wlAsk('Delete “'+b.title+'”?'+(b.repeat?' This removes every week.':'')+' It will disappear from Daily Tasks too.',{title:'Delete booking',ok:'Delete'}))) return;
+  delete bookings[id]; closeModal(); renderAll(); toast('Booking deleted'); await store.del(id);
 }
 
 /* ---------- events ---------- */
+function step(n){
+  const d=parse(cursor);
+  if(view==='month'){ cursor=ymd(new Date(d.getFullYear(),d.getMonth()+n,1)); }
+  else if(view==='week'||view==='agenda') cursor=addDays(cursor,7*n);
+  else cursor=addDays(cursor,n);
+  renderAll();
+}
 document.addEventListener('click',async e=>{
   const g=s=>e.target.closest(s); let el;
-  if(g('[data-dd]')){ openDD=!openDD; return render(); }
-  if(g('[data-clear]')){ tagF=''; openDD=false; return render(); }
-  if(openDD && !g('.pop3')){ openDD=false; if(!g('[data-tag]')){ render(); return; } }
-  if(g('[data-close]')) return close();
-  if(g('#newBtn')||g('[data-new]')) return openEdit(null);
-  if((el=g('[data-edit]'))){ return openEdit(el.dataset.edit); }
-  if((el=g('[data-view]'))) return openView(el.dataset.view);
-  if((el=g('[data-tag]'))){ openDD=false; tagF=(tagF===el.dataset.tag)?'':el.dataset.tag; return render(); }
-  if((el=g('[data-act]'))){ const p=posters[el.dataset.id]; if(!p) return; const a=el.dataset.act;
-    if(a==='dl') return actDownload(p);
-    const ok=await (a==='img'?actCopyImg(p):actCopyMsg(p)); if(ok) flashTick(el); return; }
-  if(g('[data-save]')) return save();
-  if(g('[data-del]')) return del();
-  if(g('#drop')) return $('#file').click();
+  if(g('[data-close]')&&!g('.box')||(el=g('.x[data-close],.btn[data-close]'))) return closeModal();
+  if((el=g('[data-nav]'))) return step(+el.dataset.nav);
+  if(g('[data-today]')){ cursor=today(); return renderAll(); }
+  if((el=g('[data-view]'))&&el.classList.contains('chip')){ view=el.dataset.view; return renderAll(); }
+  if((el=g('[data-site]'))){ const s=el.dataset.site; siteF=(s==='-')?'-':s; return renderAll(); }
+  if((el=g('[data-new]'))) return openModal(null,el.dataset.new);
+  if((el=g('[data-goday]'))){ cursor=el.dataset.goday; view='day'; return renderAll(); }
+  if((el=g('[data-new]'))) return openModal(null,el.dataset.new);
+  if(g('#newBtn')) return openModal(null,cursor);
+  if((el=g('[data-tick]'))) return toggleDone(el.dataset.tick,el.dataset.date);
+  if((el=g('[data-del]'))) return deleteBooking(el.dataset.del);
+  if(g('[data-done]')&&draft){ const id=draft.id,d=draft._occ; closeModal(); return toggleDone(id,d); }
+  if(g('[data-save]')) return saveDraft();
+  if((el=g('[data-edit]'))) return openModal(el.dataset.edit,el.dataset.date);
 });
-document.addEventListener('change',e=>{ if(e.target.id==='file') setFile(e.target.files[0]); });
-document.addEventListener('input',e=>{ if(e.target.id==='search'){ q=e.target.value; render(); } });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('#modal').innerHTML) close(); });
-document.addEventListener('dragover',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(d){ e.preventDefault(); d.classList.add('over'); } });
-document.addEventListener('dragleave',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(d) d.classList.remove('over'); });
-document.addEventListener('drop',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(d){ e.preventDefault(); d.classList.remove('over'); setFile(e.dataTransfer.files[0]); } });
-document.addEventListener('paste',e=>{ if(!draft) return; const f=[...(e.clipboardData&&e.clipboardData.files||[])].find(x=>/^image\//.test(x.type)); if(f){ e.preventDefault(); setFile(f); } });
-
-
-function demoPosters(){
-  const mkSvg=(bg1,bg2,big,small,body)=>'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+bg1+'"/><stop offset="1" stop-color="'+bg2+'"/></linearGradient></defs><rect width="600" height="800" fill="url(#g)"/><rect x="40" y="40" width="520" height="720" rx="6" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3"/><text x="300" y="130" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="6" fill="#fff" fill-opacity=".85">DEMO POSTER</text><text x="300" y="360" text-anchor="middle" font-family="Arial,sans-serif" font-size="78" font-weight="900" fill="#fff">'+big+'</text><text x="300" y="440" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#fff" fill-opacity=".92">'+small+'</text>'+body.map((l,i)=>'<text x="300" y="'+(540+i*44)+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="26" fill="#fff" fill-opacity=".85">'+l+'</text>').join('')+'<text x="300" y="720" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="4" fill="#fff" fill-opacity=".7">SAMPLE ONLY</text></svg>');
-  const now=Date.now(), L=[
-   ['Safety First','Safety','Wear your hi-vis at all times','SAFETY','FIRST',['Seatbelt on before the engine','Phone away while driving'],'#0F766E','#115E59'],
-   ['Van Walk-Around','Fleet','Check the van before every shift','VAN CHECK','WALK AROUND',['Tyres, lights, mirrors','Report damage straight away'],'#1D4ED8','#1E3A8A'],
-   ['Daily Huddle','Team','Huddle starts at 09:00 sharp','DAILY','HUDDLE',['Wave times and routes','Questions and shout-outs'],'#B45309','#92400E'],
-   ['Welcome New Starters','Team','Your first week at Warrior','WELCOME','TO THE TEAM',['Training modules first','Ride along with a buddy'],'#9D174D','#831843'],
-   ['Report an Incident','Safety','Tell your manager straight away','REPORT IT','EVERY TIME',['Accidents and near misses','No blame - just report'],'#B91C1C','#7F1D1D'],
-   ['Return Vans Clean','Fleet','Leave the van ready for the next driver','CLEAN VAN','HAND BACK',['Bin the rubbish','Fuel card back in the cab'],'#4D7C0F','#365314']
-  ];
-  const o={}; L.forEach((r,i)=>{ const id='demo'+i; o[id]={id,title:r[0],tag:r[1],message:r[2],img:mkSvg(r[6],r[7],r[3],r[4],r[5]),by:'Tom Jackson',created:now-i*864e5,updated:now-i*864e5}; }); return o;
-}
-store.init(o=>{ posters=o||{}; Object.keys(pend).forEach(k=>{ if(!posters[k]) posters[k]=pend[k]; }); render(); }).then(()=>{ if(window.WL_DEMO&&!lsGet('wl_demo_seeded_po')&&!Object.keys(posters).length){ posters=demoPosters(); store.persist(); lsSet('wl_demo_seeded_po','1'); } render(); });
-render();
-
-/* WhatsApp formatting buttons: wrap (or unwrap) the selected text */
-document.addEventListener('mousedown',e=>{ const b=e.target.closest&&e.target.closest('[data-fmt]'); if(b) e.preventDefault(); });
-document.addEventListener('click',e=>{
-  const b=e.target.closest&&e.target.closest('[data-fmt]'); if(!b) return;
-  const t=document.getElementById('fMsg'); if(!t) return; const m=b.dataset.fmt, v=t.value; let s=t.selectionStart, en=t.selectionEnd;
-  t.focus();
-  const sel=v.slice(s,en);
-  if(sel && sel.length>=2*m.length && sel.startsWith(m) && sel.endsWith(m)){ t.setRangeText(sel.slice(m.length,-m.length),s,en,'select'); }
-  else if(s>=m.length && v.slice(s-m.length,s)===m && v.slice(en,en+m.length)===m){ t.setRangeText(sel,s-m.length,en+m.length,'select'); }
-  else if(sel){ const lead=sel.match(/^\s*/)[0], trail=sel.match(/\s*$/)[0], core=sel.trim(); if(!core) return; t.setRangeText(lead+m+core+m+trail,s,en,'preserve'); t.setSelectionRange(s+lead.length,s+lead.length+core.length+2*m.length); }
-  else { t.setRangeText(m+m,s,en,'end'); t.setSelectionRange(s+m.length,s+m.length); }
-  t.dispatchEvent(new Event('input',{bubbles:true}));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&draft) closeModal();
+  if(e.key==='Enter'&&draft&&e.target.matches&&e.target.matches('#fTitle,#fDate,#fTime')){ e.preventDefault(); saveDraft(); }
 });
+$('#search').addEventListener('input',e=>{ q=e.target.value; renderMain(); renderSide(); });
+/* site filter "No site" support */
+const _m=matches; matches=function(b){ if(siteF==='-'){ if(b.site) return false; const n=q.trim().toLowerCase(); return !n||((b.title||'')+' '+(b.by||'')).toLowerCase().includes(n); } return _m(b); };
+setInterval(()=>{ if(!draft) renderAll(); },60000);
+renderAll(); store.init();
 </script>
+
 <script>/*WL-CONFIRM*/
 window.wlAsk=function(msg,o){o=o||{};return new Promise(function(res){
 var bk=document.createElement('div');bk.className='wlc-bk';
@@ -850,7 +873,7 @@ var IC={ca:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 
 var P=[['dt','Daily Tasks','daily-tasks.html'],['ca','Calendar','calendar.html'],['wp','Wave Plan','wave-plan-generator.html'],['rc','Recruitment','recruitment.html'],['dv','DVLA','dvla.html'],['po','Posters','posters.html'],['ki','Kinesis','#',1],['nr','Netradyne','#',1],['mt','MOT Tracker','#',1]];
 var RW={1:88,2:76,3:88,4:176,5:88,6:88};
 function sv(k,s){return '<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC[k]+'</svg>'}
-var rv=2,act='po';
+var rv=2,act='ca';
 var nav=document.getElementById('wlRail')||document.getElementById('rail');nav.id='wlRail';
 function build(){
  nav.className='wl-rail rr r'+rv;document.documentElement.style.setProperty('--rw',RW[rv]+'px');

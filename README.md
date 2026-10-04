@@ -9,6 +9,7 @@ Desktop web tools for the Warrior Logistics management team (DLS4 / HSA7 / DXFL 
 | Daily Tasks | `daily-tasks.html` |
 | Wave Plan Generator | `wave-plan-generator.html` |
 | Posters | `posters.html` |
+| Calendar (all diary bookings, month / week / day / agenda) | `calendar.html` |
 | Recruitment | `recruitment.html` |
 | DVLA Tracker | `dvla.html` |
 
