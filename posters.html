@@ -252,6 +252,10 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
 
 [data-act].tkok{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important;transition:background .15s}
 [data-act].tkok svg{animation:tkpop .28s ease-out}@keyframes tkpop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+.fmrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.fmrow .lbl{margin:0}
+.fmtb{display:flex;gap:6px}.fmb{all:unset;box-sizing:border-box;cursor:pointer;width:32px;height:28px;display:grid;place-items:center;border:1px solid var(--line,#E5E5E6);border-radius:4px;background:var(--card,#fff);color:var(--text,#181819);font-size:14px}
+.fmb:hover{background:var(--accent);border-color:var(--accent);color:#fff}.fmb b,.fmb i,.fmb s{font-size:14px}
 </style>
 </head>
 <body>
@@ -488,7 +492,7 @@ function openEdit(id){
     <div>
       <div class="ff"><label class="lbl" for="fTitle">Title</label><input class="fld" id="fTitle" maxlength="80" value="${esc(draft.title)}" placeholder="e.g. Seatbelts on, every stop"></div>
       <div class="ff"><label class="lbl" for="fTag">Tag <span style="font-weight:500;letter-spacing:0;text-transform:none">(optional – used to filter)</span></label><input class="fld" id="fTag" list="tagList" maxlength="30" value="${esc(draft.tag)}" placeholder="e.g. Safety"><datalist id="tagList">${tags.map(t=>`<option value="${esc(t)}">`).join('')}</datalist></div>
-      <div class="ff"><label class="lbl" for="fMsg">WhatsApp message</label><textarea class="fld" id="fMsg" placeholder="The text that goes with this poster…">${esc(draft.message)}</textarea><div class="hint">WhatsApp formatting works: *bold*, _italic_, ~strike~.</div></div>
+      <div class="ff"><div class="fmrow"><label class="lbl" for="fMsg">WhatsApp message</label><div class="fmtb"><button type="button" class="fmb" data-fmt="*" title="Bold (*text*)"><b>B</b></button><button type="button" class="fmb" data-fmt="_" title="Italic (_text_)"><i>I</i></button><button type="button" class="fmb" data-fmt="~" title="Strikethrough (~text~)"><s>S</s></button></div></div><textarea class="fld" id="fMsg" placeholder="The text that goes with this poster…">${esc(draft.message)}</textarea><div class="hint">WhatsApp formatting works: *bold*, _italic_, ~strike~.</div></div>
     </div>
     <div class="mf">${draft.isNew?'':`<button class="btn bad" data-del="1">Delete poster</button>`}<span class="sp"></span><button class="btn" data-close="1">Cancel</button><button class="btn pri" data-save="1">${draft.isNew?'ADD POSTER':'SAVE CHANGES'}</button></div>
   </div></div>`;
@@ -573,6 +577,20 @@ function demoPosters(){
 }
 store.init(o=>{ posters=o||{}; Object.keys(pend).forEach(k=>{ if(!posters[k]) posters[k]=pend[k]; }); render(); }).then(()=>{ if(window.WL_DEMO&&!lsGet('wl_demo_seeded_po')&&!Object.keys(posters).length){ posters=demoPosters(); store.persist(); lsSet('wl_demo_seeded_po','1'); } render(); });
 render();
+
+/* WhatsApp formatting buttons: wrap (or unwrap) the selected text */
+document.addEventListener('mousedown',e=>{ const b=e.target.closest&&e.target.closest('[data-fmt]'); if(b) e.preventDefault(); });
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-fmt]'); if(!b) return;
+  const t=document.getElementById('fMsg'); if(!t) return; const m=b.dataset.fmt, v=t.value; let s=t.selectionStart, en=t.selectionEnd;
+  t.focus();
+  const sel=v.slice(s,en);
+  if(sel && sel.length>=2*m.length && sel.startsWith(m) && sel.endsWith(m)){ t.setRangeText(sel.slice(m.length,-m.length),s,en,'select'); }
+  else if(s>=m.length && v.slice(s-m.length,s)===m && v.slice(en,en+m.length)===m){ t.setRangeText(sel,s-m.length,en+m.length,'select'); }
+  else if(sel){ const lead=sel.match(/^\s*/)[0], trail=sel.match(/\s*$/)[0], core=sel.trim(); if(!core) return; t.setRangeText(lead+m+core+m+trail,s,en,'preserve'); t.setSelectionRange(s+lead.length,s+lead.length+core.length+2*m.length); }
+  else { t.setRangeText(m+m,s,en,'end'); t.setSelectionRange(s+m.length,s+m.length); }
+  t.dispatchEvent(new Event('input',{bubbles:true}));
+});
 </script>
 </body>
 </html>
