@@ -706,7 +706,7 @@ firstL=false;const d=sn.data();let ch=false;
 if(Array.isArray(d.onby)&&d.onby.length&&JSON.stringify(d.onby)!==JSON.stringify(ONBY)){ONBY=d.onby.slice();lsSet(OBK,JSON.stringify(ONBY));ch=true}
 if(Array.isArray(d.stations)&&d.stations.length&&JSON.stringify(d.stations)!==JSON.stringify(STATIONS)){STATIONS=d.stations.slice();L.forEach(c=>{if(c.site&&!STATIONS.includes(c.site))STATIONS.push(c.site)});lsSet(SK,JSON.stringify(STATIONS));ch=true}
 if(ch&&typeof render==='function')render()},e=>console.error(e))}).catch(e=>console.error(e))}
-let view=(lsGet('wl_recruit_view2')==='grid')?'grid':'list',openDD=null,q='',stF='ALL',osmF='ALL',dbsF='ALL',sort='attn';
+let view=(lsGet('wl_recruit_view2')==='grid')?'grid':'list',openDD=null,q='',stF='ALL',osmF='ALL',dbsF='ALL',sort='close';
 const dv=c=>c.dbs||'';
 const nDone=(c,g)=>GROUPS[g].items.filter(it=>done(c,it)).length;
 const pctG=(c,g)=>nDone(c,g)/GROUPS[g].items.length;
@@ -740,11 +740,13 @@ function render(){
   const osO=['ALL','TOM','JORDAN'].map(o=>[o,o==='ALL'?'All':o.toLowerCase(),L.filter(c=>o==='ALL'||c.osm===o).length]);
   window._ddHtml=((stF!=='ALL'||dbsF!=='ALL'||osmF!=='ALL'||q)?'<button class="bt3 clr" data-clear="1">Clear filters</button>':'');
   let list=L.filter(match);
-  if(sort==='attn')list.sort((a,b)=>STAGES.indexOf(a.status)-STAGES.indexOf(b.status)||total(b)-total(a));
-  else if(sort==='close')list.sort((a,b)=>(complete(a)-complete(b))||total(b)-total(a));
+  if(sort==='attn')list.sort((a,b)=>STAGES.indexOf(a.status)-STAGES.indexOf(b.status)||total(b)-total(a)||a.name.localeCompare(b.name));
+  else if(sort==='close')list.sort((a,b)=>total(b)-total(a)||STAGES.indexOf(b.status)-STAGES.indexOf(a.status)||a.name.localeCompare(b.name));
   else if(sort==='new')list.sort((a,b)=>(b.created||0)-(a.created||0)||a.name.localeCompare(b.name));
   else if(sort==='old')list.sort((a,b)=>(a.created||0)-(b.created||0)||a.name.localeCompare(b.name));
   else list.sort((a,b)=>a.name.localeCompare(b.name));
+  if(sort==='close'&&!q&&stF!=='ACTIVE'&&stF!=='REJECTED')list=list.filter(c=>c.status==='REJECTED'||total(c)<1);
+  if(sort==='attn'||sort==='close')list=[...list.filter(c=>c.status!=='REJECTED'),...list.filter(c=>c.status==='REJECTED')];
   const SI=d=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
   const SO=[['attn','Stage order','var(--accent)','<path d="M3 6h18M6 12h12M10 18h4"/>'],['close','Closest to done','#15803D','<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>'],['name','A–Z','#2563EB','<path d="M3 7h8M3 12h6M3 17h4M16 5v14M13 16l3 3 3-3"/>'],['new','Newest to oldest','#EA580C','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'],['old','Oldest to newest','#C026D3','<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>']];
   const cs=SO.find(x=>x[0]===sort)||SO[0];
@@ -1084,7 +1086,7 @@ var STEPS=['Onboarding','Amiigo Training','Generate Connect','Driver Setup','Fil
 function STP(){return '<div class="nvstp">'+STEPS.map(function(s,i){return '<div class="'+(i?'':'on')+'"><b>'+(i+1)+'</b><span>'+s+'</span></div>'}).join('')+'</div>'}
 function SD(){return '<div class="sd nvsd"><span class="lbl9">Starting stage</span><div class="st6"><span class="dot"></span><span>Onboarding</span></div></div>'}
 function NEXT(){return '<div class="nvnx"><div class="lbl9">What happens next</div>'+['Send the onboarding link','Amiigo training','Generate Connect invite','Driver setup & compliance'].map(function(s,i){return '<p><b>'+(i+1)+'</b>'+s+'</p>'}).join('')+'</div>'}
-function card(t,b){return '<div class="cb nvcard"><div class="nvch">'+t+'</div><div class="nvcb">'+b+'</div></div>'}
+function nvCardEl(t,b){return '<div class="cb nvcard"><div class="nvch">'+t+'</div><div class="nvcb">'+b+'</div></div>'}
 function row(l,input){return '<div class="nvrow"><label>'+l+'</label>'+input+'</div>'}
 function build(){return H('NEW STARTER','Add a new person to onboarding','',HS())+SD()+'<div class="nvbody">'+F('nn','Name','Full name','user','big')+'<div class="nvhero">'+T('np','Phone number','07…','phone')+T('ne','Email address','name@email.com','mail')+'</div></div>'+FT()}
 function newForm(){
