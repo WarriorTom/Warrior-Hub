@@ -249,6 +249,9 @@ apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListe
 <style id="wlMainFit">.pg{padding-left:30px!important;padding-right:30px!important;margin:0!important;max-width:none!important}
 /* thin themed scrollbar on every scroll area (drawers, lists, tables) */
 *{scrollbar-width:thin}
+
+[data-act].tkok{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important;transition:background .15s}
+[data-act].tkok svg{animation:tkpop .28s ease-out}@keyframes tkpop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
@@ -418,13 +421,13 @@ async function copyText(t){
   try{ await navigator.clipboard.writeText(t); return true; }
   catch(e){ try{ const a=document.createElement('textarea'); a.value=t; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); const ok=document.execCommand('copy'); a.remove(); return ok; }catch(e2){ return false; } }
 }
-async function actCopyMsg(p){ if(!p.message){ return toast('This poster has no message yet'); } toast(await copyText(p.message)?'Message copied – paste it into WhatsApp':'Could not copy – select the text and copy it'); }
+async function actCopyMsg(p){ if(!p.message){ toast('This poster has no message yet'); return false; } const ok=await copyText(p.message); toast(ok?'Message copied – paste it into WhatsApp':'Could not copy – select the text and copy it'); return ok; }
 async function srcFor(p){ const b=await store.getOriginal(p); return b?URL.createObjectURL(b):p.img; }   // original if we have it, else the preview
 async function actCopyImg(p){
   try{
     await navigator.clipboard.write([new ClipboardItem({'image/png':srcFor(p).then(pngBlob)})]);
-    toast('Image copied – paste it into WhatsApp');
-  }catch(e){ console.error(e); toast('Your browser would not copy the image – use Download instead'); }
+    toast('Image copied – paste it into WhatsApp'); return true;
+  }catch(e){ console.error(e); toast('Your browser would not copy the image – use Download instead'); return false; }
 }
 async function actDownload(p){
   const b=await store.getOriginal(p), a=document.createElement('a');
@@ -435,6 +438,7 @@ async function actDownload(p){
   a.download=slug(p.title)+'.'+ext; document.body.appendChild(a); a.click(); a.remove(); toast('Downloading '+a.download);
   if(b) setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
+function flashTick(el){ if(!el||el._tk) return; el._tk=1; const h=el.innerHTML; el.classList.add('tkok'); el.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'; setTimeout(()=>{ el.innerHTML=h; el.classList.remove('tkok'); el._tk=0; },2200); }
 /* ---------- render ---------- */
 const sorted=()=>Object.values(posters).sort((a,b)=>(b.created||0)-(a.created||0));
 function render(){
@@ -529,7 +533,7 @@ async function del(){
 }
 
 /* ---------- events ---------- */
-document.addEventListener('click',e=>{
+document.addEventListener('click',async e=>{
   const g=s=>e.target.closest(s); let el;
   if(g('[data-dd]')){ openDD=!openDD; return render(); }
   if(g('[data-clear]')){ tagF=''; openDD=false; return render(); }
@@ -540,7 +544,8 @@ document.addEventListener('click',e=>{
   if((el=g('[data-view]'))) return openView(el.dataset.view);
   if((el=g('[data-tag]'))){ openDD=false; tagF=(tagF===el.dataset.tag)?'':el.dataset.tag; return render(); }
   if((el=g('[data-act]'))){ const p=posters[el.dataset.id]; if(!p) return; const a=el.dataset.act;
-    return a==='img'?actCopyImg(p):a==='dl'?actDownload(p):actCopyMsg(p); }
+    if(a==='dl') return actDownload(p);
+    const ok=await (a==='img'?actCopyImg(p):actCopyMsg(p)); if(ok) flashTick(el); return; }
   if(g('[data-save]')) return save();
   if(g('[data-del]')) return del();
   if(g('#drop')) return $('#file').click();
