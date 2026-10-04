@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en-GB">
-<head>
+<head><script>/*m-sysdefault*/try{if(innerWidth<=820&&!localStorage.getItem('wl_theme')){localStorage.setItem('wl_theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}}catch(e){}</script>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#7C3AED">
@@ -965,5 +966,101 @@ build();var gd=document.createElement('div');gd.style.cssText='position:absolute
 new MutationObserver(function(){/* theme toggle icon refresh handled by wlRailInit click */}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 })();</script>
 <style>/*side-slate*/:root:root:root:not([data-theme="dark"]) .wp-side,:root:root:root:not([data-theme="dark"]) .side{background:linear-gradient(180deg,#F4F5F6 0%,#E6EAEB 40%,#A4A9B1 100%)!important;border-right-color:#CDD0D5!important}</style>
+<style>/*m-extra2*/
+@media (max-width:820px){
+.pa{flex-wrap:wrap}.pa .dl{flex:1 0 100%}.pa .sq{flex:1 1 0;width:auto}
+:root:root:root #pageResults .rp-export .export-tile{grid-template-columns:44px 1fr!important;row-gap:10px!important}
+:root:root:root #pageResults .rp-export .export-tile>.export-tile-btns{grid-column:1/-1!important;grid-row:3!important}
+:root:root:root #pageResults .rp-export .export-tile>.export-text-row{grid-column:1/-1!important;grid-row:4!important;margin-left:0!important}
+:root:root:root #pageResults .rp-export .export-tile>.upload-progress{grid-row:5!important}
+:root:root:root #pageResults .rp-export .export-tile>.export-tile-btns button{flex:1!important;padding:0 10px!important}
+:root:root:root #pageResults .rp-export .rx-hero .accent-picker{flex-wrap:wrap!important}
+:root:root:root #pageResults .rp-export .export-grid{padding:6px 14px 10px!important}
+.accent-theme-dots,.accent-dots{flex-wrap:wrap}
+}
+/*m-extra*/
+@media (max-width:820px){
+.review-table-wrap{overflow-x:auto!important}
+.review-table{min-width:760px!important;table-layout:auto!important}
+.review-table th,.review-table td{white-space:nowrap}
+:has(>table.dt){overflow-x:auto}
+table.dt{min-width:780px!important;width:780px!important}
+:has(>.lr){overflow-x:auto}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.dm .g{grid-template-columns:1fr!important}.dm .g .w2{grid-column:auto}
+.export-tile{flex-wrap:wrap!important;min-width:0!important}
+.export-tile *{min-width:0}
+.export-tile-desc{white-space:normal!important}
+.accent-picker{max-width:100%}
+.wave-modal,.ov{padding:8px!important}
+}
+/*m-rail*/
+@media (max-width:820px){
+body{min-width:0!important}
+:root:root:root:root body{padding-left:0!important;padding-bottom:64px!important}
+:root:root:root:root #wlRail{position:fixed!important;left:0!important;right:0!important;top:auto!important;bottom:0!important;width:100%!important;height:58px!important;flex-direction:row!important;align-items:center!important;justify-content:space-around!important;padding:0 6px!important;gap:0!important;border-right:0!important;border-top:1px solid #494A4F;z-index:200}
+:root:root:root:root #wlRail .rgrow,:root:root:root:root #wlRail .rut,:root:root:root:root #wlRail .rit.soon{display:none!important}
+:root:root:root:root #wlRail .rlg{margin:0!important;width:38px!important;height:38px!important;flex:none}
+:root:root:root:root #wlRail .rit{width:auto!important;padding:0!important;flex:none}
+:root:root:root:root #wlRail{--tz:38px}
+:root:root:root:root #wlRail .rtip{display:none!important}
+:root:root:root:root #wlRail .rit.on .rti::after,:root:root:root:root #wlRail .rlg.on::after{inset:-4px}
+.wl-mdemo{display:none}
+}
+/*m-pages*/
+@media (max-width:820px){
+html:root,html:root body{overflow-x:hidden!important}
+:root:root:root:root .wp-side{position:static!important;left:auto!important;top:auto!important;bottom:auto!important;width:100%!important;height:auto!important;overflow:visible!important;border-right:0!important;border-bottom:1px solid var(--line,#ccc)!important;padding:58px 14px 16px!important;scrollbar-gutter:auto!important}
+:root:root:root:root .pg{padding:14px 12px 24px!important;min-width:0!important;width:auto!important}
+:root:root:root:root .shell{padding:14px 12px 24px!important;min-width:0!important}
+:root:root:root:root .dashboard,:root:root:root:root .results-page{min-width:0!important}
+:root:root:root:root .tbl-wrap,:root:root:root:root .lst,:root:root:root:root .tw{overflow-x:auto}
+img,canvas,video{max-width:100%}
+.wl-topline,.topline{display:none}
+#wlDemoBar{left:8px!important;right:8px!important;bottom:66px!important;transform:none!important;width:auto!important;min-width:0!important}
+}
+</style>
+<style>/*m-ctl*/
+.mctl{display:none}
+@media (max-width:820px){
+.mctl{display:flex;gap:6px;align-items:center;position:absolute;top:10px;right:10px;z-index:320}
+.mctl.inflow{position:static;margin-left:auto}
+.mctl button{all:unset;cursor:pointer;box-sizing:border-box;width:36px;height:36px;border-radius:4px;display:grid;place-items:center;background:#1E2023;border:1px solid #494A4F;color:#fff}
+.mctl button svg{width:20px;height:20px;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mctl #mcT svg,.mctl #mcT svg *{stroke:url(#wlMoonG)}
+:root[data-theme="dark"] .mctl #mcT svg,:root[data-theme="dark"] .mctl #mcT svg *{stroke:url(#wlSunG)}
+.mctl #mcM svg{stroke:#fff}
+.mmenu{position:absolute;top:44px;right:0;min-width:170px;background:#1E2023;border:1px solid #494A4F;border-radius:4px;box-shadow:0 14px 30px -10px rgba(0,0,0,.6);padding:4px;display:none;flex-direction:column}
+.mmenu.open{display:flex}
+.mmenu button{all:unset;cursor:pointer;width:auto;height:auto;padding:11px 12px;border-radius:2px;font:700 12px Inter,system-ui,sans-serif;letter-spacing:.08em;color:#fff;text-transform:uppercase;display:flex;align-items:center;gap:10px;background:none;border:0}
+.mmenu button svg{width:18px;height:18px;stroke:#A855F7}
+.mmenu button:active{background:rgba(255,255,255,.08)}
+.mmenu .red svg{stroke:#EF4444}
+.mctl.inflow .mmenu{top:44px}
+}</style>
+<script>/*m-ctl*/(function(){
+function ready(f){if(document.body)f();else document.addEventListener('DOMContentLoaded',f)}
+ready(function(){
+var d=document,root=d.documentElement,rail=d.getElementById('wlRail');
+var MOON='<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+var DOTS='<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>';
+if(!d.getElementById('wlSunG')){var gd=d.createElement('div');gd.style.cssText='position:absolute;width:0;height:0;overflow:hidden';gd.innerHTML='<svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="wlSunG" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="21" y2="21"><stop offset="0" stop-color="#FDE047"/><stop offset="1" stop-color="#F97316"/></linearGradient><linearGradient id="wlMoonG" gradientUnits="userSpaceOnUse" x1="4" y1="3" x2="20" y2="21"><stop offset="0" stop-color="#F1F5F9"/><stop offset="1" stop-color="#8FA3E8"/></linearGradient></defs></svg>';d.body.appendChild(gd)}
+var c=d.createElement('div');c.className='mctl';
+c.innerHTML='<button type="button" id="mcT" aria-label="Switch light or dark mode"></button>'+(rail?'<button type="button" id="mcM" aria-label="More">'+DOTS+'</button><div class="mmenu" id="mmenu"><button type="button" id="mmMute"></button><button type="button" id="mmDemo"></button></div>':'');
+var top=d.querySelector('.top');if(top&&d.getElementById('so')){c.classList.add('inflow');top.insertBefore(c,d.getElementById('so'))}else d.body.appendChild(c);
+function dark(){return root.dataset.theme==='dark'}
+function paint(){var t=d.getElementById('mcT');if(t)t.innerHTML=dark()?SUN:MOON;
+ if(rail){var mu=d.getElementById('wlMute'),de=d.getElementById('wlDemo');var muted=mu&&mu.classList.contains('muted');
+  var mm=d.getElementById('mmMute');mm.className=muted?'red':'';mm.innerHTML=(muted?'<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/></svg>Unmute':'<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4zM19 5a9 9 0 0 1 0 14M15.5 8.5a5 5 0 0 1 0 7"/></svg>Mute');
+  var on=de&&de.classList.contains('demoon');d.getElementById('mmDemo').innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4z"/></svg>'+(on?'Exit demo':'Demo mode')}}
+d.getElementById('mcT').onclick=function(){var th=rail&&d.getElementById('wlTheme');if(th){th.click()}else{var n=dark()?'light':'dark';root.dataset.theme=n;try{localStorage.setItem('wl_theme',n)}catch(e){}}setTimeout(paint,50)};
+if(rail){var menu=d.getElementById('mmenu');
+ d.getElementById('mcM').onclick=function(e){e.stopPropagation();paint();menu.classList.toggle('open')};
+ d.addEventListener('click',function(e){if(!e.target.closest('.mctl'))menu.classList.remove('open')});
+ d.getElementById('mmMute').onclick=function(){d.getElementById('wlMute').click();setTimeout(paint,50)};
+ d.getElementById('mmDemo').onclick=function(){d.getElementById('wlDemo').click()}}
+new MutationObserver(paint).observe(root,{attributes:true,attributeFilter:['data-theme']});paint();
+})})();</script>
+
 </body>
 </html>
