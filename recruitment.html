@@ -218,7 +218,7 @@ textarea.fld{min-height:190px;resize:vertical;line-height:1.5}
 .clist{display:flex;flex-direction:column;gap:12px;padding:18px 22px 22px;overflow-x:auto;background:var(--bg)}
 .lr{display:grid;grid-template-columns:50px minmax(150px,1.4fr) minmax(120px,.9fr) minmax(120px,.9fr) 350px 46px 84px;gap:10px;align-items:center;min-width:1010px;padding:14px 18px 14px 14px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--sc);border-radius:4px;box-shadow:0 2px 6px rgba(30,30,80,.07);cursor:pointer;transition:.12s}
 .lr:hover{border-color:var(--sc);box-shadow:0 6px 16px -6px color-mix(in srgb,var(--sc) 55%,transparent)}
-.lr.NEW_STARTER{--sc:#64748B}.lr.ONBOARDING{--sc:#2563EB}.lr.AMIIGO_TRAINING{--sc:#0891B2}.lr.GENERATE_CONNECT{--sc:#C026D3}.lr.DRIVER_SETUP{--sc:#EA580C}.lr.ACTIVE{--sc:#15803D}.lr.REJECTED{--sc:#B91C1C}
+.lr.NEW_STARTER{--sc:#64748B}.lr.ONBOARDING{--sc:#2563EB}.lr.AMIIGO_TRAINING{--sc:#0891B2}.lr.GENERATE_CONNECT{--sc:#C026D3}.lr.DRIVER_SETUP{--sc:#EA580C}.lr.FILE_COMPLIANCE{--sc:#0D9488}.lr.ACTIVE{--sc:#15803D}.lr.REJECTED{--sc:#B91C1C}
 .lr .lc{min-width:0}.lr .nm{min-width:0}.lr .av{width:46px;height:46px;border-radius:4px;background:var(--sc);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .lr .nm b{display:block;font-size:13.5px;font-weight:800;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lr .nm small{display:block;font-size:10px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lr .nm small.nx{margin-top:2px;color:var(--text);font-weight:600}
 .lr .spl,.lr .dbp{display:flex;align-items:center;justify-content:center;width:100%;height:26px;box-sizing:border-box;border:2px solid var(--c);border-radius:3px;background:var(--card);color:var(--c);font-size:9.5px;font-weight:800;letter-spacing:.07em;white-space:nowrap}
@@ -281,7 +281,7 @@ textarea.fld{min-height:190px;resize:vertical;line-height:1.5}
 
 .rc{padding:0;gap:0;overflow:hidden}.cbd{padding:11px 12px 12px;display:flex;flex-direction:column;gap:9px;flex:1}
 .chd{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.08em;gap:8px;white-space:nowrap}.chd b{font-size:12px}
-.chd.NEW_STARTER{background:#64748B}.chd.ONBOARDING{background:#2563EB}.chd.AMIIGO_TRAINING{background:#0891B2}.chd.GENERATE_CONNECT{background:#C026D3}.chd.DRIVER_SETUP{background:#EA580C}.chd.ACTIVE{background:#15803D}.chd.REJECTED{background:#B91C1C}
+.chd.NEW_STARTER{background:#64748B}.chd.ONBOARDING{background:#2563EB}.chd.AMIIGO_TRAINING{background:#0891B2}.chd.GENERATE_CONNECT{background:#C026D3}.chd.DRIVER_SETUP{background:#EA580C}.chd.FILE_COMPLIANCE{background:#0D9488}.chd.ACTIVE{background:#15803D}.chd.REJECTED{background:#B91C1C}
 .rc .top{flex-wrap:nowrap}.rc .nm{order:0;flex:1;flex-basis:auto}
 
 /* slim modern scrollbars (same as Daily Tasks) */
@@ -317,7 +317,7 @@ html{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 45%,tr
 .dfoot .cf{flex:1;min-width:0}.dfoot .cf b{display:block;font-size:13px}.dfoot .cf span{font-size:11.5px;color:var(--mute)}
 .dfoot #drs{flex:0 0 240px;height:36px}.btn.bad.solid{background:#DC2626;border-color:#DC2626;color:#fff;font-weight:800;letter-spacing:.05em}.btn.bad.solid:hover{background:#B91C1C;border-color:#B91C1C}
 
-.rc.NEW_STARTER{--sc:#64748B}.rc.ONBOARDING{--sc:#2563EB}.rc.AMIIGO_TRAINING{--sc:#0891B2}.rc.GENERATE_CONNECT{--sc:#C026D3}.rc.DRIVER_SETUP{--sc:#EA580C}.rc.ACTIVE{--sc:#15803D}.rc.REJECTED{--sc:#B91C1C}
+.rc.NEW_STARTER{--sc:#64748B}.rc.ONBOARDING{--sc:#2563EB}.rc.AMIIGO_TRAINING{--sc:#0891B2}.rc.GENERATE_CONNECT{--sc:#C026D3}.rc.DRIVER_SETUP{--sc:#EA580C}.rc.FILE_COMPLIANCE{--sc:#0D9488}.rc.ACTIVE{--sc:#15803D}.rc.REJECTED{--sc:#B91C1C}
 .rc{background:color-mix(in srgb,var(--sc) 3%,var(--card));border:2px solid var(--sc);box-shadow:0 6px 16px -6px color-mix(in srgb,var(--sc) 55%,transparent),0 1px 3px rgba(23,18,63,.12)}
 .rc:hover{border-color:var(--sc)}
 .rc .chd{background:color-mix(in srgb,var(--sc) 88%,#000)}
@@ -425,7 +425,7 @@ html{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 45%,tr
 
 /* popup top v6 */
 .det>.vbar{display:none}
-.det{--sc:#7C3AED}.det[data-st=NEW_STARTER]{--sc:#64748B}.det[data-st=ONBOARDING]{--sc:#2563EB}.det[data-st=AMIIGO_TRAINING]{--sc:#0891B2}.det[data-st=GENERATE_CONNECT]{--sc:#C026D3}.det[data-st=DRIVER_SETUP]{--sc:#EA580C}.det[data-st=ACTIVE]{--sc:#15803D}.det[data-st=REJECTED]{--sc:#B91C1C}
+.det{--sc:#7C3AED}.det[data-st=NEW_STARTER]{--sc:#64748B}.det[data-st=ONBOARDING]{--sc:#2563EB}.det[data-st=AMIIGO_TRAINING]{--sc:#0891B2}.det[data-st=GENERATE_CONNECT]{--sc:#C026D3}.det[data-st=DRIVER_SETUP]{--sc:#EA580C}.det[data-st=FILE_COMPLIANCE]{--sc:#0D9488}.det[data-st=ACTIVE]{--sc:#15803D}.det[data-st=REJECTED]{--sc:#B91C1C}
 .det .dh.bnr{background:linear-gradient(120deg,color-mix(in srgb,var(--sc) 62%,#000),var(--sc) 55%,color-mix(in srgb,var(--sc) 78%,#fff));color:#fff;border:0;padding:18px 20px 16px;position:relative;overflow:hidden}.det .dh.bnr::after{display:block}
 .det .dh.bnr .av{background:rgba(255,255,255,.22);color:#fff;width:50px!important;height:50px!important}
 .det .dh.bnr .nmcp,.det .dh.bnr .nmcp svg{color:#fff}.det .dh.bnr .nmcp svg{opacity:.8}.det .dh.bnr small{color:rgba(255,255,255,.85)}
@@ -649,7 +649,7 @@ const done=(c,it)=>{if(it.t==='onb')return !!c.onb;const v=c.v[it.k];return it.t
 const rnd=(n,al)=>Array.from({length:n},()=>al[Math.floor(Math.random()*al.length)]).join('');
 function seedVal(it,c){switch(it.k){case'disprz':return rnd(16,'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789');case'amz':return c.name;case'cortex':return 'CX'+rnd(6,'0123456789');case'gnum':return 'G'+rnd(7,'0123456789');case'trid':return 'TR'+rnd(6,'0123456789');case'h100':return '100'+rnd(5,'0123456789')}
   return it.t==='date'?todayISO(-7):it.t==='td'?todayISO(-2):true}
-const STAGES=['NEW STARTER','ONBOARDING','AMIIGO TRAINING','GENERATE CONNECT','DRIVER SETUP','ACTIVE','REJECTED'];
+const STAGES=['NEW STARTER','ONBOARDING','AMIIGO TRAINING','GENERATE CONNECT','DRIVER SETUP','FILE COMPLIANCE','ACTIVE','REJECTED'];
 const sk=x=>String(x).replace(/\s+/g,'_');
 const KEY='wl_recruit_v4';
 const SK='wl_recruit_stations';
@@ -715,8 +715,8 @@ const trainD=c=>nMods(c);
 const dispG=(c,gi)=>gi===1?{d:trainD(c),n:NMOD,p:trainD(c)/NMOD,txt:trainD(c)+'/'+NMOD}:{d:nDone(c,gi),n:GROUPS[gi].items.length,p:pctG(c,gi),txt:nDone(c,gi)+'/'+GROUPS[gi].items.length};
 const total=c=>{let d=0,t=0;GROUPS.forEach((g,gi)=>{d+=nDone(c,gi);t+=g.items.length});return d/t};
 const complete=c=>GROUPS.every((g,gi)=>nDone(c,gi)===g.items.length);
-const stageFor=c=>['NEW STARTER','AMIIGO TRAINING','GENERATE CONNECT','DRIVER SETUP','DRIVER SETUP'][Math.max(0,GROUPS.findIndex((g,gi)=>nDone(c,gi)<g.items.length))];
-/* legacy Active starters are left as they are */
+const stageFor=c=>['NEW STARTER','AMIIGO TRAINING','GENERATE CONNECT','DRIVER SETUP','FILE COMPLIANCE'][Math.max(0,GROUPS.findIndex((g,gi)=>nDone(c,gi)<g.items.length))];
+L.forEach(c=>{if(c.status==='DRIVER SETUP'&&GROUPS.slice(0,4).every((g,gi)=>nDone(c,gi)===g.items.length))c.status='FILE COMPLIANCE'});/* legacy Active starters are left as they are */
 const next=c=>{for(const g of GROUPS){const it=g.items.find(x=>!done(c,x));if(it)return it.l}return null};
 const ini=n=>n.split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 const isStat=(c,k)=>k==='ALL'||(k==='PIPE'?(c.status!=='ACTIVE'&&c.status!=='REJECTED'):k==='WEEK'?!!(c.created&&c.created>=Date.now()-7*864e5):c.status===k);
@@ -726,14 +726,14 @@ function render(){
   const act=L.filter(c=>c.status==='ACTIVE');
   const dn=d=>L.filter(c=>dv(c)===d).length;
   const sn=x=>L.filter(c=>c.status===x).length,wk=Date.now()-7*864e5;
-  const stats=[['ALL','All starters','users',L.length],['PIPE','Pipeline','user',L.filter(c=>isStat(c,'PIPE')).length],['ACTIVE','Active drivers','check',sn('ACTIVE')],['WEEK','Starters this week','plus',L.filter(c=>isStat(c,'WEEK')).length],['NEW STARTER','New starters','plus',sn('NEW STARTER')],['ONBOARDING','Onboarding','send',sn('ONBOARDING')],['AMIIGO TRAINING','Amiigo Training','cap',sn('AMIIGO TRAINING')],['GENERATE CONNECT','Generate Connect','link',sn('GENERATE CONNECT')],['DRIVER SETUP','Driver Setup','road',sn('DRIVER SETUP')],['REJECTED','Rejected','x',sn('REJECTED')]];
+  const stats=[['ALL','All starters','users',L.length],['PIPE','Pipeline','user',L.filter(c=>isStat(c,'PIPE')).length],['ACTIVE','Active drivers','check',sn('ACTIVE')],['WEEK','Starters this week','plus',L.filter(c=>isStat(c,'WEEK')).length],['NEW STARTER','New starters','plus',sn('NEW STARTER')],['ONBOARDING','Onboarding','send',sn('ONBOARDING')],['AMIIGO TRAINING','Amiigo Training','cap',sn('AMIIGO TRAINING')],['GENERATE CONNECT','Generate Connect','link',sn('GENERATE CONNECT')],['DRIVER SETUP','Driver Setup','road',sn('DRIVER SETUP')],['FILE COMPLIANCE','File Compliance','file',sn('FILE COMPLIANCE')],['REJECTED','Rejected','x',sn('REJECTED')]];
   const srow=(f,key,cur,icon,lab,n)=>'<div class="sb-row'+(cur===key?' on':'')+'" data-f="'+f+'" data-v="'+esc(key)+'"><span class="sb-ic">'+icon+'</span><span class="sb-lb">'+esc(lab)+'</span><b class="sb-n">'+n+'</b></div>';
   $('#stats').innerHTML=stats.map(s=>srow('st',s[0],stF,ic(I[s[2]],16),s[1],s[3])).join('');
   const dbsRows=[['ALL','All DBS',L.length],['NONE','Not started',L.filter(c=>!dv(c)).length],['AWAITING','Awaiting',dn('AWAITING')],['DRAFT','Draft',dn('DRAFT')],['PENDING','Pending',dn('PENDING')],['COMPLETE','Complete',dn('COMPLETE')],['FAILED','Failed',dn('FAILED')]];
   $('#dbsStats').innerHTML=dbsRows.map(r=>srow('dbs',r[0],dbsF,ic(SHIELD,16),r[1],r[2])).join('');
   $('#osmStats').innerHTML=[['ALL','All OSMs',L.length],['TOM','Tom',L.filter(c=>c.osm==='TOM').length],['JORDAN','Jordan',L.filter(c=>c.osm==='JORDAN').length]].map(r=>srow('osm',r[0],osmF,ic(I.users,16),r[1],r[2])).join('');
   const DBL=[['ALL','All',L.length],['NONE','Not started',L.filter(c=>!dv(c)).length]].concat(DBS.map(d=>[d,d.toLowerCase(),L.filter(c=>dv(c)===d).length]));
-  const SCOL={ALL:'var(--accent)','NEW STARTER':'#64748B',ONBOARDING:'#2563EB','AMIIGO TRAINING':'#0891B2','GENERATE CONNECT':'#C026D3','DRIVER SETUP':'#EA580C',ACTIVE:'#15803D',REJECTED:'#B91C1C',NONE:'#64748B',DRAFT:'#475569',PENDING:'#B45309',AWAITING:'#0369A1',COMPLETE:'#15803D',FAILED:'#DC2626',TOM:'var(--accent)',JORDAN:'var(--accent)'};
+  const SCOL={ALL:'var(--accent)','NEW STARTER':'#64748B',ONBOARDING:'#2563EB','AMIIGO TRAINING':'#0891B2','GENERATE CONNECT':'#C026D3','DRIVER SETUP':'#EA580C','FILE COMPLIANCE':'#0D9488',ACTIVE:'#15803D',REJECTED:'#B91C1C',NONE:'#64748B',DRAFT:'#475569',PENDING:'#B45309',AWAITING:'#0369A1',COMPLETE:'#15803D',FAILED:'#DC2626',TOM:'var(--accent)',JORDAN:'var(--accent)'};
   const frw=(lab,key,cur,n,fn)=>'<button class="fro'+(cur===key?' on':'')+'" style="--c:'+(SCOL[key]||'var(--accent)')+'" data-f="'+fn+'" data-v="'+key+'"><i></i><span>'+lab+'</span><b>'+n+'</b></button>';
   const dd=(id,title,cur,opts,fn)=>{const o=opts.find(x=>x[0]===cur)||opts[0];return '<div class="ddw"><button class="bt3'+(cur!=='ALL'?' on':'')+'" data-dd="'+id+'">'+title+': '+o[1]+' ▾</button>'+(openDD===id?'<div class="pop3">'+opts.map(x=>frw(x[1],x[0],cur,x[2],fn)).join('')+'</div>':'')+'</div>'};
   const stO=[['ALL','All',L.length]].concat(STAGES.map(x=>[x,x.toLowerCase(),L.filter(c=>c.status===x).length]));
@@ -1040,7 +1040,7 @@ function detail(id){const c=L.find(x=>x.id===id);if(!c)return;
 
 /* custom dropdowns (filter style) layered on hidden native selects */
 const PDDB={'':'#94A3B8','NONE':'#94A3B8','NOT STARTED':'#94A3B8',DRAFT:'#64748B',PENDING:'#B45309',AWAITING:'#0369A1',COMPLETE:'#15803D',FAILED:'#DC2626'};
-const PDST={'NEW STARTER':'#64748B',ONBOARDING:'#2563EB','AMIIGO TRAINING':'#0891B2','GENERATE CONNECT':'#C026D3','DRIVER SETUP':'#EA580C',ACTIVE:'#15803D',REJECTED:'#B91C1C'};
+const PDST={'NEW STARTER':'#64748B',ONBOARDING:'#2563EB','AMIIGO TRAINING':'#0891B2','GENERATE CONNECT':'#C026D3','DRIVER SETUP':'#EA580C','FILE COMPLIANCE':'#0D9488',ACTIVE:'#15803D',REJECTED:'#B91C1C'};
 let PDOPEN=null;
 function pdClose(){if(PDOPEN){PDOPEN.menu.remove();PDOPEN.btn.classList.remove('open');PDOPEN=null}}
 function pdCol(sel,v){if(sel.id==='dst')return PDST[v]||'var(--accent)';if(sel.id==='ddbs')return PDDB[v]||'#94A3B8';return 'var(--accent)'}
