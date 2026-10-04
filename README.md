@@ -13,7 +13,7 @@ Desktop web tools for the Warrior Logistics management team (DLS4 / HSA7 / DXFL 
 | Recruitment | `recruitment.html` |
 | DVLA Tracker | `dvla.html` |
 
-Coming soon (shown greyed out on the home page and rail, not built yet): Kinesis, Netradyne, MOT Tracker.
+Coming soon (shown greyed out on the home page and rail, not built yet): Kinesis, Netradyne.
 
 All pages are single HTML files with no build step. They share a left-hand rail for switching pages, so keep them in the same folder.
 
