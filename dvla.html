@@ -407,6 +407,11 @@ html{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 45%,tr
 .audx{width:34px;height:30px;border:1px solid #C0392B;background:#FDECEA;color:#C0392B;border-radius:6px;font-size:15px;font-weight:700;cursor:pointer;line-height:1}
 .audx:hover{background:#C0392B;color:#fff}
 :root[data-theme="dark"] .audx{background:rgba(192,57,43,.18);color:#ff8a7a;border-color:#a8453a}
+
+/* wider drawers + name never wraps */
+.dr.dvx{width:min(1040px,100vw)!important}
+.dr.dvx .dhn{flex:1 1 auto;min-width:0}.dr.dvx .dh .sp{display:none}
+.dr.dvx .dhn b{white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
 </style>
 <body>
 <div class="topline"></div>

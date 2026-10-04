@@ -575,6 +575,14 @@ html:has(#modal .ov),html:has(#modal .ov) body{overflow:hidden!important}
 
 /* selected-row count badge readable in light and dark */
 #stats .sb-row.on .sb-n,#licStats .sb-row.on .sb-n,#siteStats .sb-row.on .sb-n,#checkStats .sb-row.on .sb-n,.sb-row.on .sb-n{background:#fff!important;color:#064E30!important}
+
+/* wider drawer + name never wraps */
+.ov .box.det,.ov .box.nf,.ov .box.edit,.ov .box.view{width:min(1040px,100vw)!important;min-width:min(1040px,100vw)!important;max-width:100vw!important}
+.det .dh.bnr>div:nth-child(2){flex:1 1 auto;min-width:0}
+.det .dh.bnr .sp{display:none}
+.det .dh.bnr h2{white-space:nowrap}
+.det .dh.bnr .nmcp{white-space:nowrap;max-width:100%}
+.det .dh.bnr .nmcp{overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
