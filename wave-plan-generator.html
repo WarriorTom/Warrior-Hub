@@ -988,7 +988,19 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
 :root:root:root:root:root:root #wlRail #wlDemo.demoon::before{content:"DEMO";font:800 11px Inter,system-ui,sans-serif;letter-spacing:.14em;color:#fff}
 /*wp-overscroll*/.wp-side,.review-table-wrap,.review-errors,textarea{overscroll-behavior:contain}
 </style>
-<style id="popborder">:root:root .ov .box,:root:root .cal-box,:root:root .tp-box,:root:root .wave-modal-panel{border:2px solid var(--accent)!important}:root:root .wlc{border:2px solid var(--accent)!important;border-top:5px solid var(--accent)!important}:root:root .wlc.dg{border-color:var(--accent)!important;border-top-color:#DC2626!important}</style></head>
+<style id="popborder">:root:root .ov .box,:root:root .cal-box,:root:root .tp-box,:root:root .wave-modal-panel{border:2px solid var(--accent)!important}:root:root .wlc{border:2px solid var(--accent)!important;border-top:5px solid var(--accent)!important}:root:root .wlc.dg{border-color:var(--accent)!important;border-top-color:#DC2626!important}</style><style id="cyclecss">
+.wp-cycle{margin:-2px 0 12px}
+.wp-seg{display:grid;grid-template-columns:1fr 1fr;gap:3px;background:rgba(0,0,0,.2);border-radius:5px;padding:3px}
+.wp-seg button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:10px 4px;border-radius:4px;font-size:11.5px;font-weight:800;letter-spacing:.09em;color:#fff;transition:.15s}
+.wp-seg button:hover{background:rgba(255,255,255,.14)}
+.wp-seg button.on{background:#fff;color:var(--pg-text,#14532d);box-shadow:0 3px 8px -4px rgba(0,0,0,.5)}
+.wp-cchip{margin-top:7px;min-height:18px;text-align:center;font-size:9.5px;font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.92)}
+.wp-cchip.warn{color:#FEF3C7}
+.wave-tabs{display:flex;gap:6px;margin:0 0 12px}
+.wave-tabs button{all:unset;cursor:pointer;padding:8px 14px;border-radius:4px;border:1px solid var(--line,#E2E6EF);font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--mute,#64748B)}
+.wave-tabs button.on{background:var(--accent,#059652);border-color:var(--accent,#059652);color:#fff}
+.wave-empty{font-size:12px;color:var(--mute,#64748B);margin:0 0 10px}
+</style></head>
 <body>
 <div class="wl-topline"></div>
 <nav class="wl-rail" id="wlRail" aria-label="Pages"></nav>
@@ -1028,6 +1040,7 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
     </div>
     <div class="wp-body">
       <div class="wp-date"><small>PLAN DATE</small><b id="wpDate">&nbsp;</b></div>
+      <div class="wp-cycle"><div class="wp-seg" id="cycleSeg" role="group" aria-label="Cycle"><button type="button" data-cycle="1" class="on">CYCLE 1</button><button type="button" data-cycle="2">CYCLE 2</button></div><div class="wp-cchip" id="cycleChip"></div></div>
       <div class="wp-in">
         <div class="wp-quick">
           <button type="button" class="wp-btn" id="standbyQuickBtn">STANDBY</button>
@@ -1251,6 +1264,8 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
       <h2 style="margin:0;">Wave schedule</h2>
       <button type="button" class="btn-ghost" id="closeWaveScheduleBtn">Close</button>
     </div>
+    <div class="wave-tabs" id="waveTabs"><button type="button" data-cycle="1" class="on">CYCLE 1</button><button type="button" data-cycle="2">CYCLE 2</button></div>
+    <div id="waveEmpty" class="wave-empty" style="display:none;">No waves saved for this cycle yet — add each wave number and its time, then Save as default.</div>
     <div id="waveRows"></div>
     <div class="actions">
       <button type="button" class="secondary" id="addWaveRow">+ Add wave</button>
@@ -1491,12 +1506,14 @@ const WAVE_TIMES_KEY = 'dls4_wave_times';
 // so a real schedule change reaches every laptop, even ones that had
 // customised their own copy. Leave it alone for a normal deploy that
 // doesn't touch the wave times.
-const WAVE_TIMES_VERSION = 3;
+const WAVE_TIMES_VERSION = 4;
+const CYCLES = [1, 2];
+let CYCLE = 1;            // active cycle (1 = CA_ routes, 2 = CB_ routes)
+let cycleManual = false;  // true once the user picked a cycle by hand
 
 function defaultWaveTimes(){
-  // Baked-in default wave schedule. For a permanent change, edit these
-  // values, bump WAVE_TIMES_VERSION above, and push the update to
-  // GitHub — every laptop is forced back onto this default next load.
+  // Baked-in default wave schedule for CYCLE 1. Cycle 2 has no baked-in
+  // times: enter them once in Wave schedule and Save as default (shared).
   return {
     "WAVE 1": "11:00",
     "WAVE 2": "11:25",
@@ -1506,23 +1523,56 @@ function defaultWaveTimes(){
     "WAVE 6": "13:05",
   };
 }
-function loadWaveTimes(){
+function defaultWaveSets(){ return {1: defaultWaveTimes(), 2: {}}; }
+function loadWaveSets(){
   try{
     const raw = localStorage.getItem(WAVE_TIMES_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
-      if(parsed && parsed.version === WAVE_TIMES_VERSION && parsed.times && Object.keys(parsed.times).length){
-        return parsed.times;
+      if(parsed && parsed.version === WAVE_TIMES_VERSION && parsed.sets && parsed.sets[1] && Object.keys(parsed.sets[1]).length){
+        return {1: parsed.sets[1], 2: parsed.sets[2] || {}};
       }
-      // Either no version stored (old format) or it's stale — a newer
-      // baked-in default has shipped since this was saved, so drop the
-      // local override rather than let it silently outlive the update.
       localStorage.removeItem(WAVE_TIMES_KEY);
     }
   }catch(e){ /* fall through to defaults */ }
-  return defaultWaveTimes();
+  return defaultWaveSets();
 }
-let WAVE_TIMES = loadWaveTimes(); // wave label -> standard wave time "HH:MM" (24h). QUEUE = wave time - 15 min, ARRIVAL = wave time - 30 min
+let WAVE_SETS = loadWaveSets();       // cycle -> {label: "HH:MM"}
+let WAVE_TIMES = WAVE_SETS[CYCLE];    // active cycle's standard wave times. QUEUE = wave time - 15 min, ARRIVAL = wave time - 30 min
+function persistWaveSetsLocal(){ try{ localStorage.setItem(WAVE_TIMES_KEY, JSON.stringify({version: WAVE_TIMES_VERSION, sets: WAVE_SETS})); }catch(e){} }
+function cycleLetter(n){ return String.fromCharCode(64 + (n||CYCLE)); }
+function routePrefix(n){ return 'C' + cycleLetter(n) + '_'; }
+function setCycle(n, manual){
+  n = +n; if(!CYCLES.includes(n)) return;
+  CYCLE = n; if(manual) cycleManual = true;
+  WAVE_TIMES = WAVE_SETS[CYCLE] || {};
+  document.querySelectorAll('#cycleSeg button').forEach(b => b.classList.toggle('on', +b.dataset.cycle === CYCLE));
+  MODAL_CYCLE = CYCLE;
+  if(typeof renderWaveRows === 'function') try{ renderWaveRows(); }catch(e){}
+}
+function setCycleChip(text, warn){
+  const el = document.getElementById('cycleChip'); if(!el) return;
+  el.textContent = text || ''; el.classList.toggle('warn', !!warn);
+}
+// Cycle 1 routes are CA_xxx, cycle 2 routes are CB_xxx: the wave plan text
+// therefore says which run this is. Only a single clear answer switches it.
+function detectCycleFromText(text){
+  const letters = new Set();
+  const re = /\|\s*C([A-Z])_[A-Za-z0-9]+\s*\|/g; let m;
+  while((m = re.exec(text || '')) !== null) letters.add(m[1]);
+  if(letters.size === 1){ const n = [...letters][0].charCodeAt(0) - 64; return CYCLES.includes(n) ? {cycle: n, prefix: 'C' + [...letters][0] + '_'} : null; }
+  if(letters.size > 1) return {mixed: [...letters].map(l => 'C' + l + '_')};
+  return null;
+}
+function applyCycleDetection(){
+  const ta = document.getElementById('wpText'); if(!ta) return;
+  const d = detectCycleFromText(ta.value);
+  if(d && d.cycle){ setCycle(d.cycle, false); cycleManual = false; setCycleChip('DETECTED FROM ' + d.prefix + ' ROUTES'); }
+  else if(d && d.mixed){ setCycleChip('MIXED ' + d.mixed.join(' / ') + ' ROUTES — CHOOSE CYCLE', true); }
+  else setCycleChip(cycleManual ? 'SET BY YOU' : '');
+}
+document.querySelectorAll('#cycleSeg button').forEach(b => b.onclick = () => { setCycle(b.dataset.cycle, true); setCycleChip('SET BY YOU'); });
+(function(){ const ta = document.getElementById('wpText'); if(ta){ ta.addEventListener('input', applyCycleDetection); ta.addEventListener('change', applyCycleDetection); } })();
 
 // Conflicts (two drivers on one route, one driver on two routes) are no
 // longer resolved before Generate — they're auto-defaulted so a full result
@@ -1531,13 +1581,19 @@ let WAVE_TIMES = loadWaveTimes(); // wave label -> standard wave time "HH:MM" (2
 // resolution step without re-reading the source files.
 let pendingConflicts = null; // unresolved conflicts (explicit choices not yet made) for the current build
 let pendingConflictCtx = null; // {rawRows, roster, staging, stagingTimes, serviceInfo, atlasCounts, collectionCounts, station, planDate, driverOverrides, droppedRoutes}
+let lastOtherCycleVans = new Set(); // vans of roster drivers who are on the OTHER cycle's routes (not "missing a route")
 
 /* ---------- wave schedule editor ---------- */
+let MODAL_CYCLE = 1; // which cycle's waves the Wave schedule window is showing
 function renderWaveRows(){
   const container = document.getElementById('waveRows');
   container.innerHTML = '';
-  Object.entries(WAVE_TIMES).forEach(([label, time]) => addWaveRowEl(label, time));
+  const set = WAVE_SETS[MODAL_CYCLE] || {};
+  Object.entries(set).forEach(([label, time]) => addWaveRowEl(label, time));
+  document.querySelectorAll('#waveTabs button').forEach(b => b.classList.toggle('on', +b.dataset.cycle === MODAL_CYCLE));
+  const em = document.getElementById('waveEmpty'); if(em) em.style.display = Object.keys(set).length ? 'none' : '';
 }
+document.querySelectorAll('#waveTabs button').forEach(b => b.onclick = () => { MODAL_CYCLE = +b.dataset.cycle; document.getElementById('waveStatus').textContent = ''; renderWaveRows(); });
 function addWaveRowEl(label='', time=''){
   const container = document.getElementById('waveRows');
   const row = document.createElement('div');
@@ -1590,12 +1646,13 @@ document.getElementById('saveWaveTimes').onclick = () => {
     statusEl.textContent = 'Add at least one wave before saving.';
     return;
   }
-  WAVE_TIMES = Object.fromEntries(entries);
-  try{ localStorage.setItem(WAVE_TIMES_KEY, JSON.stringify({version: WAVE_TIMES_VERSION, times: WAVE_TIMES})); }catch(e){}
+  WAVE_SETS[MODAL_CYCLE] = Object.fromEntries(entries);
+  WAVE_TIMES = WAVE_SETS[CYCLE] || {};
+  persistWaveSetsLocal();
   statusEl.className = 'status';
   statusEl.textContent = 'Saving…';
-  saveWaveTimesShared(entries).then(ok => {
-    if(ok === true){ statusEl.className = 'status ok'; statusEl.textContent = 'Saved — these wave times are now the default for everyone.'; }
+  saveWaveTimesShared().then(ok => {
+    if(ok === true){ statusEl.className = 'status ok'; statusEl.textContent = 'Saved — CYCLE ' + MODAL_CYCLE + ' wave times are now the default for everyone.'; }
     else if(ok === 'local'){ statusEl.className = 'status ok'; statusEl.textContent = 'Saved on this browser only (shared saving is not available here).'; }
     else { statusEl.className = 'status error'; statusEl.textContent = 'Could not save for everyone — saved on this browser only. Check your connection and try again.'; }
   });
@@ -1603,12 +1660,15 @@ document.getElementById('saveWaveTimes').onclick = () => {
 
 /* ---- shared wave times: Firestore settings/waveTimes (every signed-in user reads and writes the same doc) ---- */
 function waveShared(){ return !!(window.WL_FB_CONFIG && window.WL_FB_CONFIG.apiKey && !window.WL_DEMO && window.wlFirebase); }
-async function saveWaveTimesShared(entries){
+const waveArr = set => Object.entries(set || {}).map(([label, time]) => ({label, time}));
+async function saveWaveTimesShared(){
   if(!waveShared()) return 'local';
   try{
     const {fs, db} = await window.wlFirebase();
     await fs.setDoc(fs.doc(db, 'settings', 'waveTimes'), {
-      waves: entries.map(([label, time]) => ({label, time})),
+      waves: waveArr(WAVE_SETS[1]),          // cycle 1 (kept in the original field)
+      cycle2: waveArr(WAVE_SETS[2]),         // cycle 2
+      saved_cycle: MODAL_CYCLE,
       updated: new Date().toISOString(),
       by: window.WL_USER || ''
     });
@@ -1622,12 +1682,13 @@ async function startWaveTimesSync(){
     fs.onSnapshot(fs.doc(db, 'settings', 'waveTimes'), snap => {
       if(!snap.exists()) return;
       const d = snap.data() || {};
-      if(!Array.isArray(d.waves) || !d.waves.length) return;
-      const t = {};
-      d.waves.forEach(w => { if(w && w.label && w.time) t[w.label] = w.time; });
-      if(!Object.keys(t).length) return;
-      WAVE_TIMES = t;
-      try{ localStorage.setItem(WAVE_TIMES_KEY, JSON.stringify({version: WAVE_TIMES_VERSION, times: WAVE_TIMES})); }catch(e){}
+      const toSet = arr => { const t = {}; (Array.isArray(arr) ? arr : []).forEach(w => { if(w && w.label && w.time) t[w.label] = w.time; }); return t; };
+      const c1 = toSet(d.waves), c2 = toSet(d.cycle2);
+      if(!Object.keys(c1).length && !Object.keys(c2).length) return;
+      if(Object.keys(c1).length) WAVE_SETS[1] = c1;
+      WAVE_SETS[2] = c2;
+      WAVE_TIMES = WAVE_SETS[CYCLE] || {};
+      persistWaveSetsLocal();
       renderWaveRows();
     }, e => console.error('wave times sync', e));
   }catch(e){ console.error(e); }
@@ -1636,6 +1697,7 @@ startWaveTimesSync();
 renderWaveRows();
 
 document.getElementById('openWaveScheduleBtn').onclick = () => {
+  MODAL_CYCLE = CYCLE; renderWaveRows();
   document.getElementById('waveScheduleModal').classList.add('open');
 };
 document.getElementById('closeWaveScheduleBtn').onclick = () => {
@@ -1959,7 +2021,7 @@ function parseStagingText(text){
   // and the SERVICE TYPE field (previously matched and discarded) so a
   // route running under a different DSP or service type can be spotted in
   // the review table before the plan is finalized.
-  const re = /^\s*(\S+)\s*\|\s*(CA_[A-Za-z0-9]+)\s*\|\s*([^|]+?)\s*\|\s*([\d:]+\s*[AP]M)\s*\|\s*STG-([A-Za-z]+)\.(\d+)\s*\|/;
+  const re = /^\s*(\S+)\s*\|\s*(C[A-Z]_[A-Za-z0-9]+)\s*\|\s*([^|]+?)\s*\|\s*([\d:]+\s*[AP]M)\s*\|\s*STG-([A-Za-z]+)\.(\d+)\s*\|/;
   for(const line of text.split(/\r?\n/)){
     const m = line.match(re);
     if(m){
@@ -1975,7 +2037,7 @@ function parseStagingText(text){
 }
 function parseAtlasText(text){
   const counts = {};
-  const re = /^\s*[A-Z]{2}\d+\s*-\s*(CA_[A-Za-z0-9]+)\s*-/gm;
+  const re = /^\s*[A-Z]{2}\d+\s*-\s*(C[A-Z]_[A-Za-z0-9]+)\s*-/gm;
   let m;
   while((m = re.exec(text)) !== null){
     counts[m[1]] = (counts[m[1]]||0)+1;
@@ -1986,7 +2048,7 @@ function parseHomeCollectionsText(text){
   const counts = {};
   for(const line of text.split(/\r?\n/)){
     if(/\bCR\d+/.test(line)){
-      const re = /CA_[A-Za-z]+\d+/g;
+      const re = /C[A-Z]_[A-Za-z]+\d+/g;
       let m;
       while((m = re.exec(line)) !== null){
         counts[m[0]] = (counts[m[0]]||0)+1;
@@ -2517,7 +2579,8 @@ function updatePreGenerateValidation(){
     return;
   }
   const noVan = [];
-  for(const row of lastRoutesRows){
+  const _sp = splitRoutesByCycle(lastRoutesRows, lastRoster);
+  for(const row of (_sp.mine.length ? _sp.mine : lastRoutesRows)){
     const mv = matchVan(row.driver, lastRoster);
     if(!mv || mv.van == null) noVan.push(row.driver);
   }
@@ -2529,6 +2592,22 @@ function updatePreGenerateValidation(){
   }else{
     el.style.display = 'none';
   }
+}
+
+/* ---------- cycle filter ---------- */
+// Keep only the active cycle's routes (CA_ for cycle 1, CB_ for cycle 2).
+// Routes with no cycle prefix are kept. Drivers on the other cycle's routes
+// are recorded so the roster check doesn't call them "missing a route".
+function splitRoutesByCycle(rows, roster){
+  const pre = routePrefix(CYCLE), mine = [], other = [];
+  for(const r of rows){
+    const m = String(r.route || '').match(/^C[A-Z]_/);
+    if(m && m[0] !== pre) other.push(r); else mine.push(r);
+  }
+  const vans = new Set();
+  other.forEach(r => { const mv = matchVan(r.driver, roster || []); if(mv && mv.van != null) vans.add(mv.van); });
+  mine.forEach(r => { const mv = matchVan(r.driver, roster || []); if(mv && mv.van != null) vans.delete(mv.van); });
+  return {mine, other, vans};
 }
 
 /* ---------- wave label matching (ports find_wave_label) ---------- */
@@ -2578,7 +2657,13 @@ async function runPipeline(driverOverrides={}, droppedRoutes=new Set()){
     log(`High-value routes: ${Object.keys(atlasCounts).length}`);
     log(`Collection routes: ${Object.keys(collectionCounts).length}`);
 
-    const rawRows = await parseRoutes(routesFile);
+    let rawRows = await parseRoutes(routesFile);
+    {
+      const sp = splitRoutesByCycle(rawRows, roster);
+      if(sp.other.length && sp.mine.length){ rawRows = sp.mine; lastOtherCycleVans = sp.vans; }
+      else lastOtherCycleVans = new Set();
+      if(sp.other.length && !sp.mine.length) setCycleChip('NO ' + routePrefix() + ' ROUTES IN FILE — SHOWING ALL', true);
+    }
     log(`Routes rows: ${rawRows.length}`);
 
     // Conflicts no longer block Generate. Anything not already given an
@@ -2746,7 +2831,7 @@ function computeIssues(built){
     built.filter(r => !isBlankReviewRow(r) && r.van != null && r.van !== '').map(r => r.van)
   );
   const noRoute = (lastRoster || [])
-    .filter(entry => entry.van != null && !usedVans.has(entry.van))
+    .filter(entry => entry.van != null && !usedVans.has(entry.van) && !lastOtherCycleVans.has(entry.van))
     .map(entry => [entry.van, entry.driver]);
   return {noVan, noWave, noRoute};
 }
@@ -2798,7 +2883,7 @@ function renderReviewErrors(issues){
     conflicts.forEach(c => {
       if(c.type === 'pipe_driver'){
         html += `<div class="conflict" data-conflict>
-          <h4>Two drivers listed on one route — ${escH((c.route||'').toString().replace(/^CA_/,''))}</h4>
+          <h4>Two drivers listed on one route — ${escH((c.route||'').toString().replace(/^C[A-Z]_/,''))}</h4>
           <div class="hint">Raw: ${escH(c.raw)}</div>
           <label>Which driver actually ran this route?</label>
           <select data-type="pipe_driver" data-route="${escH(c.route)}">
@@ -2808,10 +2893,10 @@ function renderReviewErrors(issues){
       }else{
         html += `<div class="conflict" data-conflict>
           <h4>Same driver on multiple routes — ${escH(c.driver)}</h4>
-          <div class="hint">Routes: ${c.routes.map(r => escH(r.toString().replace(/^CA_/,''))).join(', ')}</div>
+          <div class="hint">Routes: ${c.routes.map(r => escH(r.toString().replace(/^C[A-Z]_/,''))).join(', ')}</div>
           <label>Which route is the real one? (the others will be dropped)</label>
           <select data-type="duplicate_driver" data-routes="${escH(c.routes.join(','))}">
-            ${c.routes.map(r => `<option value="${escH(r)}">${escH(r.toString().replace(/^CA_/,''))}</option>`).join('')}
+            ${c.routes.map(r => `<option value="${escH(r)}">${escH(r.toString().replace(/^C[A-Z]_/,''))}</option>`).join('')}
           </select>
         </div>`;
       }
@@ -2829,7 +2914,7 @@ function renderReviewErrors(issues){
   if(issues.noVan.length){
     html += `<h3>${issues.noVan.length} driver(s) with no van match</h3><ul>`;
     issues.noVan.forEach(([route,driver]) => {
-      html += `<li>${escH((route||'').toString().replace(/^CA_/,''))} — ${escH(driver)}</li>`;
+      html += `<li>${escH((route||'').toString().replace(/^C[A-Z]_/,''))} — ${escH(driver)}</li>`;
     });
     html += '</ul>';
   }
@@ -2843,7 +2928,7 @@ function renderReviewErrors(issues){
   if(issues.noWave.length){
     html += `<h3>${issues.noWave.length} route(s) with no matching wave/staging time</h3><ul>`;
     issues.noWave.forEach(([route,driver]) => {
-      html += `<li>${escH((route||'').toString().replace(/^CA_/,''))} — ${escH(driver)}</li>`;
+      html += `<li>${escH((route||'').toString().replace(/^C[A-Z]_/,''))} — ${escH(driver)}</li>`;
     });
     html += '</ul>';
   }
@@ -2880,7 +2965,7 @@ function renderReviewTable(built){
     const r = built[i];
     const hasIssue = reviewRowHasIssue(r);
     html += `<tr data-idx="${i}"${hasIssue ? ' class="row-error"' : ''}>
-      <td contenteditable="true" data-field="route">${escH((r.route||'').toString().replace(/^CA_/,''))}</td>
+      <td contenteditable="true" data-field="route">${escH((r.route||'').toString().replace(/^C[A-Z]_/,''))}</td>
       <td contenteditable="true" data-field="stage">${escH(r.stage||'')}</td>
       <td contenteditable="true" data-field="wave">${escH(r.wave||'')}</td>
       <td contenteditable="true" data-field="arrival">${escH(r.arrival||'')}</td>
@@ -3001,7 +3086,7 @@ document.getElementById('closeReviewBtn').onclick = closeReviewModal;
 
 function populateResultsPage(built, station, planDate){
   const issues = computeIssues(built);
-  document.getElementById('reviewMeta').textContent = `${station} · ${wpLongDate(planDate)}`;
+  document.getElementById('reviewMeta').textContent = `${station} · CYCLE ${CYCLE} · ${wpLongDate(planDate)}`;
   const ddmmMatch = String(planDate).match(/^(\d{1,2}\/\d{1,2})/);
   const ddmm = ddmmMatch ? ddmmMatch[1] : planDate;
   document.getElementById('resultsStationHeader').textContent = 'WAVE PLAN';
@@ -3846,7 +3931,7 @@ function imgDrawTableRows(ctx, x0, y, rows, cols){
       const colCx = cxp + w / 2;
       if(label === 'ROUTE'){
         let routeDisp = String(r.route);
-        if(routeDisp.startsWith('CA_')) routeDisp = routeDisp.slice(3);
+        routeDisp = routeDisp.replace(/^C[A-Z]_/, '');
         imgDrawCellText(ctx, colCx, y, IMG_ROW_H, routeDisp, fb, IMG_TEXT_DARK);
       }else if(label === 'NAME'){
         const nameDisp = r.display_name || String(r.driver);
@@ -3939,7 +4024,7 @@ function imgDrawTrainingNotice(ctx, x0, y, nameColW, pairs, totalW){
     ctx.fillRect(x0, y, noticeW, IMG_ROW_H);
     let cxp = x0;
     let routeDisp = String(p.route || '');
-    if(routeDisp.startsWith('CA_')) routeDisp = routeDisp.slice(3);
+    routeDisp = routeDisp.replace(/^C[A-Z]_/, '');
     const dayTxt = imgOrdinal(p.day || 1);
     for(const [label, w] of cols){
       const colCx = cxp + w / 2;
@@ -4220,7 +4305,7 @@ function imgDrawAtlasCollectionsRows(ctx, x0, y, rows, cols, CARD_W){
         imgDrawCellText(ctx, colCx, y, IMG_ROW_H, nameDisp.toUpperCase(), f, IMG_TEXT_DARK);
       }else if(label === 'ROUTE'){
         let routeDisp = String(r.route);
-        if(routeDisp.startsWith('CA_')) routeDisp = routeDisp.slice(3);
+        routeDisp = routeDisp.replace(/^C[A-Z]_/, '');
         imgDrawCellText(ctx, colCx, y, IMG_ROW_H, routeDisp, fb, IMG_TEXT_DARK);
       }else if(label === 'STAGE'){
         imgDrawCellText(ctx, colCx, y, IMG_ROW_H, String(r.stage || '\u2013'), fb, IMG_TEXT_DARK);
@@ -4498,7 +4583,7 @@ function buildXlsxPreviewHtml(built, station, planDate){
   html += '<thead><tr>' + headerRow.map(h => `<th style="border:1px solid #444; padding:7px 9px; background:#1b1b1b; color:#fff; position:sticky; top:0; white-space:nowrap;">${h}</th>`).join('') + '</tr></thead><tbody>';
   built.forEach((r, i) => {
     const cells = [
-      typeof r.route === 'string' ? r.route.replace(/^CA_/, '') : (r.route || ''),
+      typeof r.route === 'string' ? r.route.replace(/^C[A-Z]_/, '') : (r.route || ''),
       r.driver || '', r.stage || '', r.wave || '', r.time || '', r.arrival || '',
       r.high_value || '', r.collection || '', r.van ?? '', r.reg || '',
       r.ride_along_trainee || '', r.ride_along_trainee ? (r.ride_along_day || '') : '',
@@ -4983,7 +5068,7 @@ function buildXlsxBlob(built, station, planDate){
   const data = [[`${station} WAVE PLAN`,,,,,,,,,,planDate], headerRow];
   for(const r of built){
     data.push([
-      typeof r.route === 'string' ? r.route.replace(/^CA_/, '') : r.route,
+      typeof r.route === 'string' ? r.route.replace(/^C[A-Z]_/, '') : r.route,
       r.driver, r.stage, r.wave, r.time||'', r.arrival||'',
       r.high_value || '', r.collection || '', r.van ?? '', r.reg || '',
       r.ride_along_trainee || '', r.ride_along_trainee ? r.ride_along_day : '',
