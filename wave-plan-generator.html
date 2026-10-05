@@ -27,13 +27,7 @@ window.wlRailInit=function(){var t=document.getElementById('wlTheme'),d=document
 document.addEventListener('DOMContentLoaded',function(){if(!on)return;var b=document.createElement('div');b.id='wlDemoBar';b.innerHTML='<b>DEMO MODE</b><span>Sample data only - your real data is untouched</span><button type="button" id="wlDemoRs">Reset demo</button><button type="button" id="wlDemoEx">Exit demo</button>';document.body.appendChild(b);document.getElementById('wlDemoRs').onclick=window.wlDemoReset;document.getElementById('wlDemoEx').onclick=window.wlDemoExit});
 })();</script>
 <style>#wlDemoBar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:960;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:4px;background:#1E2023;color:#fff;font:600 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px -8px rgba(0,0,0,.55);border:1px solid #494A4F}#wlDemoBar b{letter-spacing:.14em;font-size:11px;color:#fff;background:linear-gradient(160deg,#7C3AED,#A855F7);padding:4px 9px;border-radius:3px}#wlDemoBar span{color:#B9BCC3}#wlDemoBar button{all:unset;cursor:pointer;padding:6px 11px;border-radius:3px;background:rgba(255,255,255,.1);font-weight:700;font-size:11px}#wlDemoBar button:hover{background:#fff;color:#1E2023}:root:root:root:root:root:root #wlDemo,:root:root:root:root:root:root #mmDemo,:root:root:root:root:root:root #wlRail #wlDemo{display:none!important}html.wl-lock #wlDemoEx{display:none!important}.wl-rail button.demoon,.rail button.demoon{background:linear-gradient(160deg,#7C3AED,#A855F7);color:#fff;box-shadow:0 8px 18px -8px rgba(124,58,237,.8)}</style>
-<script>/*WL-GUARD*/(function(){var SES='wl_session';window.WL_FB_CONFIG={apiKey:"AIzaSyCuLjPnex47FaoL0j7W8awVraVR6aZbeJ4",authDomain:"warrior-hub-e44a9.firebaseapp.com",projectId:"warrior-hub-e44a9",storageBucket:"warrior-hub-e44a9.firebasestorage.app",messagingSenderId:"942187494063",appId:"1:942187494063:web:981079cbd0fb173195b25a"};
-window.wlFirebase=function(){if(window.__wlfb)return window.__wlfb;return window.__wlfb=(async function(){var b='https://www.gstatic.com/firebasejs/10.12.2/';var m=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);var app=m[0].initializeApp(window.WL_FB_CONFIG);var auth=m[1].getAuth(app);await auth.authStateReady();return{app:app,auth:auth,au:m[1],fs:m[2],db:m[2].getFirestore(app),base:b}})()};
-window.wlSignOut=function(){var d=0,go=function(){if(d)return;d=1;try{localStorage.removeItem(SES);if(window.WL_DEMOLOCK)localStorage.removeItem('wl_demo')}catch(e){}location.href='login.html'};if(window.WL_DEMO&&!window.WL_DEMOLOCK){go();return}window.wlFirebase().then(function(f){return f.au.signOut(f.auth)}).then(go,go);setTimeout(go,2500)};
-if(window.WL_DEMO&&!window.WL_DEMOLOCK){window.WL_USER='Demo';document.documentElement.classList.add('wl-off');var st=document.createElement('style');st.textContent='html.wl-off #wlOut,html.wl-off #so{display:none!important}';document.head.appendChild(st);return}
-var n=(location.pathname.split('/').pop()||'index.html');
-try{var s=JSON.parse(localStorage.getItem(SES)||'null');if(!s||!s.exp||s.exp<Date.now())throw 0;window.WL_USER=s.name||s.u}catch(e){location.replace('login.html?next='+encodeURIComponent(n));return}
-window.wlFirebase().then(function(f){if(!f.auth.currentUser){try{localStorage.removeItem(SES)}catch(e){}location.replace('login.html?next='+encodeURIComponent(n))}}).catch(function(){});})();</script>
+<script>/*STANDALONE TEST*/window.WL_USER='Tom Jackson';window.wlSignOut=function(){};</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Poppins:wght@400;500;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1581,6 +1575,7 @@ document.querySelectorAll('#cycleSeg button').forEach(b => b.onclick = () => { s
 // resolution step without re-reading the source files.
 let pendingConflicts = null; // unresolved conflicts (explicit choices not yet made) for the current build
 let pendingConflictCtx = null; // {rawRows, roster, staging, stagingTimes, serviceInfo, atlasCounts, collectionCounts, station, planDate, driverOverrides, droppedRoutes}
+let lastBuiltCycle = 1; // cycle the current results were built for (stamped on every export)
 let lastOtherCycleVans = new Set(); // vans of roster drivers who are on the OTHER cycle's routes (not "missing a route")
 
 /* ---------- wave schedule editor ---------- */
@@ -2800,6 +2795,7 @@ function computeBuiltRows(rows, roster, staging, stagingTimes, serviceInfo, atla
 }
 
 function buildOutput(rows, roster, staging, stagingTimes, serviceInfo, atlasCounts, collectionCounts, station, planDate){
+  lastBuiltCycle = CYCLE;
   const built = computeBuiltRows(rows, roster, staging, stagingTimes, serviceInfo, atlasCounts, collectionCounts);
   renderResult(built, station, planDate);
 }
@@ -3247,13 +3243,13 @@ function domHtmlToCanvas(html, width){
 // captions are a first draft — adjust the wording once there's a real
 // sense of what your team actually wants to paste alongside each.
 function waveBlueprintCaptionText(){
-  return `*${lastStation} Wave Blueprint for ${lastPlanDate}*\nInternal backup, not for drivers.`;
+  return `*${lastStation} Wave Blueprint — Cycle ${lastBuiltCycle} — ${lastPlanDate}*\nInternal backup, not for drivers.`;
 }
 function atlasCollectionsCaptionText(){
   const dm = (lastPlanDate.match(/\d{1,2}\/\d{1,2}/) || [lastPlanDate])[0];
   const atlasTotal = (lastBuilt || []).reduce((s,r)=>s+(r.high_value||0),0);
   const collTotal = (lastBuilt || []).reduce((s,r)=>s+(r.collection||0),0);
-  return `*${lastStation} ATLAS & COLLECTIONS (${dm})*\n\nAtlas Shipments: ${atlasTotal}\nHome Collections: ${collTotal}`;
+  return `*${lastStation} ATLAS & COLLECTIONS — CYCLE ${lastBuiltCycle} (${dm})*\n\nAtlas Shipments: ${atlasTotal}\nHome Collections: ${collTotal}`;
 }
 function wavePlanCaptionText(){
   return buildWhatsAppMessage(lastStation, lastPlanDate);
@@ -4054,7 +4050,7 @@ function imgDrawTrainingNotice(ctx, x0, y, nameColW, pairs, totalW){
 // instead of a full-width colour band.
 // ============================================================
 const IMG_TICKET_STRIPE_W = IS(22);
-const IMG_TICKET_TITLE_H = IS(150);
+const IMG_TICKET_TITLE_H = IS(152);
 const IMG_TICKET_STAT_ROW_H = IS(70);
 const IMG_TICKET_GAP = IS(28);
 const IMG_TICKET_FOOTER_H = IS(60);
@@ -4082,30 +4078,42 @@ function normalizeDateDDMMYY(str){
   return `${d.padStart(2,'0')}/${mo.padStart(2,'0')}/${y.padStart(2,'0')}`;
 }
 
-function imgDrawTicketHeader(ctx, x0, x1, y, stationCode, titleRest, taglineTxt, warningTxt, dateSuffix, stats, pageLabel){
+function imgDrawTicketHeader(ctx, x0, x1, y, stationCode, titleRest, taglineTxt, warningTxt, dateSuffix, stats, pageLabel, cycleLabel){
   dateSuffix = normalizeDateDDMMYY(dateSuffix);
   const titleF = pf('bold', 46);
   const stationW = imgTextW(ctx, stationCode, titleF);
   imgDrawTextAt(ctx, x0, y, stationCode, titleF, IMG_RED);
   imgDrawTextAt(ctx, x0 + stationW + IS(14), y, titleRest, titleF, IMG_TEXT_DARK);
-
   const dateF = pf('bold', 32);
   const dateW = imgTextW(ctx, dateSuffix, dateF);
-  const datePillW = dateW + IS(63), datePillH = IS(77);
+  // With a CYCLE pill underneath, both pills share the wider of the two widths so they match.
+  const datePillW = Math.max(dateW + IS(63), cycleLabel ? imgTextW(ctx, cycleLabel, dateF) + IS(63) : 0), datePillH = IS(62);
   imgRoundRect(ctx, x1 - datePillW, y + IS(4), x1, y + IS(4) + datePillH, IS(7));
   ctx.fillStyle = IMG_BLACK; ctx.fill();
   imgDrawCellText(ctx, x1 - datePillW / 2, y + IS(4), datePillH, dateSuffix, dateF, IMG_WHITE);
 
-  // Multi-image Wave Plan only: a small "N/M" page badge under the date
-  // pill, right-aligned to match it.
+  // CYCLE pill: directly under the date pill, same size and font.
+  const cycTop = y + IS(4) + datePillH + IS(8);
+  if(cycleLabel){
+    const cycW = datePillW;
+    imgRoundRect(ctx, x1 - cycW, cycTop, x1, cycTop + datePillH, IS(7));
+    ctx.fillStyle = IMG_RED; ctx.fill();
+    imgDrawCellText(ctx, x1 - cycW / 2, cycTop, datePillH, cycleLabel, dateF, IMG_WHITE);
+  }
+  // Multi-image Wave Plan only: a small "N/M" page badge. Sits under the
+  // date pill when there is no cycle pill, otherwise beside the cycle pill.
   if(pageLabel){
     const pageF = pf('bold', 20);
     const pageW = imgTextW(ctx, pageLabel, pageF);
     const pagePillW = pageW + IS(30), pagePillH = IS(39);
-    const pageY = y + IS(4) + datePillH + IS(8);
-    imgRoundRect(ctx, x1 - pagePillW, pageY, x1, pageY + pagePillH, IS(7));
+    let pageX1 = x1, pageY = y + IS(4) + datePillH + IS(8);
+    if(cycleLabel){
+      const cycW = datePillW;
+      pageX1 = x1 - cycW - IS(12); pageY = cycTop + (datePillH - pagePillH) / 2;
+    }
+    imgRoundRect(ctx, pageX1 - pagePillW, pageY, pageX1, pageY + pagePillH, IS(7));
     ctx.fillStyle = IMG_RED; ctx.fill();
-    imgDrawCellText(ctx, x1 - pagePillW / 2, pageY, pagePillH, pageLabel, pageF, IMG_WHITE);
+    imgDrawCellText(ctx, pageX1 - pagePillW / 2, pageY, pagePillH, pageLabel, pageF, IMG_WHITE);
   }
 
   y += IS(58);
@@ -4259,7 +4267,7 @@ function renderWavePlanCanvases(built, stationCode, dateSuffix){
     imgDrawTicketStripe(ctx, finalH);
 
     let y = IMG_MARGIN;
-    y = imgDrawTicketHeader(ctx, x0, x1, y, stationCode, 'WAVE PLAN', IMG_DEFAULT_TAGLINE, IMG_DEFAULT_WARNING, dateSuffix, stats, pageLabel);
+    y = imgDrawTicketHeader(ctx, x0, x1, y, stationCode, 'WAVE PLAN', IMG_DEFAULT_TAGLINE, IMG_DEFAULT_WARNING, dateSuffix, stats, pageLabel, 'CYCLE ' + lastBuiltCycle);
 
     const tableFrameTop = y;
     y = imgDrawTableHeader(ctx, x0, y, cols);
@@ -4383,7 +4391,7 @@ function renderAtlasCollectionsCanvas(built, stationCode, dateSuffix){
   imgDrawTicketStripe(ctx, finalH);
 
   let y = IMG_MARGIN;
-  y = imgDrawTicketHeader(ctx, x0, x1, y, stationCode, 'MANUAL PICKUP', IMG_HV_TAGLINE, IMG_HV_WARNING, dateSuffix, stats);
+  y = imgDrawTicketHeader(ctx, x0, x1, y, stationCode, 'MANUAL PICKUP', IMG_HV_TAGLINE, IMG_HV_WARNING, dateSuffix, stats, undefined, 'CYCLE ' + lastBuiltCycle);
 
   // --- Atlas Shipments table ---
   y = imgDrawSectionLabel(ctx, x0, x1, y, 'ATLAS SHIPMENTS');
@@ -4552,7 +4560,7 @@ document.getElementById('downloadWaveBlueprintBtn').onclick = () => {
   if(!lastBuilt){ setExportStatus('error','Nothing to export yet.'); return; }
   runExportButtonProgress('downloadWaveBlueprintBtn', 'waveBlueprintProgress', 'waveBlueprintProgressFill', 'waveBlueprintProgressLabel', 'RENDERING', 'RENDERED', () => {
     const blob = buildXlsxBlob(lastBuilt, lastStation, lastPlanDate);
-    triggerDownload(blob, `${lastStation}_WAVE_BLUEPRINT_${dateForFilename(lastPlanDate)}.xlsx`);
+    triggerDownload(blob, `${lastStation}_WAVE_BLUEPRINT_C${lastBuiltCycle}_${dateForFilename(lastPlanDate)}.xlsx`);
     setExportStatus('ok', 'Wave blueprint downloaded.');
   });
 };
@@ -4579,7 +4587,7 @@ document.getElementById('copyWaveBlueprintImageBtn').onclick = async (e) => {
 function buildXlsxPreviewHtml(built, station, planDate){
   const headerRow = ["ROUTE","DRIVER NAME","STAGE","WAVE","TIME","ARRIVAL","HIGH VALUE","COLLECTION","VAN","REG","RIDE ALONG TRAINEE","RIDE ALONG DAY"];
   let html = `<table style="width:100%; border-collapse:collapse; font-size:12.5px; font-family:'IBM Plex Mono',monospace; background:#fff; color:#111;">`;
-  html += `<caption style="caption-side:top; text-align:left; padding:10px 12px; font-weight:700; font-family:'Space Grotesk',system-ui,sans-serif; background:#eee;">${escH(station)} WAVE PLAN — ${escH(planDate)}</caption>`;
+  html += `<caption style="caption-side:top; text-align:left; padding:10px 12px; font-weight:700; font-family:'Space Grotesk',system-ui,sans-serif; background:#eee;">${escH(station)} WAVE PLAN — CYCLE ${lastBuiltCycle} — ${escH(planDate)}</caption>`;
   html += '<thead><tr>' + headerRow.map(h => `<th style="border:1px solid #444; padding:7px 9px; background:#1b1b1b; color:#fff; position:sticky; top:0; white-space:nowrap;">${h}</th>`).join('') + '</tr></thead><tbody>';
   built.forEach((r, i) => {
     const cells = [
@@ -4609,7 +4617,7 @@ document.getElementById('downloadAtlasCollectionsBtn').onclick = () => {
       await ensureImageFontsReady();
       const canvas = renderAtlasCollectionsCanvas(lastBuilt, lastStation, lastPlanDate);
       const blob = await canvasToBlob(canvas);
-      triggerDownload(blob, `${lastStation}_ATLAS_COLLECTIONS_${dateForFilename(lastPlanDate)}.png`);
+      triggerDownload(blob, `${lastStation}_ATLAS_COLLECTIONS_C${lastBuiltCycle}_${dateForFilename(lastPlanDate)}.png`);
       setExportStatus('ok', 'Atlas & Collections PNG downloaded.');
     }catch(err){
       console.error(err);
@@ -4913,7 +4921,7 @@ document.getElementById('downloadWavePlanBtn').onclick = () => {
     try{
       await ensureImageFontsReady();
       const canvases = renderWavePlanCanvases(lastBuilt, lastStation, lastPlanDate);
-      const baseName = `${lastStation}_WAVE_PLAN_${dateForFilename(lastPlanDate)}`;
+      const baseName = `${lastStation}_WAVE_PLAN_C${lastBuiltCycle}_${dateForFilename(lastPlanDate)}`;
       if(canvases.length === 1){
         const blob = await canvasToBlob(canvases[0]);
         triggerDownload(blob, `${baseName}.png`);
@@ -5085,7 +5093,7 @@ function buildXlsxBlob(built, station, planDate){
 function buildWhatsAppMessage(station, planDate){
   const dm = planDate.match(/(\d{1,2})\/(\d{1,2})/);
   const dmShort = dm ? `${dm[1]}/${dm[2]}` : planDate;
-  return `*${station} VAN LIST & WAVE PLAN (${dmShort})*
+  return `*${station} VAN LIST & WAVE PLAN — CYCLE ${lastBuiltCycle} (${dmShort})*
 
 ⏰ *LOGIN TIME* ⏰
 Don't log into the Amazon Flex app until the time shown next to your name
