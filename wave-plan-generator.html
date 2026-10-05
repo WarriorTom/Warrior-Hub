@@ -833,9 +833,9 @@ table.review-table{table-layout:fixed;width:100%;font-size:12px}
 table.review-table th,table.review-table td{white-space:normal;word-break:break-word;padding:9px 5px}
 table.review-table th{font-size:11px;letter-spacing:0}
 table.review-table th:nth-child(1){width:8%}table.review-table th:nth-child(2){width:7.5%}table.review-table th:nth-child(3){width:8%}
-table.review-table th:nth-child(4){width:7%}table.review-table th:nth-child(5){width:15%}table.review-table th:nth-child(6){width:5%}
+table.review-table th:nth-child(4){width:7.5%}table.review-table th:nth-child(5){width:15%}table.review-table th:nth-child(6){width:5%}
 table.review-table th:nth-child(7){width:11%}table.review-table th:nth-child(8){width:6%}table.review-table th:nth-child(9){width:10.5%}
-table.review-table th:nth-child(10){width:7.5%}table.review-table th:nth-child(11){width:10%}table.review-table th:nth-child(12){width:6%}
+table.review-table th:nth-child(10){width:7%}table.review-table th:nth-child(11){width:10%}table.review-table th:nth-child(12){width:6%}
 table.review-table th:nth-child(13){width:44px}
 table.review-table th,table.review-table td{white-space:nowrap}
 table.review-table th:nth-child(5),table.review-table td:nth-child(5),table.review-table th:nth-child(7),table.review-table td:nth-child(7),table.review-table th:nth-child(11),table.review-table td:nth-child(11){white-space:normal}
@@ -1376,7 +1376,7 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
       <div class="review-table-wrap" id="reviewTableWrap">
         <table class="review-table" id="reviewTable">
           <thead>
-            <tr><th>ROUTE</th><th>STAGE</th><th>WAVE</th><th>QUEUE</th><th>NAME</th><th>VAN</th><th>REGISTRATION</th><th>ATLAS</th><th>COLLECTION</th><th>ARRIVAL</th><th>TRAINEE</th><th>RA DAY</th><th></th></tr>
+            <tr><th>ROUTE</th><th>STAGE</th><th>WAVE</th><th>ARRIVAL</th><th>NAME</th><th>VAN</th><th>REGISTRATION</th><th>ATLAS</th><th>COLLECTION</th><th>QUEUE</th><th>TRAINEE</th><th>RA DAY</th><th></th></tr>
           </thead>
           <tbody id="reviewTableBody"></tbody>
         </table>
@@ -2883,13 +2883,13 @@ function renderReviewTable(built){
       <td contenteditable="true" data-field="route">${escH((r.route||'').toString().replace(/^CA_/,''))}</td>
       <td contenteditable="true" data-field="stage">${escH(r.stage||'')}</td>
       <td contenteditable="true" data-field="wave">${escH(r.wave||'')}</td>
-      <td contenteditable="true" data-field="time">${escH(r.time||'')}</td>
+      <td contenteditable="true" data-field="arrival">${escH(r.arrival||'')}</td>
       <td contenteditable="true" data-field="driver">${escH(r.driver||'')}</td>
       <td contenteditable="true" data-field="van">${escH(r.van ?? '')}</td>
       <td contenteditable="true" data-field="reg">${escH(r.reg||'')}</td>
       <td contenteditable="true" data-field="high_value">${escH(r.high_value||0)}</td>
       <td contenteditable="true" data-field="collection">${escH(r.collection||0)}</td>
-      <td contenteditable="true" data-field="arrival">${escH(r.arrival||'')}</td>
+      <td contenteditable="true" data-field="time">${escH(r.time||'')}</td>
       <td contenteditable="true" data-field="ride_along_trainee">${escH(r.ride_along_trainee||'')}</td>
       <td${r.ride_along_trainee ? ' contenteditable="true"' : ''} data-field="ride_along_day" title="1st day trainees get a fixed 10:30 arrival on the training notice; 2nd day trainees use their real arrival time. Enter 1 or 2.">${r.ride_along_trainee ? (parseInt(r.ride_along_day,10)===2 ? '2' : '1') : ''}</td>
       <td class="row-actions-cell"><button type="button" class="row-del-btn" data-idx="${i}" title="Remove this row">${WIC('x',12)}</button></td>
