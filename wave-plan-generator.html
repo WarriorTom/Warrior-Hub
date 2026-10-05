@@ -27,7 +27,13 @@ window.wlRailInit=function(){var t=document.getElementById('wlTheme'),d=document
 document.addEventListener('DOMContentLoaded',function(){if(!on)return;var b=document.createElement('div');b.id='wlDemoBar';b.innerHTML='<b>DEMO MODE</b><span>Sample data only - your real data is untouched</span><button type="button" id="wlDemoRs">Reset demo</button><button type="button" id="wlDemoEx">Exit demo</button>';document.body.appendChild(b);document.getElementById('wlDemoRs').onclick=window.wlDemoReset;document.getElementById('wlDemoEx').onclick=window.wlDemoExit});
 })();</script>
 <style>#wlDemoBar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:960;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;border-radius:4px;background:#1E2023;color:#fff;font:600 12px Inter,system-ui,sans-serif;box-shadow:0 10px 30px -8px rgba(0,0,0,.55);border:1px solid #494A4F}#wlDemoBar b{letter-spacing:.14em;font-size:11px;color:#fff;background:linear-gradient(160deg,#7C3AED,#A855F7);padding:4px 9px;border-radius:3px}#wlDemoBar span{color:#B9BCC3}#wlDemoBar button{all:unset;cursor:pointer;padding:6px 11px;border-radius:3px;background:rgba(255,255,255,.1);font-weight:700;font-size:11px}#wlDemoBar button:hover{background:#fff;color:#1E2023}:root:root:root:root:root:root #wlDemo,:root:root:root:root:root:root #mmDemo,:root:root:root:root:root:root #wlRail #wlDemo{display:none!important}html.wl-lock #wlDemoEx{display:none!important}.wl-rail button.demoon,.rail button.demoon{background:linear-gradient(160deg,#7C3AED,#A855F7);color:#fff;box-shadow:0 8px 18px -8px rgba(124,58,237,.8)}</style>
-<script>/*STANDALONE TEST*/window.WL_USER='Tom Jackson';window.wlSignOut=function(){};</script>
+<script>/*WL-GUARD*/(function(){var SES='wl_session';window.WL_FB_CONFIG={apiKey:"AIzaSyCuLjPnex47FaoL0j7W8awVraVR6aZbeJ4",authDomain:"warrior-hub-e44a9.firebaseapp.com",projectId:"warrior-hub-e44a9",storageBucket:"warrior-hub-e44a9.firebasestorage.app",messagingSenderId:"942187494063",appId:"1:942187494063:web:981079cbd0fb173195b25a"};
+window.wlFirebase=function(){if(window.__wlfb)return window.__wlfb;return window.__wlfb=(async function(){var b='https://www.gstatic.com/firebasejs/10.12.2/';var m=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);var app=m[0].initializeApp(window.WL_FB_CONFIG);var auth=m[1].getAuth(app);await auth.authStateReady();return{app:app,auth:auth,au:m[1],fs:m[2],db:m[2].getFirestore(app),base:b}})()};
+window.wlSignOut=function(){var d=0,go=function(){if(d)return;d=1;try{localStorage.removeItem(SES);if(window.WL_DEMOLOCK)localStorage.removeItem('wl_demo')}catch(e){}location.href='login.html'};if(window.WL_DEMO&&!window.WL_DEMOLOCK){go();return}window.wlFirebase().then(function(f){return f.au.signOut(f.auth)}).then(go,go);setTimeout(go,2500)};
+if(window.WL_DEMO&&!window.WL_DEMOLOCK){window.WL_USER='Demo';document.documentElement.classList.add('wl-off');var st=document.createElement('style');st.textContent='html.wl-off #wlOut,html.wl-off #so{display:none!important}';document.head.appendChild(st);return}
+var n=(location.pathname.split('/').pop()||'index.html');
+try{var s=JSON.parse(localStorage.getItem(SES)||'null');if(!s||!s.exp||s.exp<Date.now())throw 0;window.WL_USER=s.name||s.u}catch(e){location.replace('login.html?next='+encodeURIComponent(n));return}
+window.wlFirebase().then(function(f){if(!f.auth.currentUser){try{localStorage.removeItem(SES)}catch(e){}location.replace('login.html?next='+encodeURIComponent(n))}}).catch(function(){});})();</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Poppins:wght@400;500;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -994,6 +1000,11 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
 .wave-tabs button{all:unset;cursor:pointer;padding:8px 14px;border-radius:4px;border:1px solid var(--line,#E2E6EF);font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--mute,#64748B)}
 .wave-tabs button.on{background:var(--accent,#059652);border-color:var(--accent,#059652);color:#fff}
 .wave-empty{font-size:12px;color:var(--mute,#64748B);margin:0 0 10px}
+</style><style id="barcenter">
+/* loading-bar text: optically centred vertically (IBM Plex Mono sits slightly low in its line box) */
+.upload-progress .upload-progress-label{padding:0 0 .08em!important;line-height:1!important}
+.export-tile .upload-progress .upload-progress-label,#pageResults .upload-progress .upload-progress-label,#quickListModal .upload-progress .upload-progress-label{padding:0!important}
+#pageResults .export-tile .upload-progress,#quickListModal .export-tile .upload-progress{height:36px!important;box-sizing:border-box}
 </style></head>
 <body>
 <div class="wl-topline"></div>
@@ -1113,20 +1124,20 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
         <div class="panel">
           <div class="panel-head">
             <span class="label-with-info">
-              <h2>VAN ROSTER</h2>
+              <h2>VAN ALLOCATION</h2>
               <button type="button" class="info-icon" data-info-target="info-van-roster" aria-label="Where to get this">i</button>
               <div class="info-popover" id="info-van-roster">Exported from Warrior Ops — go to the Day of Ops segment, right-click the van list export and save it as a PDF. Upload that raw PDF here and let the magic happen.</div>
             </span>
             <span class="pill" id="rosterPill">EMPTY</span>
           </div>
           <div class="dropzone">
-            <input type="file" id="rosterFile" accept=".csv,.xlsx,.xls,.pdf">
+            <input type="file" id="rosterFile" accept=".csv,.xlsx,.xls,.pdf,.png,.jpg,.jpeg">
             <div class="dz-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
             </div>
             <div>
-              <div class="dz-text">DROP TODAY'S VAN ROSTER HERE</div>
-              <div class="dz-hint mono">.PDF (WARRIOR OPS EXPORT)</div>
+              <div class="dz-text">DROP TODAY'S VAN ALLOCATION HERE</div>
+              <div class="dz-hint mono">.PNG (WARRIOR OPS EXPORT)</div>
             </div>
           </div>
           <div class="upload-progress" id="rosterProgress">
@@ -1165,7 +1176,7 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
             <span class="label-with-info">
               <h2>STATION &amp; DATE</h2>
               <button type="button" class="info-icon" data-info-target="info-station-date" aria-label="Where to get this">i</button>
-              <div class="info-popover" id="info-station-date">Auto-extracted from the Van Roster and Routes files once uploaded — no need to type these in yourself.</div>
+              <div class="info-popover" id="info-station-date">Auto-extracted from the Van Allocation and Routes files once uploaded — no need to type these in yourself.</div>
             </span>
             <span class="pill" id="detailsPill">EMPTY</span>
           </div>
@@ -1280,13 +1291,13 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
     </div>
     <div class="ql-pad">
     <div class="dropzone" id="quickListDropzone">
-      <input type="file" id="quickListFile" accept=".csv,.xlsx,.xls,.pdf">
+      <input type="file" id="quickListFile" accept=".csv,.xlsx,.xls,.pdf,.png,.jpg,.jpeg">
       <div class="dz-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       </div>
       <div>
         <div class="dz-text" id="quickListDzText">DROP TODAY'S PLAN HERE</div>
-        <div class="dz-hint mono">.PDF (WARRIOR OPS EXPORT)</div>
+        <div class="dz-hint mono">.PNG (WARRIOR OPS EXPORT)</div>
       </div>
     </div>
     <div class="upload-progress" id="quickListProgress">
@@ -1889,18 +1900,37 @@ function updateGenerateButtonState(){
   goBtn.classList.toggle('btn-empty-state', !(hasRoster && hasRoutes));
 }
 
+// Shared by the Van Roster box and the Same Day / Standby window: an image is read in the
+// background while the normal UPLOADING bar plays, then the same bar restarts from 0 and
+// follows the reading. Other file types keep the plain upload bar.
+const IMG_RE = /\.(png|jpe?g|webp)$/i;
+async function parseRosterWithBar(file, ids){
+  const isImg = IMG_RE.test(file.name);
+  let roster = null, parseError = false, phase1 = null;
+  if(isImg){
+    ocrBarLive = false; ocrLast = null; ocrTotal = 0; ocrCardTimes = {}; ocrStageT = {}; ocrCardsEnd = 0;
+    ocrBarIds = ids;
+    phase1 = new Promise(res => runUploadProgress(ids[0], ids[1], ids[2], 'UPLOADING', 'UPLOADED', 4500, res)).then(() => ocrBarStart(ids));
+  }
+  try{ roster = await parseVanRoster(file); }catch(err){ parseError = true; }
+  if(phase1) await phase1; // never cut the upload animation short
+  ocrBarIds = null; ocrBarStop();
+  return {roster, parseError, isImg};
+}
+function finishOcrBar(ids, parseError){
+  const f = document.getElementById(ids[1]), l = document.getElementById(ids[2]);
+  if(f) f.style.width = parseError ? '0%' : '100%';
+  if(l) l.textContent = parseError ? 'COULD NOT READ IMAGE' : 'EXTRACTED 100%';
+}
+
 document.getElementById('rosterFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   updateGenerateButtonState();
   if(!file){ setPill('rosterPill', false, 'EMPTY'); lastRoster = null; updateStepper(); updatePreGenerateValidation(); return; }
-  let roster = null, parseError = false;
-  try{
-    roster = await parseVanRoster(file);
-    lastRoster = roster;
-  }catch(err){
-    parseError = true;
-    lastRoster = null;
-  }
+  setPill('rosterPill', false, 'EMPTY'); // clear any earlier ERROR / count while this file loads
+  const RIDS = ['rosterProgress','rosterProgressFill','rosterProgressLabel'];
+  const {roster, parseError, isImg} = await parseRosterWithBar(file, RIDS);
+  lastRoster = parseError ? null : roster;
   updateStepper();
 
   // The confirmation list is often generated before the Routes file even
@@ -1921,7 +1951,7 @@ document.getElementById('rosterFile').addEventListener('change', async (e) => {
   // code / date auto-fill (read from the roster filename) waits for the
   // same 100% mark — they must stay blank until then, not appear the
   // instant the file is chosen.
-  runUploadProgress('rosterProgress', 'rosterProgressFill', 'rosterProgressLabel', 'UPLOADING', 'UPLOADED', 1500, () => {
+  const rosterDone = () => {
     if(parseError){
       setPill('rosterPill', false, 'ERROR');
     }else{
@@ -1941,7 +1971,10 @@ document.getElementById('rosterFile').addEventListener('change', async (e) => {
         const [, y, mo, d] = dateMatch;
         document.getElementById('planDate').value = `${d}/${mo}/${y.slice(2)}`;
       }
-      if(stationMatch || dateMatch) refreshDetailsStatus();
+      if(!dateMatch && lastPdfExportDate && /\.(png|jpe?g|webp)$/i.test(file.name)){
+        document.getElementById('planDate').value = lastPdfExportDate;
+      }
+      if(stationMatch || dateMatch || lastPdfExportDate) refreshDetailsStatus();
     }
     // The stepper reads the pill's own 'done' class, which only gets set
     // here — the earlier updateStepper() call above ran before the bar
@@ -1950,7 +1983,14 @@ document.getElementById('rosterFile').addEventListener('change', async (e) => {
     updateStepper();
     updateGenerateButtonState();
     updatePreGenerateValidation();
-  });
+  };
+  if(isImg){
+    // the bar already showed the real reading progress; finish it off
+    finishOcrBar(RIDS, parseError);
+    rosterDone();
+  }else{
+    runUploadProgress(RIDS[0], RIDS[1], RIDS[2], 'UPLOADING', 'UPLOADED', 1500, rosterDone);
+  }
 });
 
 /* ---------- time helpers ---------- */
@@ -2073,8 +2113,352 @@ function sheetToRows(wb){
 }
 
 /* ---------- van roster parsing ---------- */
+/* ---------- van roster from a PNG screenshot (OCR) ----------
+   The "Van deployment sheet" screenshot has one fixed layout every day: a grid
+   of yellow number-plate cards (plate, driver name, VAN n), then the
+   ride-along list and the standby list. It only ever gets longer. The reg
+   plates are located by colour, each card is read on its own, and the van
+   numbers (small grey text, the hardest to read) are settled using the fact
+   that the cards run in ascending van order. Everything is shown on a
+   check screen before it is used. The image never leaves the browser. */
+const OCR_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+let _tessLoad = null, _tessWorker = null;
+const _ocrRosterCache = new Map();
+function loadTesseractLib(){
+  if(window.Tesseract) return Promise.resolve();
+  if(_tessLoad) return _tessLoad;
+  _tessLoad = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = OCR_CDN;
+    s.onload = res; s.onerror = () => { _tessLoad = null; rej(new Error('Could not load the text-reading library — check your connection and try again.')); };
+    document.head.appendChild(s);
+  });
+  return _tessLoad;
+}
+async function getOcrWorker(){
+  await loadTesseractLib();
+  if(!_tessWorker) _tessWorker = await Tesseract.createWorker('eng');
+  return _tessWorker;
+}
+let ocrBarIds = null; // when set, status messages drive that progress bar instead of a floating toast
+let ocrBarLive = false, ocrLast = null, ocrDisp = 0, ocrTimer = null; // bar only follows the reading once the upload animation has finished
+// The reading is already some cards ahead when the bar restarts, so the visible counter
+// starts at card 1 and runs quickly up to the real position, then follows it.
+let ocrCardTimes = {}, ocrLastTick = 0, ocrShown = 0;
+function ocrBarTick(){
+  if(!ocrBarIds || !ocrBarLive || !ocrLast) return;
+  const c = document.getElementById(ocrBarIds[0]), f = document.getElementById(ocrBarIds[1]), l = document.getElementById(ocrBarIds[2]);
+  if(!c || !f) return;
+  const now = performance.now(), dt = Math.min(0.25, (now - (ocrLastTick || now)) / 1000 || 0.07); ocrLastTick = now;
+  const r = ocrLast, total = r.total || ocrTotal;
+  let msg = r.msg, target = r.pct || 0;
+  const t1 = ocrCardTimes[1], doneCards = r.card ? r.card - 1 : (total || 0);
+  const per = (t1 && doneCards > 1) ? Math.min(1.5, Math.max(0.15, (ocrCardsEnd || now) - t1) / 1000 / doneCards) : 0.45; // seconds per card on this machine
+  const k = per / 0.41; // later stages take proportionally longer on a slower machine
+  if(total){
+    // Smooth, even card counter: steady pace chosen so it reaches the last card when the real reading does.
+    const realCard = r.card || total + 1;
+    let rem;
+    if(r.card){ const since = (now - (ocrCardTimes[r.card] || now)) / 1000; rem = Math.max(0.25, (total - r.card + 1) * per - since); }
+    else rem = 0.5;
+    ocrDisp = Math.min(ocrDisp + (total - ocrDisp) / rem * dt, r.card ? Math.min(total, r.card) : total);
+    if(r.card || ocrDisp < total - 0.35){
+      msg = `DECODING CARD ${Math.max(1, Math.min(total, Math.ceil(ocrDisp)))} OF ${total}`; target = ocrDisp / total * 82;
+    }else{
+      // after the cards each stage keeps creeping forward over its expected time (never waits, never jumps)
+      const el = (now - (ocrStageT[r.msg] || now)) / 1000;
+      if(/STATION/.test(r.msg)) target = 82 + 6 * (1 - Math.exp(-el / (1.4 * k)));
+      else if(/RIDE/.test(r.msg)) target = 88 + 9 * (1 - Math.exp(-el / (2.0 * k)));
+      else target = 97 + 2 * (1 - Math.exp(-el / 6));
+    }
+  }
+  // the shown value only ever moves forward, at a limited speed, so nothing can jump
+  const step = Math.min(Math.max(0, target - ocrShown) * Math.min(1, dt * 4), 18 * dt);
+  ocrShown += step;
+  const sh = Math.max(0, Math.min(100, ocrShown));
+  c.style.display = 'block'; f.style.transition = 'width .1s linear'; f.style.width = Math.max(2, sh) + '%';
+  if(l) l.textContent = msg + ' · ' + Math.floor(sh) + '%';
+}
+let ocrStageT = {}, ocrCardsEnd = 0;
+let ocrTotal = 0;
+function ocrBarStart(ids){
+  ocrBarLive = true; ocrDisp = 0; ocrLastTick = 0; ocrShown = 0;
+  const f = document.getElementById(ids[1]), l = document.getElementById(ids[2]);
+  if(f){ f.style.transition = 'none'; f.style.width = '0%'; void f.offsetWidth; f.style.transition = ''; }
+  if(l) l.textContent = 'ANALYSING IMAGE · 0%';
+  clearInterval(ocrTimer); ocrTimer = setInterval(ocrBarTick, 70);
+}
+function ocrBarStop(){ ocrBarLive = false; clearInterval(ocrTimer); ocrTimer = null; }
+function ocrToast(msg, pct, extra){
+  if(ocrBarIds){
+    if(msg){ ocrLast = {msg, pct, card: extra && extra.card, total: extra && extra.total}; if(extra && extra.total) ocrTotal = extra.total; if(extra && extra.card && !ocrCardTimes[extra.card]) ocrCardTimes[extra.card] = performance.now(); if(!ocrStageT[msg]) ocrStageT[msg] = performance.now(); if(!(extra && extra.card) && !ocrCardsEnd && ocrCardTimes[1]) ocrCardsEnd = performance.now(); }
+    return;
+  }
+  let t = document.getElementById('ocrToast');
+  if(!msg){ if(t) t.remove(); return; }
+  if(!t){ t = document.createElement('div'); t.id = 'ocrToast';
+    t.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:3000;background:#14181F;color:#fff;font:700 12px Inter,system-ui,sans-serif;letter-spacing:.06em;padding:11px 18px;border-radius:6px;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)';
+    document.body.appendChild(t); }
+  t.textContent = msg;
+}
+async function fileToCanvas(file){
+  const bm = await createImageBitmap(file);
+  const c = document.createElement('canvas'); c.width = bm.width; c.height = bm.height;
+  c.getContext('2d').drawImage(bm, 0, 0); return c;
+}
+// crop a region, enlarge it, optionally threshold / invert, return a canvas ready for OCR
+function ocrCrop(src, x, y, w, h, scale, thr, invert){
+  x = Math.max(0, Math.round(x)); y = Math.max(0, Math.round(y));
+  w = Math.max(4, Math.min(src.width - x, Math.round(w))); h = Math.max(4, Math.min(src.height - y, Math.round(h)));
+  const pad = 12, c = document.createElement('canvas');
+  c.width = w * scale + pad * 2; c.height = h * scale + pad * 2;
+  const g = c.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.fillStyle = invert ? '#000' : '#fff'; g.fillRect(0, 0, c.width, c.height);
+  g.drawImage(src, x, y, w, h, pad, pad, w * scale, h * scale);
+  const d = g.getImageData(0, 0, c.width, c.height), p = d.data;
+  for(let i = 0; i < p.length; i += 4){
+    let v = p[i] * .299 + p[i+1] * .587 + p[i+2] * .114;
+    if(thr) v = v > thr ? 255 : 0;
+    if(invert) v = 255 - v;
+    p[i] = p[i+1] = p[i+2] = v; p[i+3] = 255;
+  }
+  g.putImageData(d, 0, 0); return c;
+}
+async function ocrText(worker, canvas, psm, whitelist){
+  await worker.setParameters({tessedit_pageseg_mode: String(psm), tessedit_char_whitelist: whitelist || ''});
+  const r = await worker.recognize(canvas, {}, {text: true, blocks: true});
+  return r.data;
+}
+// yellow plate cards: connected blocks of plate-yellow pixels
+function findPlateBoxes(canvas){
+  const W = canvas.width, H = canvas.height;
+  const px = canvas.getContext('2d').getImageData(0, 0, W, H).data;
+  const mask = new Uint8Array(W * H);
+  for(let i = 0, j = 0; i < px.length; i += 4, j++) mask[j] = (px[i] > 200 && px[i+1] > 165 && px[i+2] < 90) ? 1 : 0;
+  const boxes = [], stack = new Int32Array(W * H);
+  for(let s = 0; s < mask.length; s++){
+    if(mask[s] !== 1) continue;
+    let sp = 0, x0 = W, x1 = 0, y0 = H, y1 = 0, n = 0; stack[sp++] = s; mask[s] = 2;
+    while(sp){
+      const k = stack[--sp], x = k % W, y = (k / W) | 0; n++;
+      if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y;
+      if(x > 0 && mask[k-1] === 1){ mask[k-1] = 2; stack[sp++] = k-1; }
+      if(x < W-1 && mask[k+1] === 1){ mask[k+1] = 2; stack[sp++] = k+1; }
+      if(y > 0 && mask[k-W] === 1){ mask[k-W] = 2; stack[sp++] = k-W; }
+      if(y < H-1 && mask[k+W] === 1){ mask[k+W] = 2; stack[sp++] = k+W; }
+    }
+    const w = x1 - x0 + 1, h = y1 - y0 + 1;
+    if(w >= W * .08 && h >= W * .04 && w / h > 1.3 && w / h < 4.2) boxes.push({x: x0, y: y0, w, h});
+  }
+  boxes.sort((a, b) => a.y - b.y);
+  const rows = []; // group into rows, then left to right
+  boxes.forEach(b => { const r = rows.find(r => Math.abs(r[0].y - b.y) < b.h * .5); if(r) r.push(b); else rows.push([b]); });
+  return rows.flatMap(r => r.sort((a, b) => a.x - b.x));
+}
+function fixReg(raw){
+  const L = {'0':'O','1':'I','5':'S','8':'B','2':'Z'}, D = {O:'0',I:'1',S:'5',B:'8',Z:'2',Q:'0'};
+  let s = (raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  let changed = false;
+  if(s.length === 7){
+    s = s.split('').map((ch, i) => {
+      if([2,3].includes(i) && D[ch]){ changed = true; return D[ch]; }
+      if(![2,3].includes(i) && L[ch]){ changed = true; return L[ch]; }
+      return ch; }).join('');
+  }
+  const ok = /^[A-Z]{2}\d{2}[A-Z]{3}$/.test(s);
+  return {reg: ok ? s.slice(0,4) + ' ' + s.slice(4) : s, ok, changed};
+}
+function cleanOcrName(raw){
+  let t = (raw || '').replace(/[^A-Za-z'’\-\s]/g, ' ').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+  while(t.length > 1 && t[t.length-1].length < 2) t.pop();
+  while(t.length > 1 && t[0].length < 2 && !/^[A-Za-z]$/.test(t[0])) t.shift();
+  return t.join(' ');
+}
+// van numbers must rise from card to card: pick the highest-voted rising sequence
+function resolveVanSequence(cands){
+  let states = new Map([[0, {score: 0, path: []}]]);
+  const relax = (m, k, v) => { const o = m.get(k); if(!o || v.score > o.score) m.set(k, v); };
+  cands.forEach(c => {
+    const next = new Map();
+    for(const [last, st] of states){
+      relax(next, last, {score: st.score - 1, path: [...st.path, null]});
+      for(const [num, votes] of c) if(num > last) relax(next, num, {score: st.score + votes, path: [...st.path, num]});
+    }
+    states = next;
+  });
+  let best = null; for(const st of states.values()) if(!best || st.score > best.score) best = st;
+  return best ? best.path : cands.map(() => null);
+}
+async function readVanNumberVotes(worker, canvas, plate){
+  const votes = new Map(), bx = plate.x + plate.w + plate.w * .06, bw = plate.w * .8;
+  const bands = [[.24, .41], [.22, .44]];
+  for(const [f0, f1] of bands) for(const [sc, thr] of [[6, 60], [6, 80], [8, 70], [5, 90]]){
+    const c = ocrCrop(canvas, bx, plate.y + plate.h * f0, bw, plate.h * (f1 - f0), sc, thr, true);
+    const d = await ocrText(worker, c, 7, 'VAN0123456789 ');
+    const m = (d.text || '').match(/VAN\s*(\d{1,2})/);
+    if(m) votes.set(+m[1], (votes.get(+m[1]) || 0) + 1);
+  }
+  return votes;
+}
+// Warm up the text reader shortly after the page loads so the first image scan starts instantly.
+setTimeout(() => { try{ getOcrWorker().catch(() => {}); }catch(e){} }, 2500);
+async function parseImageVanRoster(file){
+  const key = file.name + '|' + file.size + '|' + file.lastModified;
+  if(_ocrRosterCache.has(key)){
+    const c = _ocrRosterCache.get(key);
+    lastPdfStation = c.station; lastPdfExportDate = c.date; lastPdfStandby = c.standby.slice(); lastPdfNoVan = [];
+    return c.roster.map(r => ({...r}));
+  }
+  lastPdfStation = null; lastPdfStandby = null; lastPdfNoVan = []; lastPdfExportDate = null;
+  ocrToast('INITIALISING VISION ENGINE', 4);
+  let result;
+  try{
+    const worker = await getOcrWorker();
+    const canvas = await fileToCanvas(file);
+    ocrToast('LOCATING VEHICLE CARDS', 12);
+    const plates = findPlateBoxes(canvas);
+    if(!plates.length) throw new Error('No van cards found in that image — is it the Van Deployment Sheet screenshot?');
+    const cards = [], warnings = [];
+    for(let i = 0; i < plates.length; i++){
+      const p = plates[i];
+      ocrToast(`DECODING CARD ${i + 1} OF ${plates.length}`, 15 + 70 * i / plates.length, {card: i + 1, total: plates.length});
+      const regRaw = (await ocrText(worker, ocrCrop(canvas, p.x + p.w * .04, p.y + p.h * .1, p.w * .92, p.h * .8, 3, 110, false), 7, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ')).text;
+      const nameRaw = (await ocrText(worker, ocrCrop(canvas, p.x + p.w + p.w * .06, p.y - 4, p.w * 2, p.h * .38, 3, 0, true), 7, '')).text;
+      const votes = await readVanNumberVotes(worker, canvas, p);
+      const rg = fixReg(regRaw);
+      cards.push({plate: p, reg: rg, regFlag: !rg.ok || rg.changed, name: cleanOcrName(nameRaw), votes});
+    }
+    const seq = resolveVanSequence(cards.map(c => c.votes));
+    cards.forEach((c, i) => {
+      c.van = seq[i];
+      const total = [...c.votes.values()].reduce((a, b) => a + b, 0), mine = c.votes.get(c.van) || 0;
+      const top = [...c.votes.entries()].sort((a, b) => b[1] - a[1])[0];
+      c.vanFlag = c.van == null || mine < total * .6 || (top && top[0] !== c.van);
+      c.nameFlag = c.name.split(' ').length < 2;
+    });
+
+    ocrToast('RESOLVING STATION & DATE', 86);
+    // ---- header: station + date
+    let station = null, date = null;
+    try{
+      const hd = await ocrText(worker, ocrCrop(canvas, canvas.width * .5, 0, canvas.width * .5, Math.min(canvas.height, plates[0].y * .22), 3, 0, true), 6, '');
+      const sm = (hd.text || '').match(/STATION\s+((?:[A-Z]\s?){2,4}\d)/i); if(sm) station = sm[1].replace(/\s/g, '').toUpperCase();
+      const MON = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      const dm = (hd.text || '').match(/(\d{1,2})\s+([A-Za-z]{3,9})\s+(20\d{2})/);
+      if(dm){ const mi = MON.indexOf(dm[2].slice(0, 3).toLowerCase()); if(mi >= 0) date = `${String(dm[1]).padStart(2,'0')}/${String(mi+1).padStart(2,'0')}/${dm[3].slice(2)}`; }
+    }catch(e){ /* header is optional */ }
+    // ---- "N DRIVERS DEPLOYED" cross-check
+    try{
+      const bd = await ocrText(worker, ocrCrop(canvas, 0, Math.max(0, plates[0].y - plates[0].h * .95), canvas.width, plates[0].h * .9, 3, 0, true), 6, '');
+      const m = (bd.text || '').match(/(\d+)\s+DRIVERS?\s+DEPLOYED/i);
+      if(m && +m[1] !== cards.length) warnings.push(`The sheet says ${m[1]} drivers deployed but ${cards.length} cards were found — a card may have been missed.`);
+    }catch(e){}
+
+    // ---- ride-along + standby (everything under the last card row)
+    const lastBottom = Math.max(...plates.map(p => p.y + p.h));
+    ocrToast('MAPPING RIDE-ALONGS & STANDBY', 92);
+    const tail = await ocrText(worker, ocrCrop(canvas, 0, lastBottom + 20, canvas.width, canvas.height - lastBottom - 20, 3, 0, true), 6, '');
+    const rideRaw = [];
+    (tail.text || '').split('\n').forEach(line => {
+      const m = line.match(/^(.*?)\s*[^A-Za-z'’\-\s]{1,5}\s*(.*?)\s*[-–—·•.]\s*Van\s*(\d{1,2})\s*$/i);
+      if(m && /[A-Za-z]{2}/.test(m[1]) && /[A-Za-z]{2}/.test(m[2])) rideRaw.push({trainee: cleanOcrName(m[1]), trainer: cleanOcrName(m[2]), van: +m[3]});
+    });
+    let standby = [];
+    const words = (tail.words || []).filter(w => w.text && w.confidence > 30);
+    const lines = (tail.lines || []);
+    const sbIdx = lines.findIndex(l => /STANDBY/i.test(l.text));
+    const nameLine = sbIdx > 0 ? lines[sbIdx - 1] : null;
+    if(nameLine && !/Van\s*\d/i.test(nameLine.text)){
+      const ws = (nameLine.words || []).filter(w => /[A-Za-z]/.test(w.text)).sort((a, b) => a.bbox.x0 - b.bbox.x0);
+      const grp = []; let cur = [];
+      ws.forEach((w, i) => { if(i && w.bbox.x0 - ws[i-1].bbox.x1 > 40 * 3){ grp.push(cur); cur = []; } cur.push(w); });
+      if(cur.length) grp.push(cur);
+      standby = grp.map(g => cleanOcrName(g.map(w => w.text).join(' '))).filter(n => n.split(' ').length >= 2);
+    }
+
+    if(!standby.length && /STANDBY/i.test(tail.text || '')) warnings.push('A STANDBY section was seen but no names could be read from it — add them below if needed.');
+    const roster = cards.map(c => ({
+      van: c.van, driver: normalizeDriverName(c.name), reg: c.reg.reg,
+      ride_along_trainee: null, ride_along_day: 1,
+      _flags: {van: c.vanFlag, reg: c.regFlag, name: c.nameFlag}
+    }));
+    rideRaw.forEach(ra => {
+      const e = roster.find(r => r.van === ra.van) || matchVan(normalizeDriverName(ra.trainer), roster);
+      if(e) e.ride_along_trainee = normalizeDriverName(ra.trainee);
+    });
+    result = {roster, station, date, standby: standby.map(normalizeDriverName), warnings, rideCount: rideRaw.length};
+  }finally{ if(!ocrBarIds) ocrToast(null); }
+
+  ocrToast('AWAITING YOUR VERIFICATION', 98);
+  const confirmed = await confirmOcrRoster(result);
+  if(!confirmed) throw new Error('Roster image not confirmed.');
+  const entry = {roster: confirmed.roster, station: result.station, date: result.date, standby: confirmed.standby};
+  _ocrRosterCache.set(key, entry);
+  lastPdfStation = result.station; lastPdfExportDate = result.date; lastPdfStandby = confirmed.standby.slice(); lastPdfNoVan = [];
+  return confirmed.roster.map(r => ({...r}));
+}
+// Check screen: shows what was read, highlights anything uncertain, lets it be corrected.
+function confirmOcrRoster(res){
+  return new Promise(resolve => {
+    const flagged = res.roster.filter(r => r._flags.van || r._flags.reg || r._flags.name).length;
+    const wrap = document.createElement('div');
+    wrap.id = 'ocrConfirm';
+    const cell = (v, cls, flag, field, i) => `<td><input class="ocr-in${flag ? ' ocr-flag' : ''}" data-f="${field}" data-i="${i}" value="${escH(v ?? '')}" ${cls || ''}></td>`;
+    const nRA = res.roster.filter(r => r.ride_along_trainee).length;
+    wrap.innerHTML = `<div class="ocr-panel">
+      <div class="ocr-band"><div><div class="ocr-eye">WARRIOR LOGISTICS</div><h2>CHECK VAN ALLOCATIONS</h2></div>
+        <div class="ocr-chips"><span class="ocr-chip"><em>${res.roster.length}</em>DRIVERS</span><span class="ocr-chip"><em>${nRA}</em>RIDE-ALONG</span><span class="ocr-chip"><em>${res.standby.length}</em>STANDBY</span>${res.station ? `<span class="ocr-chip fx">${escH(res.station)}</span>` : ''}${res.date ? `<span class="ocr-chip fx">${escH(res.date)}</span>` : ''}</div></div>
+      <div class="ocr-body">
+      ${(res.warnings || []).map(w => `<div class="ocr-warn">${escH(w)}</div>`).join('')}
+      <div class="ocr-note${flagged ? ' bad' : ''}">${flagged ? `${flagged} ROW${flagged > 1 ? 'S' : ''} UNSURE — HIGHLIGHTED RED. FIX, THEN CONFIRM.` : 'NOTHING LOOKED UNSURE — HAVE A QUICK LOOK, THEN CONFIRM.'}</div>
+      <div class="ocr-scroll"><table class="ocr-t"><thead><tr><th>VAN</th><th>DRIVER</th><th>REG</th><th>RIDE-ALONG</th></tr></thead><tbody>
+      ${res.roster.map((r, i) => `<tr>${cell(r.van, 'size="3"', r._flags.van, 'van', i)}${cell(r.driver, '', r._flags.name, 'driver', i)}${cell(r.reg, 'size="9"', r._flags.reg, 'reg', i)}${cell(r.ride_along_trainee, '', false, 'ra', i)}</tr>`).join('')}
+      </tbody></table></div>
+      <div class="ocr-sb"><label>STANDBY</label><input class="ocr-in" id="ocrStandby" value="${escH(res.standby.join(', '))}"></div>
+      <div class="ocr-act"><button type="button" class="secondary" id="ocrCancel">Cancel</button><button type="button" class="btn-primary" id="ocrOk">Use this roster</button></div>
+      </div>
+    </div>`;
+    const st = document.createElement('style');
+    st.textContent = `#ocrConfirm{position:fixed;inset:0;z-index:3500;background:rgba(10,12,16,.62);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+.ocr-panel{background:var(--surface,#fff);color:var(--text,#14181F);border:2px solid var(--accent);border-radius:6px;width:min(760px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+.ocr-band{background:var(--accent);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ocr-eye{font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.2em;opacity:.8}.ocr-band h2{margin:2px 0 0;font-size:16px;letter-spacing:.06em;font-weight:700;color:#fff}
+.ocr-chips{display:flex;gap:6px;flex-wrap:wrap}.ocr-chip{height:28px;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;padding:0 11px;border:1px solid rgba(255,255,255,.55);border-radius:4px;font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#fff;white-space:nowrap}.ocr-chip em{font:700 13px Inter,sans-serif;font-style:normal;letter-spacing:0}.ocr-chip.fx{width:84px;justify-content:center}
+.ocr-body{padding:14px 20px 18px;display:flex;flex-direction:column;min-height:0;flex:1}
+.ocr-warn{background:#FEF3C7;color:#78350F;border-radius:4px;padding:8px 11px;font-size:12px;font-weight:600;margin-bottom:8px}
+.ocr-note{font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.08em;margin-bottom:10px;padding:7px 10px;border-radius:3px;background:var(--surface-2,#F4F6FA);color:var(--muted,#64748B);border-left:3px solid var(--accent)}
+.ocr-note.bad{background:#FDECEA;color:#D93025;border-left-color:#D93025}
+.ocr-scroll{overflow:auto;border:1px solid var(--border,#E2E6EF);border-radius:4px;flex:1;min-height:120px}
+.ocr-t{width:100%;border-collapse:collapse;font-size:12.5px}.ocr-t th{position:sticky;top:0;z-index:1;background:var(--surface-2,#F4F6FA);text-align:left;padding:7px 8px;font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--muted,#64748B)}
+.ocr-t td{padding:3px 5px;border-top:1px solid var(--border,#E2E6EF)}
+.ocr-in{width:100%;box-sizing:border-box;border:1px solid transparent;background:transparent;color:inherit;font:inherit;padding:5px 6px;border-radius:4px}
+.ocr-in:hover,.ocr-in:focus{border-color:var(--border,#CBD2DF);background:var(--surface-2,#F4F6FA);outline:none}
+.ocr-in.ocr-flag{background:#FEE2E2;border-color:#D93025;color:#7F1D1D;font-weight:700}
+.ocr-sb{display:flex;align-items:center;gap:10px;margin:12px 0 4px}.ocr-sb .ocr-in{font-size:12.5px;border-color:var(--border,#E2E6EF)}.ocr-sb label{font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--muted,#64748B)}
+.ocr-act{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}`;
+    wrap.appendChild(st); document.body.appendChild(wrap);
+    // centre on the main panel (everything right of the charcoal rail + left panel), like the other pop-ups
+    const placeOcr = () => { const m = document.querySelector('main.dashboard'); const l = m ? Math.round(m.getBoundingClientRect().left) : 472; wrap.style.paddingLeft = (Math.max(0, l) + 20) + 'px'; };
+    placeOcr(); window.addEventListener('resize', placeOcr);
+    const close = v => { window.removeEventListener('resize', placeOcr); wrap.remove(); resolve(v); };
+    wrap.querySelector('#ocrCancel').onclick = () => close(null);
+    wrap.querySelector('#ocrOk').onclick = () => {
+      const roster = res.roster.map((r, i) => {
+        const g = f => wrap.querySelector(`.ocr-in[data-f="${f}"][data-i="${i}"]`).value.trim();
+        const van = parseInt(g('van'), 10);
+        return {van: Number.isFinite(van) ? van : null, driver: normalizeDriverName(g('driver')), reg: g('reg').toUpperCase(),
+          ride_along_trainee: g('ra') ? normalizeDriverName(g('ra')) : null, ride_along_day: 1};
+      });
+      const standby = wrap.querySelector('#ocrStandby').value.split(',').map(s => normalizeDriverName(s.trim())).filter(Boolean);
+      close({roster: roster.sort((a, b) => (a.van ?? 1e9) - (b.van ?? 1e9)), standby});
+    };
+  });
+}
+
 async function parseVanRoster(file){
   const name = (file.name||"").toLowerCase();
+  if(/\.(png|jpe?g|webp)$/.test(name) || (file.type||'').startsWith('image/')){
+    return await parseImageVanRoster(file);
+  }
   if(name.endsWith(".pdf")){
     return await parsePdfVanRoster(file);
   }
@@ -2626,7 +3010,7 @@ async function runPipeline(driverOverrides={}, droppedRoutes=new Set()){
     const planDate = document.getElementById('planDate').value.trim() || new Date().toLocaleDateString('en-GB');
 
     if(!rosterFile){
-      setStatus('error','Upload the van roster file first.');
+      setStatus('error','Upload the van allocation file first.');
       return;
     }
     const roster = await parseVanRoster(rosterFile);
@@ -2637,7 +3021,7 @@ async function runPipeline(driverOverrides={}, droppedRoutes=new Set()){
       // Shouldn't be reachable — Generate is disabled until a Routes file is
       // present. Use the "Download confirmation list" button under Van
       // Roster for a pre-list-only download instead.
-      setStatus('error','Upload a Routes file to generate, or use the confirmation list button under Van Roster for the pre-list alone.');
+      setStatus('error','Upload a Routes file to generate, or use the confirmation list button under Van Allocation for the pre-list alone.');
       return;
     }
 
@@ -4756,13 +5140,9 @@ document.getElementById('quickListFile').addEventListener('change', async (e) =>
   if(!file) return;
   if(!quickListManual.length) document.getElementById('quickListActions').classList.add('ql-locked');
   quickListSetStatus('');
-  let roster = null, parseError = false;
-  try{
-    roster = await parseVanRoster(file);
-  }catch(err){
-    parseError = true;
-  }
-  runUploadProgress('quickListProgress', 'quickListProgressFill', 'quickListProgressLabel', 'UPLOADING', 'UPLOADED', 1200, () => {
+  const QIDS = ['quickListProgress','quickListProgressFill','quickListProgressLabel'];
+  const {roster, parseError, isImg: qImg} = await parseRosterWithBar(file, QIDS);
+  const qDone = () => {
     if(parseError){
       quickListSetStatus("Could not read that file — check it's a genuine Warrior Ops export.", 'error');
       return;
@@ -4782,12 +5162,14 @@ document.getElementById('quickListFile').addEventListener('change', async (e) =>
     }
     updateQlChip();
     if(quickListMode === 'standby' && lastPdfStandby === null){
-      quickListSetStatus('This file has no standby section — upload the Warrior Ops PDF export for a standby list.', 'warn');
+      quickListSetStatus('This file has no standby section — upload the Warrior Ops PNG export for a standby list.', 'warn');
     }
     document.getElementById('quickListActions').style.display = 'grid';
     document.getElementById('quickListActions').classList.remove('ql-locked');
     document.getElementById('quickListAccentPicker').style.display = 'flex';
-  });
+  };
+  if(qImg){ finishOcrBar(QIDS, parseError); qDone(); }
+  else runUploadProgress(QIDS[0], QIDS[1], QIDS[2], 'UPLOADING', 'UPLOADED', 1200, qDone);
 });
 
 function quickListBuildNames(){
