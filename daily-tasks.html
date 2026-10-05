@@ -875,7 +875,7 @@ const OLD = '2000-01-01';
 // 4th arg 'count' = the task asks for a number (e.g. how many done) instead of a simple tick
 const T = (id,label,sites=[],type) => ({id,label,sites,addedOn:OLD,...(type?{type}:{})});
 const ALL4 = SITES.slice();
-const DEFAULT_LAYOUT = { v:16, sections:[
+const DEFAULT_LAYOUT = { v:17, sections:[
   { id:'morning', name:'DISPATCH', icon:'sun', sub:'Wave plans, routes and day -1 reports before drivers go out', groups:[
     { id:'g_morning', name:null, tasks:[
       T('send_wave','Send wave plan',ALL4),
@@ -904,18 +904,18 @@ const DEFAULT_LAYOUT = { v:16, sections:[
       T('dvla','DVLA checks',ALL4),
       T('rtw','RTW checks',ALL4),
       T('damages','Process damages',ALL4),
-      T('next_day_aft','Next day plans',ALL4),
-      T('van_list_aft','Van list',ALL4),
       T('holidays','Input holidays',ALL4) ]} ]},
   { id:'deployment', name:'NEXT DAY DEPLOYMENT', icon:'truck', sub:'Van list and vehicle deployment for tomorrow', groups:[
     { id:'g_deploy', name:null, tasks:[
-      T('van_list_dep','Van list',ALL4) ]} ]},
+      T('next_day_aft','Next day plans',ALL4),
+      T('van_list_dep','Van list',ALL4),
+      T('plans_drv','Post next day plans → drivers chat',ALL4),
+      T('plans_mgr','Post next day plans → managers chat',ALL4) ]} ]},
   { id:'evening', name:'ROUTE SUPPORT', icon:'moon', sub:'Live-route chasing, workflow and tomorrow’s plans', groups:[
     { id:'g_evening', name:null, tasks:[
       T('demand_pm','Check current demand',['DLS4','HSA7']),
       T('road_updates','Road updates',ALL4),
       T('dnr_pm','DNR investigations',['DLS4','HSA7']),
-      T('plans_drv','Post next day plans → drivers chat',ALL4),
       T('pm_closed','Checking business closed',['DLS4','HSA7']),
       T('pm_spot','Spot checking deliveries',['DLS4','HSA7']),
       T('pm_workflow','Enforce workflow',['DLS4','HSA7']),
@@ -923,7 +923,6 @@ const DEFAULT_LAYOUT = { v:16, sections:[
       T('cant_find',"Chase can't find address",['DLS4','HSA7']),
       T('missing_parcels','Chase missing parcels',['DLS4','HSA7']),
       T('reattempts','Chase reattempts',['DLS4','HSA7']),
-      T('plans_mgr','Post next day plans → managers chat',ALL4),
       T('dvics',"DVIC's",['DLS4','HSA7']) ]} ]},
   // ---- right-hand column: always open, cannot be collapsed (col:'right', fixed:true)
   { id:'attendance', name:'ATTENDANCE', icon:'clipboard', sub:'Same-day and next-day attendance sent, chased and closed', col:'right', fixed:true, groups:[
@@ -1038,7 +1037,7 @@ let dragId = null, pending = false;
 /* ---------- derived data ---------- */
 const DOWS=[['MON',1],['TUE',2],['WED',3],['THU',4],['FRI',5],['SAT',6],['SUN',0]];
 const tOn = (t,d) => !t.days || !t.days.length || t.days.includes(parse(d).getDay());
-const daysLabel = a => !a||!a.length||a.length>=7?'ALL DAYS':DOWS.filter(x=>a.includes(x[1])).map(x=>x[0].charAt(0)+x[0].slice(1).toLowerCase()).join(' ');
+const daysLabel = a => !a||!a.length||a.length>=7?'ALL DAYS':DOWS.filter(x=>a.includes(x[1])).map(x=>x[0]).join(' ');
 const secOn = (s,d) => !s.onlyDays || !s.onlyDays.length || s.onlyDays.includes(parse(d).getDay());
 function extrasFor(date){
   return Object.values(extras).filter(e => e.date===date || (e.rollover && e.date<date && (!e.doneDate || date<=e.doneDate)))
@@ -1898,6 +1897,18 @@ function sanitiseLayout(l){
     }
     l.v=16;
   }
+  if(l.v===16){
+    // v17: NEXT DAY DEPLOYMENT now holds Next day plans, Van list, Post plans → drivers, Post plans → managers (same task ids, so ticks/history carry over)
+    const dep=l.sections.find(x=>x.id==='deployment');
+    if(dep){
+      const want=['next_day_aft','van_list_dep','plans_drv','plans_mgr'], got={};
+      l.sections.forEach(x=>(x.groups||[]).forEach(g=>{ g.tasks=(g.tasks||[]).filter(t=>{ if(want.includes(t.id)){ if(!got[t.id]) got[t.id]=t; return false; } return t.id!=='van_list_aft'; }); }));
+      const dd=DEFAULT_LAYOUT.sections.find(x=>x.id==='deployment').groups[0].tasks;
+      if(!dep.groups||!dep.groups.length) dep.groups=[{id:'g_deploy',name:null,tasks:[]}];
+      dep.groups[0].tasks=want.map(id=>got[id]||clone(dd.find(t=>t.id===id)));
+    }
+    l.v=17;
+  }
   DEFAULT_LAYOUT.sections.filter(d=>d.col==='right' && !l.sections.some(x=>x.id===d.id)).forEach(d=>{ const n=clone(d); l.sections.push(n); });
   l.sections.forEach(s=>{ s.groups=s.groups||[]; s.groups.forEach(g=>{ g.tasks=g.tasks||[]; g.tasks.forEach(t=>{ t.sites=Array.isArray(t.sites)?t.sites:[]; t.addedOn=t.addedOn||OLD; }); }); });
   return l;
@@ -2026,5 +2037,25 @@ function strip(){
 render=(function(old){return function(){ strip(); return old.apply(this,arguments); };})(render);
 strip();
 })();
-</script></body>
+</script><style id="allday">.tmw{position:relative;display:block;min-width:0;width:100%}.tmw>input[type=time]{width:100%;box-sizing:border-box;padding-right:88px!important}.tmw.ad>input[type=time]{color:transparent}.tmw .adb{all:unset;box-sizing:border-box;position:absolute;right:36px;top:50%;transform:translateY(-50%);height:24px;padding:0 9px;border-radius:4px;border:1px solid var(--line,#CBD2DF);background:transparent;color:var(--mute,#64748B);font:700 9.5px/22px Inter,system-ui,sans-serif;letter-spacing:.1em;cursor:pointer;white-space:nowrap}.tmw .adb:hover{border-color:var(--accent);color:var(--accent)}.tmw.ad .adb{background:var(--accent);border-color:var(--accent);color:#fff}.tmw.ad>input[type=time]::-webkit-datetime-edit{opacity:0}:root:root .cb2 .bk-r3{grid-template-columns:2.2fr 1fr 1fr}.tmw>input[type=time]{position:relative}.tmw>input[type=time]::-webkit-calendar-picker-indicator{position:absolute;right:8px;top:50%;transform:translateY(-50%);margin:0;padding:0}</style>
+<script>/*ALLDAY*/(function(){
+var IDS=['hfTime','fTime','bkTime'];
+function sync(w,i){var on=!i.value;w.classList.toggle('ad',on);var b=w.querySelector('.adb');if(b){b.textContent='ALL DAY';b.setAttribute('aria-pressed',on?'true':'false')}}
+function wrap(i){
+  if(i.parentNode&&i.parentNode.classList&&i.parentNode.classList.contains('tmw'))return;
+  var w=document.createElement('span');w.className='tmw';i.parentNode.insertBefore(w,i);w.appendChild(i);
+  var b=document.createElement('button');b.type='button';b.className='adb';b.title='Tick for an all-day booking (no set time)';w.appendChild(b);
+  sync(w,i);
+  b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();
+    if(!i.value){ i.value='09:00'; }else{ i.value=''; }
+    i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));sync(w,i);
+    if(i.value){try{i.focus()}catch(x){}}});
+  ['input','change'].forEach(function(ev){i.addEventListener(ev,function(){sync(w,i)})});
+}
+function scan(){IDS.forEach(function(id){var i=document.getElementById(id);if(i&&i.type==='time')wrap(i)})}
+var mo=new MutationObserver(function(){scan()});
+function start(){scan();mo.observe(document.body,{childList:true,subtree:true})}
+if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
+})();</script>
+</body>
 </html>

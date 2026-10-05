@@ -1438,5 +1438,25 @@ function strip(){
 renderAll=(function(old){return function(){ strip(); return old.apply(this,arguments); };})(renderAll);
 strip();
 })();
-</script></body>
+</script><style id="allday">.tmw{position:relative;display:block;min-width:0;width:100%}.tmw>input[type=time]{width:100%;box-sizing:border-box;padding-right:88px!important}.tmw.ad>input[type=time]{color:transparent}.tmw .adb{all:unset;box-sizing:border-box;position:absolute;right:36px;top:50%;transform:translateY(-50%);height:24px;padding:0 9px;border-radius:4px;border:1px solid var(--line,#CBD2DF);background:transparent;color:var(--mute,#64748B);font:700 9.5px/22px Inter,system-ui,sans-serif;letter-spacing:.1em;cursor:pointer;white-space:nowrap}.tmw .adb:hover{border-color:var(--accent);color:var(--accent)}.tmw.ad .adb{background:var(--accent);border-color:var(--accent);color:#fff}.tmw.ad>input[type=time]::-webkit-datetime-edit{opacity:0}:root:root .cb2 .bk-r3{grid-template-columns:2.2fr 1fr 1fr}.tmw>input[type=time]{position:relative}.tmw>input[type=time]::-webkit-calendar-picker-indicator{position:absolute;right:8px;top:50%;transform:translateY(-50%);margin:0;padding:0}</style>
+<script>/*ALLDAY*/(function(){
+var IDS=['hfTime','fTime','bkTime'];
+function sync(w,i){var on=!i.value;w.classList.toggle('ad',on);var b=w.querySelector('.adb');if(b){b.textContent='ALL DAY';b.setAttribute('aria-pressed',on?'true':'false')}}
+function wrap(i){
+  if(i.parentNode&&i.parentNode.classList&&i.parentNode.classList.contains('tmw'))return;
+  var w=document.createElement('span');w.className='tmw';i.parentNode.insertBefore(w,i);w.appendChild(i);
+  var b=document.createElement('button');b.type='button';b.className='adb';b.title='Tick for an all-day booking (no set time)';w.appendChild(b);
+  sync(w,i);
+  b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();
+    if(!i.value){ i.value='09:00'; }else{ i.value=''; }
+    i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));sync(w,i);
+    if(i.value){try{i.focus()}catch(x){}}});
+  ['input','change'].forEach(function(ev){i.addEventListener(ev,function(){sync(w,i)})});
+}
+function scan(){IDS.forEach(function(id){var i=document.getElementById(id);if(i&&i.type==='time')wrap(i)})}
+var mo=new MutationObserver(function(){scan()});
+function start(){scan();mo.observe(document.body,{childList:true,subtree:true})}
+if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
+})();</script>
+</body>
 </html>
