@@ -787,6 +787,7 @@ html,body{overflow-x:hidden!important}
 .row .cell:active .bx{transform:scale(.96)}
 </style><style id="datearrows">:root:root .sb-date .btn{background:var(--s-primary)!important;color:#fff!important;transition:background .15s,color .15s,box-shadow .15s,transform .15s}:root:root .sb-date .btn:hover:not(:disabled){background:var(--s-light)!important;color:var(--s-primary)!important;box-shadow:inset 0 0 0 2px var(--s-primary),0 0 0 4px color-mix(in srgb,var(--s-primary) 18%,transparent);transform:scale(1.05)}:root:root .sb-date .btn:active:not(:disabled){transform:scale(.97)}:root:root .sb-date .btn:disabled{opacity:.35;background:var(--s-primary)!important;color:#fff!important}</style>
 <style id="bestdark">:root:root .h4-best{background:var(--s-primary,var(--accent))!important;color:#fff!important}</style>
+<style id="people">.pp-row{display:grid;grid-template-columns:34px 1fr;column-gap:12px;align-items:center;padding:10px 0}.pp-row+.pp-row{border-top:1px solid var(--s-soft)}.pp-av{display:grid;place-items:center;width:34px;height:34px;border-radius:4px;background:var(--s-primary);color:#fff;font:700 12px Inter,system-ui,sans-serif;letter-spacing:.04em}.pp-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--s-text)}.pp-top em{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--s-mute);font-variant-numeric:tabular-nums}.pp-top em b{font-size:15px;letter-spacing:0;color:var(--s-primary);margin-right:2px}.pp-sub{font-size:9.5px;font-weight:700;letter-spacing:.14em;color:var(--s-mute);margin:2px 0 6px}.pp-row .bar{height:6px}.pp-empty{padding:14px;font-size:12px;color:var(--s-mute)}</style>
 </head>
 <body>
 <div class="topbar"></div>
@@ -814,6 +815,7 @@ html,body{overflow-x:hidden!important}
     </div>
     <div class="sb-block" id="bySec"></div>
     <div class="sb-block" id="bySite"></div>
+    <div class="sb-block" id="byPeople"></div>
     <button class="btn lime" id="reportBtn"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg><span>Generate End of Shift Report</span></button>
     <button class="reset" id="resetBtn">Reset this day's ticks</button>
   </aside>
@@ -1438,6 +1440,14 @@ function render(){
   const prow=(name,st2,ic)=>`<div class="sp-row"><span class="sp-ic">${icon(ic,17)}</span><div class="sp-top"><span>${esc(String(name).toUpperCase())}</span><em>${st2.d}/${st2.t}</em></div><div class="bar ${barClass(st2.p)}"><i style="width:${st2.p}%"></i></div></div>`;
   $('#bySec').innerHTML='<div class="sb-h">Section progress</div><div class="sb-card sb-list">'+secs.filter(x=>x[1].t>0).map(x=>prow(x[0],x[1],x[2])).join('')+'</div>';
   $('#bySite').innerHTML='<div class="sb-h">Site progress</div><div class="site-grid">'+SITES.map(x=>{ const s2=stat(cur,b=>b.site===x); return `<div class="site-card"><div class="sc-top"><span class="sp-ic">${icon('building',16)}</span><b>${x}</b><em>${s2.d}/${s2.t}</em></div><div class="bar ${barClass(s2.p)}"><i style="width:${s2.p}%"></i></div></div>`; }).join('')+'</div>';
+  { // WHO'S WORKING: tasks ticked per person on this day (+ the people on duty, even at 0)
+    const cnt={}, role={}, bsx=boxesFor(cur);
+    bsx.forEach(b=>{ const e=entryOf(cur,b); const n=e&&String(e.by||'').trim(); if(n) cnt[n]=(cnt[n]||0)+1; });
+    const ow=ownersOf(cur); slotsFor(cur).forEach(sl=>{ const n=ow[sl[0]]; if(n){ (role[n]=role[n]||[]).push(String(sl[1]).replace(/ shift/i,'').toUpperCase()); if(!(n in cnt)) cnt[n]=0; } });
+    const ppl=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||a.localeCompare(b)), mx=Math.max(1,...ppl.map(n=>cnt[n])), tot=ppl.reduce((a,n)=>a+cnt[n],0);
+    const ini=n=>n.split(/\s+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    $('#byPeople').innerHTML='<div class="sb-h">Who\'s working</div>'+(ppl.length?'<div class="sb-card sb-list">'+ppl.map(n=>`<div class="pp-row"><span class="pp-av">${esc(ini(n))}</span><div class="pp-mid"><div class="pp-top"><span>${esc(n.toUpperCase())}</span><em><b>${cnt[n]}</b> TASK${cnt[n]===1?'':'S'}</em></div><div class="pp-sub">${role[n]?esc(role[n].join(' · ')):'HELPING OUT'}</div><div class="bar"><i style="width:${Math.round(cnt[n]/mx*100)}%"></i></div></div></div>`).join('')+'</div>':'<div class="sb-card pp-empty">Nobody has ticked a task yet today.</div>');
+  }
   $('#reportBtn').className='btn lime'+(REPORT_ENABLED&&all.t&&all.d===all.t?' glow':''); $('#reportBtn').disabled=!REPORT_ENABLED; $('#reportBtn span').textContent=REPORT_ENABLED?'Generate End of Shift Report':'End of Shift Report';
 
   $('#bookings').innerHTML=renderBookings();
