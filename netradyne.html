@@ -1890,8 +1890,20 @@ function paintFleet(){
    (S.histDone?'':'<div class="sb-row"><span class="sb-ic">'+ic('reset',16)+'</span><span><span class="sb-lb">Historic data</span><small class="nr-sub">One-time import of past days</small></span><button class="nr-mini" data-up="hist">Import</button></div>');
 }
 S.histDone=lsGet('wl_nr_hist')==='1';
+function nrHistBuild(j){
+  if(!S.vin||!S.vmap)throw new Error('Load the VIN database and the vehicle map first (Overview > Fleet), then import again');
+  const keep={r:S.roster,a:S.alerts,s:S.site,n:S.nameEdits},out={};let skipped=0;
+  try{S.site=j.site||S.site;S.nameEdits={};
+    Object.keys(j.days).sort().forEach(d=>{const x=j.days[d],m={};(x.roster||[]).forEach(q=>{const reg=normReg(q[0]);if(reg)m[reg]={van:String(q[1]||'').trim(),driver:String(q[2]||'').trim()}});
+      S.roster=m;S.alerts=(x.alerts||[]).map(q=>({vehicle_id:q[0],alert_type:q[1]}));
+      const r=aggregate(),ws=amzWeek(d).start,w=out[ws]||(out[ws]={days:{}});skipped+=r.skipped;
+      w.days[d]={trips:r.trips,tv:r.tripVans,rows:r.rows.filter(q=>q.driver&&q.driver!=='Unassigned').map(q=>({driver:q.driver,van:q.van,fd:q.fd,ssv:q.ssv,dv:q.dv,sv:q.sv,ov:q.ov||0,total:q.total})).concat((r.ovRows||[]).map(q=>({driver:q.driver,van:q.van,fd:0,ssv:0,dv:0,sv:0,ov:q.ov,total:0}))),at:new Date(d+'T23:59:00').getTime(),by:'historic import'}})
+  }finally{S.roster=keep.r;S.alerts=keep.a;S.site=keep.s;S.nameEdits=keep.n}
+  return out}
 async function doHist(f){try{
-  const j=JSON.parse(await f.text());if(!j||j.nrHistoric!==1||!j.weekly)throw new Error('That is not a Netradyne historic data file');
+  const j=JSON.parse(await f.text());if(!j||(j.nrHistoric!==1&&j.nrHistoric!==2))throw new Error('That is not a Netradyne historic data file');
+  if(j.nrHistoric===2){if(!j.days)throw new Error('The file has no days in it');j.weekly=nrHistBuild(j)}
+  if(!j.weekly)throw new Error('That is not a Netradyne historic data file');
   let nd=0;const wk=Object.keys(j.weekly);wk.forEach(w=>{nd+=Object.keys((j.weekly[w]||{}).days||{}).length});if(!nd)throw new Error('The file has no days in it');
   wkMerge(S.weekly,j.weekly);wkSaveLocal();toast('Importing '+nd+' days...');
   let ok=true;for(const w of wk){if(!(await wkSaveCloud(w)))ok=false}
@@ -2391,7 +2403,7 @@ S.flip=true;$('#nrFlip').checked=S.flip;
 loadLocal();
 if(!S.vin)S.vin={at:0,seed:1,items:NR_SEED.vin};if(!S.vmap)S.vmap={at:0,seed:1,map:NR_SEED.vmap.map,cap:NR_SEED.vmap.cap,n:NR_SEED.vmap.n};
 paintAll();loadBrand();S.ready=cloudLoad();paintHome();paintTabs();paintWeekly();go('home',true);
-window.__nr={S,build,aggregate,cardFor,openPreview,doViol,doRost,doVin,doVmap,chip,prog,paintAll,go,nrSwitchTab,nrApplyTab,paintResults};
+window.__nr={S,build,aggregate,cardFor,openPreview,doViol,doRost,doVin,doVmap,nrHistBuild,doHist,chip,prog,paintAll,go,nrSwitchTab,nrApplyTab,paintResults};
 })();
 
 </script>
