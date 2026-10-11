@@ -12,8 +12,9 @@ Desktop web tools for the Warrior Logistics management team (DLS4 / HSA7 / DXFL 
 | Calendar (all diary bookings, month / week / day / agenda) | `calendar.html` |
 | Recruitment | `recruitment.html` |
 | DVLA Tracker | `dvla.html` |
+| Netradyne Reports Hub (daily violations, obstructions, weekly counter, scorecard, trips report) | `netradyne.html` |
 
-Coming soon (shown greyed out on the home page and rail, not built yet): Kinesis, Netradyne.
+Coming soon (shown greyed out on the home page and rail, not built yet): Kinesis.
 
 All pages are single HTML files with no build step. They share a left-hand rail for switching pages, so keep them in the same folder.
 
