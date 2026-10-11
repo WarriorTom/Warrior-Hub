@@ -1941,9 +1941,15 @@ async function readRoster(file){const rows=await sheetRows(file);if(rows.length<
   if(ir<0||id<0)throw new Error('The roster needs reg and driver columns (van is optional)');
   const m={};rows.slice(1).forEach(r=>{const reg=normReg(r[ir]);if(reg)m[reg]={van:iv>=0?String(r[iv]||'').trim():'',driver:String(r[id]||'').trim()}});return m}
 
+function nrSiteFix(raw){const s=String(raw||'').trim().toUpperCase();if(!s)return '';const L=sitesList();if(!L.length)return s;
+  const nz=x=>String(x).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/S/g,'5').replace(/O/g,'0').replace(/[IL]/g,'1').replace(/B/g,'8').replace(/Z/g,'2'),t=nz(s);
+  const ex=L.find(x=>x.toUpperCase()===s);if(ex)return ex;const fz=L.find(x=>nz(x)===t);if(fz)return fz;
+  const ed=(a,b)=>{if(Math.abs(a.length-b.length)>1)return 9;let d=0,i=0,j=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}d++;if(d>1)return 9;if(a.length>b.length)i++;else if(a.length<b.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)};
+  const cl=L.filter(x=>ed(nz(x),t)<=1);return cl.length===1?cl[0]:''}
+const nrSiteEff=()=>{const L=sitesList();return S.site&&L.some(x=>x.toUpperCase()===S.site.toUpperCase())?S.site:''};
 function sitesList(){const s=[];(S.vin?S.vin.items:[]).forEach(v=>{if(v.site&&!s.includes(v.site))s.push(v.site)});return s}
 function aggregate(){
-  const vinDb={};S.vin.items.forEach(v=>{if(S.site&&v.site&&v.site.toUpperCase()!==S.site.toUpperCase())return;vinDb[v.vin]=v});
+  const vinDb={};const _st=nrSiteEff();S.vin.items.forEach(v=>{if(_st&&v.site&&v.site.toUpperCase()!==_st.toUpperCase())return;vinDb[v.vin]=v});
   const counts={};let skipped=0,matched=0;
   S.alerts.forEach(a=>{const vin=S.vmap.map[String(a.vehicle_id)],v=vin&&vinDb[vin];if(!v){skipped++;return}
     if(['FOLLOWING-DISTANCE','SIGN-VIOLATIONS','TRAFFIC-LIGHT-VIOLATION','DRIVER-DISTRACTION','SPEEDING-VIOLATIONS'].includes(a.alert_type))matched++;
@@ -2411,7 +2417,7 @@ function nrTripsPanel(ws){
     return '<div class="nr-wdc'+(hv?' on':'')+' clk" data-tjump="'+w+'" role="button" tabindex="0" title="Open this week"><small>WK '+amzWeek(w).n+' '+wDM(w)+'</small><b>'+(hv?tt:'\u2013')+'</b></div>'}).join('')+'</div>'}
   const note=unk?'<div class="nr-tnote">'+unk+' saved day'+(unk===1?'':'s')+' ha'+(unk===1?'s':'ve')+' no trip count (saved before trips were tracked) and '+(unk===1?'is':'are')+' left out of the rates.</div>':'';
   {const rv={};Object.values(S.weekly).forEach(w=>Object.values(w.days||{}).forEach(x=>(x.tv||[]).forEach(q=>{if(q[1])rv[q[0]]=q[1]})));
-   (S.vin?S.vin.items:[]).forEach(v=>{if(S.site&&v.site&&v.site.toUpperCase()!==S.site.toUpperCase())return;if(!byv[v.reg])byv[v.reg]={reg:v.reg,van:rv[v.reg]||'',n:0,d:{},w:{}}})}
+   (S.vin?S.vin.items:[]).forEach(v=>{const _st=nrSiteEff();if(_st&&v.site&&v.site.toUpperCase()!==_st.toUpperCase())return;if(!byv[v.reg])byv[v.reg]={reg:v.reg,van:rv[v.reg]||'',n:0,d:{},w:{}}})}
   const vr=Object.values(byv).sort((a,b)=>b.n-a.n||(+a.van||9999)-(+b.van||9999)),vsum=vr.reduce((q,x)=>q+x.n,0);
   const vinOf={};(S.vin?S.vin.items:[]).forEach(v=>{vinOf[v.reg]=v.vin});
   const cols=R===1?Array.from({length:7},(_,i)=>{const d=wAdd(ws,i);return{k:'d',key:d,h:wParse(d).toLocaleDateString('en-GB',{weekday:'short'}).toUpperCase()}}):(R&&R<=4?wks.map(w=>({k:'w',key:w,h:'WK '+amzWeek(w).n})):[]);
@@ -2456,7 +2462,7 @@ async function doRost(f){nrDayCheck();S.ack=false;rTok.v=1;const tok=rTok={v:0};
     S.rosterDropped=r.list.filter(x=>!x.inDb).length;r.list=r.list.filter(x=>x.inDb);
     S.rosterList=r.list;S.roster=rosterFromList(r.list);S.rosterName=f.name;nrRosterHeld();S.built=false;S.nameEdits={};S.obsEdits={};S.pendO={};
     if(r.head.date){S.date=r.head.date;S.metaSrc='Read from roster'}else S.metaSrc='Date not found on the roster - type it in';
-    if(r.head.site){S.site=r.head.site}
+    if(r.head.site){const fx=nrSiteFix(r.head.site);if(fx)S.site=fx;else if(!S.site&&sitesList().length===1)S.site=sitesList()[0]}
     const bad=r.list.filter(x=>!x.ok).length;chip('#chRost',bad?'CHECK':'READY',bad?'warn':'');prog('#pRost',1,'EXTRACTED 100%');
     cache.clear();paintAll();paintResults();toast(r.list.length+' vans matched to the VIN database'+(S.rosterDropped?', '+S.rosterDropped+' ignored':'')+(bad?' - '+bad+' to check':''));if(bad)openRoster();return}
   S.rosterList=null;chip('#chRost','READING','busy');
