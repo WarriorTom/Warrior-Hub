@@ -12,7 +12,8 @@ Desktop web tools for the Warrior Logistics management team (DLS4 / HSA7 / DXFL 
 | Calendar (all diary bookings, month / week / day / agenda) | `calendar.html` |
 | Recruitment | `recruitment.html` |
 | DVLA Tracker | `dvla.html` |
-| Netradyne Reports Hub (daily violations, obstructions, weekly counter, scorecard, trips report) | `netradyne.html` |
+| Netradyne (violation coaching cards, weekly audit) | `netradyne.html` |
+| MOT Tracker (MOT due dates, bookings to the Calendar, VINs, spreadsheet import) | `mot-tracker.html` |
 
 Coming soon (shown greyed out on the home page and rail, not built yet): Kinesis.
 
@@ -24,3 +25,6 @@ All pages are single HTML files with no build step. They share a left-hand rail 
 
 ## Sign-in
 - Access is by invitation only, using Firebase Authentication (email + password) plus an approved-email list in Firestore. See `FIREBASE-SETUP.md`.
+
+## MOT Tracker data
+- Vehicles are stored in the Firestore collection `mot_vehicles`; MOT bookings are written into the Calendar's `bookings` collection. The 13 current vans load automatically the first time the page is opened while `mot_vehicles` is empty.
