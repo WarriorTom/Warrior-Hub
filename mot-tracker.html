@@ -2131,7 +2131,7 @@ body[data-dv="7"] .m-c3 b.m-w4{font-size:25px}
       <div class="wp-sub">VEHICLE MOT DATES</div>
     </div>
     <div class="wp-body"><div class="wp-date"><small>TODAY</small><b id="mDate">&nbsp;</b></div></div>
-    <div class="wp-nav"><div><div class="sb-row nr-nv" data-mnav="add" tabindex="0" role="button"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="sb-lb">Add vehicle</span></div><a class="sb-row nr-nv" id="mChkLink" href="https://www.rac.co.uk/car-care/mot-checker" target="_blank" rel="noopener"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span><span class="sb-lb">MOT check</span></a><div class="sb-row nr-nv" id="mImpBtn" tabindex="0" role="button"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg></span><span class="sb-lb">Import vehicles</span></div><div class="sb-row nr-nv" id="mCsv" tabindex="0" role="button"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg></span><span class="sb-lb">Export vehicles</span></div></div></div>
+    <div class="wp-nav"><div><div class="sb-row nr-nv" data-mnav="add" tabindex="0" role="button"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="sb-lb">Add vehicle</span></div><a class="sb-row nr-nv" id="mChkLink" href="https://www.rac.co.uk/car-care/mot-checker" target="_blank" rel="noopener"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span><span class="sb-lb">MOT check</span></a><div class="sb-row nr-nv" id="mImpBtn" tabindex="0" role="button"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg></span><span class="sb-lb">Import vehicles</span></div><div class="sb-row nr-nv" id="mCsv" tabindex="0" role="button"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg></span><span class="sb-lb">Export vehicles</span></div><div class="sb-row nr-nv" id="mRep" tabindex="0" role="button"><span class="sb-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><span class="sb-lb">Report</span></div></div></div>
   </div>
 </aside>
 <div id="pageInput" class="shell">
@@ -2877,10 +2877,10 @@ document.addEventListener('click',e=>{let t;
   t=e.target.closest('[data-mdel]');if(t){openDel(t.dataset.mdel);return}
   if(e.target.closest('#mImpBtn')){openImport();return}
   t=e.target.closest('.m-row[data-id]');if(t&&!e.target.closest('.m-ac,.m-inl,.m-pw')&&!$('#nrModal').className){openEdit(t.dataset.id);return}
-  if(e.target.closest('#mCsv')){exportCsv();return}});
+  if(e.target.closest('#mCsv')){exportCsv();return}if(e.target.closest('#mRep')){motReport();return}});
 document.addEventListener('input',e=>{if(e.target.classList&&e.target.classList.contains('m-chk')){e.target.classList.remove('bad');const sv=document.querySelector('.nr-ib.save');if(sv)sv.classList.toggle('show',!!e.target.value.trim());const pw=e.target.closest('.m-pw');if(pw){const d=parsePasted(e.target.value);pw.classList.toggle('has',!!e.target.value.trim());pw.classList.toggle('valid',!!d);const pb=pw.querySelector('.m-pvw b');if(pb)pb.textContent=d?fmt(plusYear(d)):''}return}
   if(e.target.classList&&e.target.classList.contains('m-inl')){const i=e.target;let v=i.value.replace(/[^\d]/g,'').slice(0,8);if(v.length>4)v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);else if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);i.value=v;i.classList.remove('bad');if(v.length===10)commitDue(i);return}if(e.target.id==='mQ'){S.q=e.target.value;paint()}});
-document.addEventListener('keydown',e=>{if(e.target.classList&&e.target.classList.contains('m-inl')){if(e.key==='Enter'){e.preventDefault();commitDue(e.target)}if(e.key==='Escape'&&e.target.classList.contains('m-chk')){S.edit=null;paint()}e.stopPropagation();return}if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[data-mnav],#mImpBtn,#mCsv')){e.preventDefault();e.target.click();return}if(e.key==='Enter'&&e.target.matches&&e.target.matches('.m-row[data-id]')){openEdit(e.target.dataset.id);return}if(e.key==='Escape'&&S.edit&&$('#nrModal').className!=='on'){S.edit=null;paint();return}if(e.key==='Escape'&&$('#nrModal').className==='on')closeModal()});
+document.addEventListener('keydown',e=>{if(e.target.classList&&e.target.classList.contains('m-inl')){if(e.key==='Enter'){e.preventDefault();commitDue(e.target)}if(e.key==='Escape'&&e.target.classList.contains('m-chk')){S.edit=null;paint()}e.stopPropagation();return}if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[data-mnav],#mImpBtn,#mCsv,#mRep')){e.preventDefault();e.target.click();return}if(e.key==='Enter'&&e.target.matches&&e.target.matches('.m-row[data-id]')){openEdit(e.target.dataset.id);return}if(e.key==='Escape'&&S.edit&&$('#nrModal').className!=='on'){S.edit=null;paint();return}if(e.key==='Escape'&&$('#nrModal').className==='on')closeModal()});
 /* statuses follow the calendar: repaint when the day changes, on return to the tab, and every minute */
 let lastDay=today();const tick=()=>{if(today()!==lastDay){lastDay=today();paint()}};
 setInterval(tick,30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){tick();if(S.ready&&!demo())loadCloud()}});
@@ -2894,7 +2894,82 @@ document.body.dataset.sv='7';
 document.body.dataset.bv='5';
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){const p=document.getElementById('mNotePop');if(p)p.remove()}});
 document.body.dataset.pn='8';document.body.dataset.av='1';document.body.dataset.cv='4';document.body.dataset.hc='1';document.body.dataset.iv='7';
-window.__m={parsePasted,S,paint,plusYear,daysLeft,status,parseDmy,fmt,put,drop,rows,counts,normReg,showReg,openAdd,openEdit,openDel,openBook,checkRow,cellDate,calBuild,exportCsv,today};
+/* ---------- MOT report: one image of the whole fleet, drawn from the live records ---------- */
+const REP={EM:'#078A50',BG:'#F1F7F3',LINE:'#DCE7E0',TX:'#17251F',MU:'#75847C',RED:'#DC2626',ORG:'#EA580C',AMB:'#D97706',TEAL:'#0891B2',GRN:'#16A36A',DAMB:'#B45309',NONE:'#6B7782'};
+const REP_KC={over:REP.RED,d7:REP.ORG,d30:REP.AMB,ok:REP.GRN,none:REP.NONE};
+async function repFonts(){if(!document.getElementById('repOsw')){const l=document.createElement('link');l.id='repOsw';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap';document.head.appendChild(l)}
+  try{await Promise.all(['700 40px Oswald','500 12px Inter','600 12px Inter','700 12px Inter'].map(f=>document.fonts.load(f)))}catch(e){}}
+function repMix(a,b,t){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const x=p(a),y=p(b);return'#'+x.map((v,i)=>('0'+Math.round(v*(1-t)+y[i]*t).toString(16)).slice(-2)).join('')}
+function repData(){
+  const all=rows().slice().sort((a,b)=>(a.n==null?1e9:a.n)-(b.n==null?1e9:b.n)||a.reg.localeCompare(b.reg));
+  const booked=all.filter(r=>r.bk),need=all.filter(r=>['over','d7','d30'].includes(r.st.k)&&!r.bk);
+  const c=counts(all);return{all,booked,need,kp:[['TOTAL VEHICLES',all.length,REP.EM],['OVERDUE',c.over,REP.RED],['DUE IN 7 DAYS',c.d7,REP.ORG],['DUE IN 30 DAYS',c.d7+c.d30,REP.AMB],['BOOKED',booked.length,REP.TEAL],['NEED BOOKING',need.length,REP.DAMB]]}}
+function repDraw(){
+  const D=repData(),R=REP,all=D.all,n=all.length,W=1560,M=40,GAP=24,CWd=(W-2*M-GAP)/2,RH=46,CH=64,SH=46,SC=2;
+  const lfix=SH+(CH+10)*Math.max(1,D.booked.length)+24+SH+(CH+10)*Math.max(1,D.need.length)+24+SH+30+16,rfix=SH+30+16;
+  const k=n?Math.max(2,Math.min(n,Math.round((rfix+RH*n-lfix)/(2*RH)))):0;
+  const lastL=288+lfix+RH*k-24+0,lastR=288+rfix+RH*(n-k);
+  const H=Math.max(lastL,lastR)+14+54+10;
+  const cv=document.createElement('canvas');cv.width=W*SC;cv.height=Math.ceil(H)*SC;const c=cv.getContext('2d');c.scale(SC,SC);c.textBaseline='alphabetic';
+  const INT='Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif',OSW='Oswald,"Arial Narrow",Impact,sans-serif';
+  const fnt=(w,s,f)=>c.font=w+' '+s+'px '+(f||INT);
+  const T=(x,y,t,w,s,col,al,f)=>{fnt(w,s,f);c.fillStyle=col;c.textAlign=al||'left';c.fillText(String(t),x,y)};
+  const tw=(t,w,s)=>{fnt(w,s);return c.measureText(String(t)).width};
+  const clip=(t,w,s,mx)=>{t=String(t);if(tw(t,w,s)<=mx)return t;while(t.length>1&&tw(t+'…',w,s)>mx)t=t.slice(0,-1);return t+'…'};
+  const rr=(x,y,w,h,r)=>{c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()};
+  const card=(x,y,w,h,bar)=>{c.save();c.shadowColor='rgba(10,60,35,.12)';c.shadowBlur=8;c.shadowOffsetY=2;rr(x,y,w,h,4);c.fillStyle='#fff';c.fill();c.restore();rr(x,y,w,h,4);c.strokeStyle=R.LINE;c.lineWidth=1;c.stroke();if(bar){c.fillStyle=bar;c.fillRect(x,y+1,4,h-2)}};
+  const plate=(x,y)=>{};
+  const plateAt=(x,y,reg)=>{const s=32/(36*1.0897);c.save();c.translate(x,y);c.scale(s,s);if(typeof nrDrawPlate==='function'){const o=NRO.PLATE;NRO.PLATE='#FFD21F';try{nrDrawPlate(c,0,0,showReg(reg))}finally{NRO.PLATE=o}}c.restore();c.textBaseline='alphabetic'};
+  const badge=(xr,y,col,t)=>{fnt('700',10);const w=c.measureText(t).width+20;c.fillStyle=repMix(col,'#ffffff',.88);rr(xr-w,y,w,22,3);c.fill();c.strokeStyle=repMix(col,'#ffffff',.55);c.lineWidth=1;c.stroke();T(xr-w/2,y+15,t,'700',10,col,'center')};
+  const head=(x,y,t,sub,col)=>{c.fillStyle=col;c.fillRect(x,y+4,5,26);T(x+16,y+29,t,'700',24,R.TX,'left',OSW);T(x+CWd,y+27,sub,'500',12,R.MU,'right');c.fillStyle=R.LINE;c.fillRect(x,y+39,CWd,1);return y+SH};
+  const dd=r=>r.n==null?'-':r.n,kc=r=>REP_KC[r.st.k]||R.NONE;
+  c.fillStyle=R.BG;c.fillRect(0,0,W,H);
+  c.fillStyle=R.EM;c.fillRect(0,0,W,130);
+  const now=new Date(),DAYN=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'],MON=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  T(M,44,'WARRIOR LOGISTICS','700',13,repMix(R.EM,'#ffffff',.78));T(M,100,'MOT TRACKER REPORT','700',50,'#fff','left',OSW);
+  T(W-M,44,DAYN[now.getDay()],'700',13,repMix(R.EM,'#ffffff',.78),'right');T(W-M,100,now.getDate()+' '+MON[now.getMonth()]+' '+now.getFullYear(),'700',34,'#fff','right',OSW);
+  const kw=(W-2*M-60)/6;
+  D.kp.forEach((q,i)=>{const x=M+i*(kw+12),y=156;card(x,y,kw,96);c.fillStyle=q[2];c.fillRect(x,y+1,kw,3);T(x+kw/2,y+30,q[0],'700',11,R.MU,'center');T(x+kw/2,y+78,q[1],'700',40,q[2],'center')});
+  const xl=M,xr=M+CWd+GAP;let y=288;
+  y=head(xl,y,'BOOKED',D.booked.length+' confirmed MOT appointment'+(D.booked.length===1?'':'s'),R.TEAL);
+  if(!D.booked.length){card(xl,y,CWd,CH,R.TEAL);T(xl+20,y+38,'No MOTs booked','500',14,R.MU);y+=CH+10}
+  D.booked.forEach(r=>{const b=r.bk;card(xl,y,CWd,CH,R.TEAL);plateAt(xl+18,y+16,r.reg);
+    T(xl+176,y+26,'BOOKED IN','700',9,R.MU);T(xl+176,y+48,fmt(b.date)+(b.time?' · '+b.time:''),'700',14,R.TX);
+    T(xl+346,y+26,'WHERE','700',9,R.MU);T(xl+346,y+48,clip(b.place||'',700,14,160),'700',14,R.TX);
+    T(xl+528,y+26,'MOT DUE','700',9,R.MU);T(xl+528,y+48,r.due?fmt(r.due):'-','700',14,R.TX);
+    if(r.n!=null)badge(xl+CWd-14,y+21,r.n<0?R.RED:R.AMB,r.n<0?'OVERDUE '+(-r.n)+'D':r.n+(r.n===1?' DAY':' DAYS'));y+=CH+10});
+  y+=14;y=head(xl,y,'NEEDS BOOKING','due within 30 days or overdue, nothing booked',R.DAMB);
+  if(!D.need.length){card(xl,y,CWd,CH,R.GRN);T(xl+20,y+38,'Everything due is booked','500',14,R.GRN);y+=CH+10}
+  D.need.forEach(r=>{card(xl,y,CWd,CH,kc(r));plateAt(xl+18,y+16,r.reg);
+    T(xl+176,y+26,'MOT DUE','700',9,R.MU);T(xl+176,y+48,fmt(r.due),'700',14,R.TX);
+    T(xl+300,y+26,'DAYS LEFT','700',9,R.MU);T(xl+300,y+50,dd(r),'700',16,kc(r));
+    T(xl+400,y+26,'BOOKING','700',9,R.MU);T(xl+400,y+48,'Not booked','500',13,R.DAMB);
+    badge(xl+CWd-14,y+21,kc(r),r.n<0?'OVERDUE':r.n+(r.n===1?' DAY LEFT':' DAYS LEFT'));y+=CH+10});
+  y+=14;
+  const fleet=(x,y,grp,title,sub)=>{y=head(x,y,title,sub,R.EM);const h=30+RH*grp.length+6;card(x,y,CWd,h);
+    [[18,'REGISTRATION'],[176,'MOT DUE'],[290,'DAYS LEFT'],[372,'STATUS'],[470,'BOOKING']].forEach(q=>T(x+q[0],y+20,q[1],'700',9,R.MU));
+    c.fillStyle=R.LINE;c.fillRect(x,y+29,CWd,1);let yy=y+30;
+    grp.forEach((r,i)=>{plateAt(x+18,yy+7,r.reg);T(x+176,yy+29,r.due?fmt(r.due):'-','700',13,R.TX);T(x+290,yy+31,dd(r),'700',16,kc(r));
+      fnt('700',10);const bw=c.measureText(r.st.t).width+20;badge(x+372+bw,yy+12,kc(r),r.st.t);
+      const b=r.bk;T(x+470,yy+29,b?clip(fmt(b.date).slice(0,5)+' · '+(b.place||''),500,12,CWd-470-12):'Not booked','500',12,b?R.TEAL:R.MU);
+      if(i<grp.length-1){c.fillStyle=R.LINE;c.fillRect(x+14,yy+RH-1,CWd-28,1)}yy+=RH});return y+h};
+  const L=all.slice(0,k),Rg=all.slice(k);
+  const fl=fleet(xl,y,L,'FULL FLEET','soonest MOT first  ·  1 to '+k+' of '+n);
+  const fr=Rg.length?fleet(xr,288,Rg,'FULL FLEET  ·  CONTINUED',(k+1)+' to '+n+' of '+n):288;
+  const yb=Math.max(fl,fr)+14;c.fillStyle=R.LINE;c.fillRect(M,yb,W-2*M,1);
+  T(M,yb+30,'Status: Overdue, due within 7 days, due within 30 days, not due.','500',11,R.MU);T(W-M,yb+30,'Generated by Warrior Hub','500',11,R.MU,'right');
+  const out=document.createElement('canvas');const Hh=Math.ceil(yb+54);out.width=W*SC;out.height=Hh*SC;out.getContext('2d').drawImage(cv,0,0);return out}
+async function motReport(){
+  if(!rows().length){toast('Add a vehicle first');return}
+  toast('Building the report...');await repFonts();try{await nrFonts();await document.fonts.load('20px NRPlate')}catch(e){}
+  let cv;try{cv=repDraw()}catch(e){console.error(e);toast('Could not build the report');return}
+  const url=cv.toDataURL('image/png'),nm='MOT report '+fmt(today()).replace(/\//g,'-')+'.png';
+  shell(0,'MOT TRACKER','MOT report','<div class="nr-form"><img src="'+url+'" alt="MOT report" style="display:block;width:100%;height:auto;border:1px solid var(--border)"></div>',
+    '<button class="nr-btn ghost" data-close="1">Close</button><button class="nr-btn ghost" id="mRpCp">Copy image</button><button class="nr-btn" id="mRpDl">Download PNG</button>');
+  $('#mRpDl').onclick=()=>{cv.toBlob(b=>{dl(b,nm);toast('Report downloaded')},'image/png')};
+  $('#mRpCp').onclick=()=>{cv.toBlob(async b=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);toast('Report copied')}catch(e){toast('Copy not available here - use Download')}},'image/png')}}
+
+window.__m={parsePasted,S,paint,plusYear,daysLeft,status,parseDmy,fmt,put,drop,rows,counts,normReg,showReg,openAdd,openEdit,openDel,openBook,checkRow,cellDate,calBuild,exportCsv,today,motReport,repData,repDraw};
 })();
 
 </script>
