@@ -3011,6 +3011,32 @@ function findWaveLabel(stagingMinutes, offsetMinutes=0){
   return [null,null];
 }
 
+/* If the pasted wave plan uses times that are not in the saved wave schedule
+   (e.g. today's 12:25 / 12:50 against a 12:15 / 12:40 schedule, or an empty
+   cycle 2 schedule), every route used to show "WAVE ?". Now the wave times
+   are taken from the plan itself for this run. If none of the plan's times
+   match the saved schedule, waves are numbered 1.. from the earliest time;
+   if only some do not match, they are added after the highest saved wave.
+   The saved schedule is never changed. */
+function adaptWavesToPlan(stagingTimes){
+  WAVE_TIMES = WAVE_SETS[CYCLE] || {};
+  const mins = [...new Set(Object.values(stagingTimes).filter(t => t != null))].sort((a,b) => a-b);
+  if(!mins.length) return null;
+  const known = new Set(Object.values(WAVE_TIMES).map(toMinutes));
+  const missing = mins.filter(t => !known.has(t));
+  if(!missing.length) return null;
+  const next = {};
+  let n = 0;
+  if(missing.length === mins.length){
+    mins.forEach(t => { next['WAVE ' + (++n)] = minutesToHHMM(t); });
+  }else{
+    Object.entries(WAVE_TIMES).forEach(([k,v]) => { next[k] = v; const m = /(\d+)/.exec(k); if(m) n = Math.max(n, +m[1]); });
+    missing.forEach(t => { next['WAVE ' + (++n)] = minutesToHHMM(t); });
+  }
+  WAVE_TIMES = next;
+  return next;
+}
+
 /* ---------- main pipeline ---------- */
 async function runPipeline(driverOverrides={}, droppedRoutes=new Set()){
   try{
@@ -3042,6 +3068,10 @@ async function runPipeline(driverOverrides={}, droppedRoutes=new Set()){
     const hvText = document.getElementById('hvText').value;
 
     const {staging, stagingTimes, serviceInfo} = parseStagingText(wpText);
+    {
+      const adapted = adaptWavesToPlan(stagingTimes);
+      if(adapted){ log('Wave times taken from the wave plan: ' + Object.entries(adapted).map(([k,v]) => k + ' ' + v).join(', ')); setCycleChip('WAVE TIMES TAKEN FROM PLAN', false); }
+    }
     const atlasCounts = parseAtlasText(hvText);
     const collectionCounts = parseHomeCollectionsText(hcText);
     log(`Staging lines matched: ${Object.keys(staging).length}`);
