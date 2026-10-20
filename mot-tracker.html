@@ -2751,19 +2751,19 @@ function shell(small,kicker,title,inner,foot){const m=$('#nrModal');m.className=
   m.innerHTML='<div class="nr-ov" data-close="1"><div class="nr-box'+(small?' nr-sm':'')+'" role="dialog" aria-label="'+esc(title)+'"><div class="nr-bh"><div><small>'+kicker+'</small><h3>'+title+'</h3></div><button class="nr-ib" data-close="1" title="Close">'+ic('x',16)+'</button></div>'+inner+'<div class="nr-sa pad">'+foot+'</div></div></div>'}
 function maskDate(i){i.addEventListener('input',()=>{let v=i.value.replace(/[^\d]/g,'').slice(0,8);if(v.length>4)v=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);else if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);i.value=v})}
 function openAdd(pre){
-  shell(1,'MOT TRACKER','Add vehicle','<div class="nr-form"><label class="w2">Vehicle registration<input id="mfR" placeholder="AB12 CDE" autocomplete="off" style="text-transform:uppercase"></label><label class="w2"><span>VIN <em class="m-op">optional</em></span><input id="mfV" placeholder="17 characters" maxlength="20" autocomplete="off" style="text-transform:uppercase"></label><label class="w2"><span>MOT due date <em class="m-op">optional</em></span><input id="mfD" placeholder="DD/MM/YYYY" inputmode="numeric" maxlength="10" autocomplete="off"></label><div class="m-err" id="mErr"></div></div>',
+  shell(1,'MOT TRACKER','Add vehicle','<div class="nr-form"><label class="w2">Vehicle registration<input id="mfR" placeholder="AB12 CDE" autocomplete="off" style="text-transform:uppercase"></label><label class="w2"><span>VIN</span><input id="mfV" placeholder="17 characters" maxlength="20" autocomplete="off" style="text-transform:uppercase"></label><label class="w2"><span>MOT due date <em class="m-op">optional</em></span><input id="mfD" placeholder="DD/MM/YYYY" inputmode="numeric" maxlength="10" autocomplete="off"></label><div class="m-err" id="mErr"></div></div>',
    '<button class="nr-btn ghost" data-close="1">Cancel</button><button class="nr-btn" id="mGo">'+ic('plus',18)+'Add vehicle</button>');
   maskDate($('#mfD'));if(pre)$('#mfR').value=pre;$('#mfR').focus();
   const go=()=>{const reg=normReg($('#mfR').value),due=parseDmy($('#mfD').value),er=$('#mErr');er.textContent='';
     if(!reg)return er.textContent='Enter the vehicle registration.';if(!validReg(reg))return er.textContent='That does not look like a registration.';
     if($('#mfD').value.trim()&&!due)return er.textContent='Enter a real date as DD/MM/YYYY, or leave it blank.';
-    const vin=normVin($('#mfV').value);if(vin&&!validVin(vin))return er.textContent='A VIN is 17 letters and numbers (no I, O or Q).';
+    const vin=normVin($('#mfV').value);if(!vin)return er.textContent='Enter the VIN - every vehicle needs one.';if(!validVin(vin))return er.textContent='A VIN is 17 letters and numbers (no I, O or Q).';
     if(S.v[reg])return er.textContent=showReg(reg)+' is already in the tracker - use Edit to record its new MOT.';
     if(vin&&Object.values(S.v).some(x=>x.vin===vin))return er.textContent='That VIN is already on another vehicle.';
     put({id:reg,reg:showReg(reg),vin,due:due||'',done:'',bk:null});closeModal();paint();toast(showReg(reg)+' added')};
   $('#mGo').onclick=go;$('#nrModal').querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')go()}))}
 function openEdit(id){const r=S.v[id];if(!r)return;
-  shell(1,'MOT TRACKER','Edit vehicle','<div class="nr-form"><label class="w2">Vehicle registration<input id="mfR" value="'+esc(showReg(r.reg))+'" autocomplete="off" style="text-transform:uppercase"></label><label class="w2"><span>VIN <em class="m-op">optional</em></span><input id="mfV" value="'+esc(r.vin||'')+'" placeholder="17 characters" maxlength="20" autocomplete="off" style="text-transform:uppercase"></label><label class="w2">New MOT completed date<input id="mfC" value="'+esc(fmt(r.done))+'" placeholder="DD/MM/YYYY" inputmode="numeric" maxlength="10" autocomplete="off"></label>'+
+  shell(1,'MOT TRACKER','Edit vehicle','<div class="nr-form"><label class="w2">Vehicle registration<input id="mfR" value="'+esc(showReg(r.reg))+'" autocomplete="off" style="text-transform:uppercase"></label><label class="w2"><span>VIN</span><input id="mfV" value="'+esc(r.vin||'')+'" placeholder="17 characters" maxlength="20" autocomplete="off" style="text-transform:uppercase"></label><label class="w2">New MOT completed date<input id="mfC" value="'+esc(fmt(r.done))+'" placeholder="DD/MM/YYYY" inputmode="numeric" maxlength="10" autocomplete="off"></label>'+
    '<div class="m-pv" id="mPv"></div><p class="m-note">'+(r.due?'Current MOT due date: <b>'+fmt(r.due)+'</b>':'No MOT due date set yet')+'. It only changes when you save a completed date. The next MOT is due one calendar year after the test.</p><div class="m-err" id="mErr"></div></div>',
    '<button class="nr-btn ghost" data-close="1">Cancel</button><button class="nr-btn" id="mGo">'+ic('save',16)+'Save</button>');
   maskDate($('#mfC'));
@@ -2776,7 +2776,7 @@ function openEdit(id){const r=S.v[id];if(!r)return;
     if(reg!==id&&S.v[reg])return er.textContent=showReg(reg)+' is already in the tracker.';
     if(raw&&!done)return er.textContent='Enter the completed date as DD/MM/YYYY.';
     if(done&&done>today())return er.textContent='The MOT cannot have been completed in the future.';
-    const vin=normVin($('#mfV').value);if(vin&&!validVin(vin))return er.textContent='A VIN is 17 letters and numbers (no I, O or Q).';
+    const vin=normVin($('#mfV').value);if(!vin)return er.textContent='Enter the VIN - every vehicle needs one.';if(!validVin(vin))return er.textContent='A VIN is 17 letters and numbers (no I, O or Q).';
     if(vin&&Object.values(S.v).some(x=>x.id!==id&&x.vin===vin))return er.textContent='That VIN is already on another vehicle.';
     const nr={id:reg,reg:showReg(reg),vin,due:done?plusYear(done):r.due,done:done||r.done||'',bk:r.bk};
     if(done&&r.bk){calDone(r);nr.bk=null}else if(r.bk&&(reg!==id||vin!==(r.vin||'')))calPut(calBuild(nr),true);
@@ -2806,20 +2806,20 @@ function cellDate(v){if(v instanceof Date&&!isNaN(v)){const d=new Date(v.getTime
 function checkRow(r,v,d){const reg=normReg(r),vin=normVin(v),noD=(d===''||d==null||String(d).trim()===''),due=noD?'':cellDate(d);
   if(!reg&&!vin&&(d===''||d==null))return null;
   if(!reg||!validReg(reg))return{err:'registration "'+String(r||'').trim()+'" is not valid'};
-  if(vin&&!validVin(vin))return{err:'VIN "'+String(v).trim()+'" is not 17 letters/numbers (no I, O or Q)'};
+  if(!vin)return{err:'no VIN for '+showReg(reg)+' - every vehicle needs one'};if(!validVin(vin))return{err:'VIN "'+String(v).trim()+'" is not 17 letters/numbers (no I, O or Q)'};
   if(!noD&&!due)return{err:'due date "'+(d instanceof Date?'':String(d==null?'':d).trim())+'" is not a real DD/MM/YY date'};
   return{reg,vin,due}}
 async function readSheet(file){await loadXlsx();const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]];
   if(!ws)throw new Error('That file has no sheet to read');return XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''})}
 async function downloadTemplate(){
-  try{await loadXlsx();const ws=XLSX.utils.aoa_to_sheet([['REG','VIN (optional)']]);ws['!cols']=[{wch:14},{wch:26}];
+  try{await loadXlsx();const ws=XLSX.utils.aoa_to_sheet([['REG','VIN']]);ws['!cols']=[{wch:14},{wch:26}];
     for(let r=1;r<=500;r++)['A','B'].forEach(c=>{ws[c+(r+1)]={t:'s',v:'',z:'@'}});ws['!ref']='A1:B501';
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'MOT import');
     dl(new Blob([XLSX.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'MOT import template.xlsx')}
-  catch(e){console.error(e);dl(new Blob(['REG,VIN (optional)\r\n'],{type:'text/csv'}),'MOT import template.csv');toast('Spreadsheet tool unavailable - downloaded a CSV template instead')}}
+  catch(e){console.error(e);dl(new Blob(['REG,VIN\r\n'],{type:'text/csv'}),'MOT import template.csv');toast('Spreadsheet tool unavailable - downloaded a CSV template instead')}}
 function openImport(){let pending=null;
-  shell(0,'MOT TRACKER','Import vehicles','<div class="nr-form m-imp"><p class="m-note">Fill in the blank template, then upload it - the vehicles are added straight away. Column <b>A</b> = REG, column <b>B</b> = VIN (<b>optional</b>). The first row can be the headings.</p>'+
-   '<div class="m-sheet" aria-hidden="true"><span></span><b>A</b><b>B</b><i>1</i><em>REG</em><em>VIN</em><i>2</i><em>AB12 CDE</em><em>optional</em></div>'+
+  shell(0,'MOT TRACKER','Import vehicles','<div class="nr-form m-imp"><p class="m-note">Fill in the blank template, then upload it - the vehicles are added straight away. Column <b>A</b> = REG, column <b>B</b> = VIN (<b>required</b>). The first row can be the headings.</p>'+
+   '<div class="m-sheet" aria-hidden="true"><span></span><b>A</b><b>B</b><i>1</i><em>REG</em><em>VIN</em><i>2</i><em>AB12 CDE</em><em>WF0EXXTT…</em></div>'+
    '<div class="m-ia"><button class="m-ib m-ib1" id="mTpl" type="button"><i class="m-sn">1</i><span class="m-ii"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC.dl+'</svg></span><span class="m-it"><b>Download blank template</b><small>Excel file with REG and VIN columns</small></span></button>'+
    '<button class="m-ib m-ib2" id="mPick" type="button"><i class="m-sn">2</i><span class="m-ii"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC.up+'</svg></span><span class="m-it"><b>Upload spreadsheet</b><small>.xlsx or .csv - vehicles are added straight away</small></span></button></div>'+
    '<div class="m-sum" id="mSum" hidden></div><div class="m-err" id="mErr"></div></div>',
@@ -2838,14 +2838,14 @@ function openImport(){let pending=null;
     $('#mGo').textContent=res.ok.length?'Import '+res.ok.length+' vehicle'+(res.ok.length===1?'':'s'):'Import'};
   $('#mPick').onclick=()=>{const i=document.createElement('input');i.type='file';i.accept='.xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv';
     i.onchange=async()=>{const f=i.files[0];if(!f)return;$('#mErr').textContent='';sum('<b>Reading '+esc(f.name)+'…</b>');
-      try{const rows=await readSheet(f);const res=analyse(rows);if(!res.ok.length&&!res.dup.length&&!res.bad.length){pending=null;sum('<b>'+esc(f.name)+'</b><p>No vehicles found. Put REG in column A and, if you have it, VIN in column B.</p>');return}res.ok.forEach(c=>put({id:c.reg,reg:showReg(c.reg),vin:c.vin,due:c.due,done:'',bk:null}));paint();
+      try{const rows=await readSheet(f);const res=analyse(rows);if(!res.ok.length&&!res.dup.length&&!res.bad.length){pending=null;sum('<b>'+esc(f.name)+'</b><p>No vehicles found. Put REG in column A and VIN in column B - both are required.</p>');return}res.ok.forEach(c=>put({id:c.reg,reg:showReg(c.reg),vin:c.vin,due:c.due,done:'',bk:null}));paint();
         if(!res.bad.length){closeModal();toast(res.ok.length+' vehicle'+(res.ok.length===1?'':'s')+' imported'+(res.dup.length?' · '+res.dup.length+' already in the tracker':''));return}
         sum('<b>'+esc(f.name)+'</b><div class="m-sr"><span class="g">'+res.ok.length+' imported</span><span>'+res.dup.length+' already in the tracker</span><span class="r">'+res.bad.length+' with problems</span></div><ul>'+res.bad.slice(0,8).map(x=>'<li>'+esc(x)+'</li>').join('')+(res.bad.length>8?'<li>…and '+(res.bad.length-8)+' more</li>':'')+'</ul><p>Fix these rows in the spreadsheet and upload it again - the ones that worked are already in the tracker.</p>')}
       catch(e){console.error(e);pending=null;sum('');$('#mErr').textContent=e.message||'Could not read that file'}};i.click()};
 }
 /* ---------- export ---------- */
 function exportCsv(){const all=rows();if(!all.length)return toast('Nothing to export yet');
-  const q=v=>'"'+String(v).replace(/"/g,'""')+'"',lines=[['Registration','MOT Due Date','Days Remaining','MOT Status'].map(q).join(',')].concat(all.map(r=>[showReg(r.reg),fmt(r.due),r.n==null?'':r.n,r.st.t].map(q).join(',')));
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"',lines=[['Registration','VIN','MOT Due Date','Days Remaining','MOT Status'].map(q).join(',')].concat(all.map(r=>[showReg(r.reg),r.vin||'',fmt(r.due),r.n==null?'':r.n,r.st.t].map(q).join(',')));
   dl(new Blob(['﻿'+lines.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'}),'MOT tracker '+fmt(today()).replace(/\//g,'-')+'.csv');toast(all.length+' vehicles exported')}
 
 /* ---------- inline MOT date for vehicles imported without one ---------- */
