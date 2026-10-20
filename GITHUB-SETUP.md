@@ -23,7 +23,7 @@ The **Demo** button on every page fills it with made-up sample data, so you can 
 1. Unzip `warrior-hub.zip` on your computer.
 2. On the empty repo page click **uploading an existing file** (or **Add file** then **Upload files**).
 3. Open the unzipped folder and select **all the files inside it** (not the folder itself) and drag them in:
-   `index.html`, `login.html`, `daily-tasks.html`, `recruitment.html`, `wave-plan-generator.html`, `posters.html`, `README.md`
+   `index.html`, `login.html`, `daily-tasks.html`, `recruitment.html`, `wave-plan-generator.html`, `posters.html`, `calendar.html`, `dvla.html`, `netradyne.html`, `mot-tracker.html`, `pave.html`, `README.md`
    (`.gitignore` is a hidden file and is optional; it is fine to skip it.)
 4. Do **not** add `recruitment-data-2026-10-03.json`.
 5. Scroll down, leave the message as it is, click **Commit changes**.

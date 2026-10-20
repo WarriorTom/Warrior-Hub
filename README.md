@@ -13,7 +13,8 @@ Desktop web tools for the Warrior Logistics management team (DLS4 / HSA7 / DXFL 
 | Recruitment | `recruitment.html` |
 | DVLA Tracker | `dvla.html` |
 | Netradyne (violation coaching cards, weekly audit) | `netradyne.html` |
-| MOT Tracker (MOT due dates, MOT bookings to the Calendar, VINs, spreadsheet import from a blank REG / VIN template) | `mot-tracker.html` |
+| MOT Tracker (MOT due dates, bookings to the Calendar, VINs, spreadsheet import) | `mot-tracker.html` |
+| PAVE (monthly van condition grades, fleet % Great vs 90% target) | `pave.html` |
 
 Coming soon (shown greyed out on the home page and rail, not built yet): Kinesis.
 
