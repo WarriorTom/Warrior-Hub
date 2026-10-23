@@ -887,7 +887,7 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
       <div class="wp-title"><small>WARRIOR LOGISTICS</small><h1>RECRUITMENT</h1></div></div>
       <div class="wp-sub">DELIVERY READY DRIVERS</div>
     </div>
-    <div class="wp-body" style="padding:0 16px 16px!important;gap:16px!important">
+    <div class="wp-body" style="padding:0 16px 16px!important;gap:16px!important;margin-top:-6px!important">
       <button class="wp-btn wp-new" id="newBtn">＋ NEW STARTER</button>
       <button class="wp-btn wp-new" id="req100Btn" style="margin:0!important" data-req100="1" title="Copy a request for 100 numbers and Transporter IDs"><span class="bic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></span><span class="blb">REQUEST 100'S</span></button>
     </div>
@@ -1014,7 +1014,7 @@ firstL=false;const d=sn.data();let ch=false;
 if(Array.isArray(d.onby)&&d.onby.length&&JSON.stringify(d.onby)!==JSON.stringify(ONBY)){ONBY=d.onby.slice();lsSet(OBK,JSON.stringify(ONBY));ch=true}
 if(Array.isArray(d.stations)&&d.stations.length&&JSON.stringify(d.stations)!==JSON.stringify(STATIONS)){STATIONS=d.stations.slice();L.forEach(c=>{if(c.site&&!STATIONS.includes(c.site))STATIONS.push(c.site)});lsSet(SK,JSON.stringify(STATIONS));ch=true}
 if(ch&&typeof render==='function')render()},e=>console.error(e))}).catch(e=>console.error(e))}
-let view=(lsGet('wl_recruit_view2')==='grid')?'grid':'list',openDD=null,q='',stF='ALL',osmF='ALL',dbsF='ALL',sort='close';
+let view=(lsGet('wl_recruit_view2')==='grid')?'grid':'list',openDD=null,q='',stF='PIPE',osmF='ALL',dbsF='ALL',sort='close';
 const dv=c=>c.dbs||'';
 const dbsRank=c=>({COMPLETE:5,PENDING:4,AWAITING:3,DRAFT:2,FAILED:0})[dv(c)]??1;
 const needIds=()=>L.filter(c=>c.status!=='REJECTED'&&(!String((c.v||{}).h100||'').trim()||!String((c.v||{}).trid||'').trim()));
@@ -1039,7 +1039,7 @@ function render(){
   const act=L.filter(c=>c.status==='ACTIVE');
   const dn=d=>L.filter(c=>dv(c)===d).length;
   const sn=x=>L.filter(c=>c.status===x).length,wk=Date.now()-7*864e5;
-  const stats=[['ALL','All starters','users',L.length],['PIPE','Pipeline','user',L.filter(c=>isStat(c,'PIPE')).length],['ACTIVE','Active drivers','check',sn('ACTIVE')],['WEEK','Starters this week','plus',L.filter(c=>isStat(c,'WEEK')).length],['NEW STARTER','New starters','plus',sn('NEW STARTER')],['ONBOARDING','Onboarding','send',sn('ONBOARDING')],['DVLA CHECK','DVLA Check','idc',sn('DVLA CHECK')],['AMIIGO TRAINING','Amiigo Training','cap',sn('AMIIGO TRAINING')],['GENERATE CONNECT','Generate Connect','link',sn('GENERATE CONNECT')],['FILE COMPLIANCE','File Compliance','file',sn('FILE COMPLIANCE')],['DRIVER SETUP','Driver Setup','road',sn('DRIVER SETUP')],['REJECTED','Rejected','x',sn('REJECTED')]];
+  const stats=[['PIPE','Pipeline','user',L.filter(c=>isStat(c,'PIPE')).length],['ALL','All starters','users',L.length],['ACTIVE','Active drivers','check',sn('ACTIVE')],['WEEK','Starters this week','plus',L.filter(c=>isStat(c,'WEEK')).length],['NEW STARTER','New starters','plus',sn('NEW STARTER')],['ONBOARDING','Onboarding','send',sn('ONBOARDING')],['DVLA CHECK','DVLA Check','idc',sn('DVLA CHECK')],['AMIIGO TRAINING','Amiigo Training','cap',sn('AMIIGO TRAINING')],['GENERATE CONNECT','Generate Connect','link',sn('GENERATE CONNECT')],['FILE COMPLIANCE','File Compliance','file',sn('FILE COMPLIANCE')],['DRIVER SETUP','Driver Setup','road',sn('DRIVER SETUP')],['REJECTED','Rejected','x',sn('REJECTED')]];
   const srow=(f,key,cur,icon,lab,n)=>'<div class="sb-row'+(cur===key?' on':'')+'" data-f="'+f+'" data-v="'+esc(key)+'"><span class="sb-ic">'+icon+'</span><span class="sb-lb">'+esc(lab)+'</span><b class="sb-n">'+n+'</b></div>';
   $('#stats').innerHTML=stats.map(s=>srow('st',s[0],stF,ic(I[s[2]],16),s[1],s[3])).join('');
   const dbsRows=[['ALL','All DBS',L.length],['NONE','Not started',L.filter(c=>!dv(c)).length],['AWAITING','Awaiting',dn('AWAITING')],['DRAFT','Draft',dn('DRAFT')],['PENDING','Pending',dn('PENDING')],['COMPLETE','Complete',dn('COMPLETE')],['FAILED','Failed',dn('FAILED')]];
@@ -1051,14 +1051,14 @@ function render(){
   const dd=(id,title,cur,opts,fn)=>{const o=opts.find(x=>x[0]===cur)||opts[0];return '<div class="ddw"><button class="bt3'+(cur!=='ALL'?' on':'')+'" data-dd="'+id+'">'+title+': '+o[1]+' ▾</button>'+(openDD===id?'<div class="pop3">'+opts.map(x=>frw(x[1],x[0],cur,x[2],fn)).join('')+'</div>':'')+'</div>'};
   const stO=[['ALL','All',L.length]].concat(STAGES.map(x=>[x,x.toLowerCase(),L.filter(c=>c.status===x).length]));
   const osO=['ALL','TOM','JORDAN'].map(o=>[o,o==='ALL'?'All':o.toLowerCase(),L.filter(c=>o==='ALL'||c.osm===o).length]);
-  window._ddHtml=((stF!=='ALL'||dbsF!=='ALL'||osmF!=='ALL'||q)?'<button class="bt3 clr" data-clear="1">Clear filters</button>':'');
+  window._ddHtml=((stF!=='PIPE'||dbsF!=='ALL'||osmF!=='ALL'||q)?'<button class="bt3 clr" data-clear="1">Clear filters</button>':'');
   let list=L.filter(match);
   if(sort==='attn')list.sort((a,b)=>STAGES.indexOf(a.status)-STAGES.indexOf(b.status)||dbsRank(b)-dbsRank(a)||total(b)-total(a)||a.name.localeCompare(b.name));
   else if(sort==='close')list.sort((a,b)=>total(b)-total(a)||dbsRank(b)-dbsRank(a)||STAGES.indexOf(b.status)-STAGES.indexOf(a.status)||a.name.localeCompare(b.name));
   else if(sort==='new')list.sort((a,b)=>(b.created||0)-(a.created||0)||a.name.localeCompare(b.name));
   else if(sort==='old')list.sort((a,b)=>(a.created||0)-(b.created||0)||a.name.localeCompare(b.name));
   else list.sort((a,b)=>a.name.localeCompare(b.name));
-  if(sort==='close'&&!q&&stF!=='ACTIVE'&&stF!=='REJECTED')list=list.filter(c=>c.status==='REJECTED'||total(c)<1);
+  if(sort==='close'&&!q&&stF!=='ALL'&&stF!=='ACTIVE'&&stF!=='REJECTED')list=list.filter(c=>c.status==='REJECTED'||total(c)<1);
   if(sort==='attn'||sort==='close')list=[...list.filter(c=>c.status!=='REJECTED'),...list.filter(c=>c.status==='REJECTED')];
   const SI=d=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
   const SO=[['attn','Stage order','var(--accent)','<path d="M3 6h18M6 12h12M10 18h4"/>'],['close','Closest to done','#15803D','<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>'],['name','A–Z','#2563EB','<path d="M3 7h8M3 12h6M3 17h4M16 5v14M13 16l3 3 3-3"/>'],['new','Newest to oldest','#EA580C','<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'],['old','Oldest to newest','#C026D3','<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>']];
@@ -1549,7 +1549,7 @@ function newForm(){
 document.addEventListener('click',e=>{
   const fb=e.target.closest('[data-folderbtn]');if(fb&&L.find(x=>x.id===fb.dataset.folderbtn&&x.folder)){e.stopPropagation();const c=L.find(x=>x.id===fb.dataset.folderbtn);if(c&&c.folder)window.open(/^https?:/i.test(c.folder)?c.folder:'https://'+c.folder,'_blank','noopener,noreferrer');return}
   const dB=e.target.closest('[data-dd]');if(dB){openDD=openDD===dB.dataset.dd?null:dB.dataset.dd;render();return}
-  if(e.target.closest('[data-clear]')){stF=dbsF=osmF='ALL';q='';$('#search').value='';openDD=null;render();return}
+  if(e.target.closest('[data-clear]')){stF='PIPE';dbsF=osmF='ALL';q='';$('#search').value='';openDD=null;render();return}
   if(openDD&&!e.target.closest('.pop3')){openDD=null;if(!e.target.closest('[data-f]')){render();return}}
   const f=e.target.closest('[data-f]');if(f){openDD=null;const v=f.dataset.v,tg=(cur)=>cur===v?'ALL':v;if(f.dataset.f==='st')stF=tg(stF);else if(f.dataset.f==='dbs')dbsF=tg(dbsF);else osmF=tg(osmF);render();return}
   const vw=e.target.closest('[data-view]');if(vw){view=vw.dataset.view;lsSet('wl_recruit_view2',view);render();return}
