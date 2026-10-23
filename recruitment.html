@@ -982,7 +982,7 @@ const OBK='wl_recruit_onbby';let ONBY;try{ONBY=JSON.parse(lsGet(OBK)||'null')}ca
 const saveBy=()=>{lsSet(OBK,JSON.stringify(ONBY));fbLists()};
 function saveSt(){lsSet(SK,JSON.stringify(STATIONS));fbLists()}
 /* rejected after a DVLA check = take them out of the DVLA tracker; reinstated = put them back */
-function dvlaRejSync(){try{L.forEach(c=>{if(!c||!c.v||!c.v.dvla)return;const rej=c.status==='REJECTED',KD='wl_dvla_v1';
+function dvlaRejSync(){return;try{L.forEach(c=>{if(!c||!c.v||!c.v.dvla)return;const rej=c.status==='REJECTED',KD='wl_dvla_v1';
   if(rej&&!c.dvr){let arr=[];try{arr=JSON.parse(localStorage.getItem(KD)||'[]')}catch(e){}if(!Array.isArray(arr))arr=[];
     const nm=String(c.name||'').trim().toLowerCase().replace(/\s+/g,' '),nk=x=>(String(x.first||'')+' '+String(x.last||'')).trim().toLowerCase().replace(/\s+/g,' ');
     const rec=arr.find(x=>x.from===c.id)||arr.find(x=>nk(x)===nm);
@@ -1242,7 +1242,7 @@ async function downloadDriverFolder(c){const nm=String(c.name||'Driver').replace
   const dirs=[nm].concat(FOLDER_SUBS.map(x=>nm+'/'+x)),url=URL.createObjectURL(zipDirs(dirs)),a=document.createElement('a');
   a.href=url;a.download=nm+'.zip';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('This browser cannot create folders directly, so "'+nm+'" came as a .zip — unzip it. Use Chrome or Edge for a real folder.')}
 /* send a starter's DVLA details to the DVLA tracker (adds the driver, or updates the linked one) */
-function dvlaSync(c,announce){
+function dvlaSync(c,announce){return;
   const nm=String(c.name||'').trim();if(!nm)return;const d=c.dvla||{},KD='wl_dvla_v1';
   let arr=[];try{arr=JSON.parse(localStorage.getItem(KD)||'[]')}catch(e){}if(!Array.isArray(arr))arr=[];
   const nk=x=>(String(x.first||'')+' '+String(x.last||'')).trim().toLowerCase().replace(/\s+/g,' ');
@@ -1258,7 +1258,7 @@ function dvlaSync(c,announce){
   if(announce){const miss=[!d.dl&&'licence number',!d.ni&&'NI number',!d.pc&&'postcode'].filter(Boolean);toast((isNew?'DRIVER ADDED TO DVLA TRACKER':'DVLA tracker updated')+(miss.length?' — still missing: '+miss.join(', '):''))}
 }
 /* put the DVLA folder link on the driver already in the DVLA tracker (matched by link to this starter, or by name) */
-function dvlaFolderSync(c,link){
+function dvlaFolderSync(c,link){return false;
   const nm=String(c.name||'').trim().toLowerCase().replace(/\s+/g,' ');if(!nm)return false;const KD='wl_dvla_v1';
   let arr=[];try{arr=JSON.parse(localStorage.getItem(KD)||'[]')}catch(e){}if(!Array.isArray(arr))arr=[];
   const nk=x=>(String(x.first||'')+' '+String(x.last||'')).trim().toLowerCase().replace(/\s+/g,' ');

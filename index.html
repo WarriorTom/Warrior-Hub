@@ -140,7 +140,7 @@ html,body{height:100%;overflow:hidden}
 .lw small{font-size:12px;letter-spacing:.18em;font-weight:700;color:var(--accent-text)}
 .lw h1{margin:10px 0 8px;font-size:clamp(34px,4.6vw,64px);font-weight:800;text-transform:uppercase;letter-spacing:.01em;line-height:1.02}
 .lw p{margin:0;color:var(--mute);letter-spacing:.08em;font-weight:600}
-.lg8{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(8px,1.1vw,16px);max-width:1500px;width:100%;margin:0 auto}
+.lg8{display:grid;grid-template-columns:repeat(7,calc((100% - 8 * clamp(8px,1.1vw,16px)) / 9));justify-content:center;gap:clamp(8px,1.1vw,16px);max-width:1500px;width:100%;margin:0 auto}
 .lt{position:relative;display:block;text-align:center;text-decoration:none;color:var(--text);outline:none}
 .lt .ti{display:grid;place-items:center;width:100%;height:auto;aspect-ratio:1;margin:0;border-radius:8px;transition:.18s;box-shadow:0 12px 20px -12px rgba(76,29,149,.8)}
 .lt .ti svg{width:38%;height:38%}
