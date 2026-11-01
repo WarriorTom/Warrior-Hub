@@ -1549,7 +1549,7 @@ function SD(){return '<div class="sd nvsd"><span class="lbl9">Starting stage</sp
 function NEXT(){return '<div class="nvnx"><div class="lbl9">What happens next</div>'+['Send the onboarding link','Amiigo training','Generate Connect invite','File compliance & driver setup'].map(function(s,i){return '<p><b>'+(i+1)+'</b>'+s+'</p>'}).join('')+'</div>'}
 function nvCardEl(t,b){return '<div class="cb nvcard"><div class="nvch">'+t+'</div><div class="nvcb">'+b+'</div></div>'}
 function row(l,input){return '<div class="nvrow"><label>'+l+'</label>'+input+'</div>'}
-function build(){return H('NEW STARTER','Add a new person to onboarding','',HS())+SD()+'<div class="nvbody">'+F('nn','Name','Full name','user','big')+'<div class="nvhero">'+T('np','Phone number','07…','phone')+'</div></div>'+FT()}
+function build(){return H('NEW STARTER','Add a new person to onboarding','',HS())+SD()+'<div class="nvbody">'+F('nn','Name','Full name','user','big')+'<div class="nvhero">'+T('np','Phone number','07…','phone')+T('ne','Email address','name@email.com','mail')+'</div></div>'+FT()}
 function newForm(){
  
  $('#modal').innerHTML='<div class="ov"><div class="bk"></div><div class="box det nvb nv1" data-st="NEW_STARTER"><div class="vbar"></div>'+build()+'</div></div>';
@@ -1559,7 +1559,7 @@ function newForm(){
  nn.addEventListener('input',function(){var a=$('#nvav');var t=nn.value.trim().split(/\s+/).filter(Boolean);if(a){a.innerHTML=t.length?esc((t[0][0]+(t[1]?t[1][0]:'')).toUpperCase()):IC('users',22)}});
  $('#nx').onclick=$('#nc').onclick=close;$('.ov .bk').onclick=close;
  $('.nvb').onkeydown=function(e){if(e.key==='Enter'&&e.target.tagName==='INPUT')$('#ns2').click()};
- $('#ns2').onclick=function(){var n=$('#nn').value.trim();if(!n){$('#nn').focus();return}var by=$('#no').value==='__edit'?'':$('#no').value,c=mk(n,'NEW STARTER',(by.split(' ')[0]||'TOM').toUpperCase(),$('#ns').value,$('#np').value.trim(),'','',[0,0,0,0]);c.by=by;L.unshift(c);save();close();render();toast('Added '+n)};
+ $('#ns2').onclick=function(){var n=$('#nn').value.trim();if(!n){$('#nn').focus();return}var by=$('#no').value==='__edit'?'':$('#no').value,c=mk(n,'NEW STARTER',(by.split(' ')[0]||'TOM').toUpperCase(),$('#ns').value,$('#np').value.trim(),$('#ne').value.trim(),'',[0,0,0,0]);c.by=by;L.unshift(c);save();close();render();toast('Added '+n)};
 }
 document.addEventListener('click',e=>{
   const fb=e.target.closest('[data-folderbtn]');if(fb&&L.find(x=>x.id===fb.dataset.folderbtn&&x.folder)){e.stopPropagation();const c=L.find(x=>x.id===fb.dataset.folderbtn);if(c&&c.folder)window.open(/^https?:/i.test(c.folder)?c.folder:'https://'+c.folder,'_blank','noopener,noreferrer');return}
