@@ -1035,16 +1035,17 @@ firstL=false;const d=sn.data();let ch=false;
 if(Array.isArray(d.onby)&&d.onby.length&&JSON.stringify(d.onby)!==JSON.stringify(ONBY)){ONBY=d.onby.slice();lsSet(OBK,JSON.stringify(ONBY));ch=true}
 if(Array.isArray(d.stations)&&d.stations.length&&JSON.stringify(d.stations)!==JSON.stringify(STATIONS)){STATIONS=d.stations.slice();const _ch=fixSt();L.forEach(c=>{if(c.site&&!STATIONS.includes(c.site))STATIONS.push(c.site)});if(_ch)setTimeout(saveSt,0);lsSet(SK,JSON.stringify(STATIONS));ch=true}
 if(ch&&typeof render==='function')render()},e=>console.error(e))}).catch(e=>console.error(e))}
-let view=(lsGet('wl_recruit_view2')==='grid')?'grid':'list',openDD=null,q='',stF='PIPE',osmF='ALL',dbsF='ALL',sort='close';
+let view=(lsGet('wl_recruit_view2')==='grid')?'grid':'list',openDD=null,q='',stF='PIPE',osmF='ALL',dbsF='ALL',sort='stat';
 const dv=c=>c.dbs||'';
 const dbsRank=c=>({COMPLETE:5,PENDING:4,AWAITING:3,DRAFT:2,FAILED:0})[dv(c)]??1;
 const needIds=()=>L.filter(c=>c.status!=='REJECTED'&&(!String((c.v||{}).h100||'').trim()||!String((c.v||{}).trid||'').trim()));
+const fcN=c=>((c.folder&&c.folderAt&&!lkBad('fold',c.folder))?1:0)+(((c.dvla||{}).folder&&(c.dvla||{}).folderAt&&!lkBad('dvf',(c.dvla||{}).folder))?1:0);
 const nDone=(c,g)=>GROUPS[g].items.filter(it=>done(c,it)).length;
 const pctG=(c,g)=>nDone(c,g)/GROUPS[g].items.length;
 const nMods=c=>MODS.filter(m=>c.v[m.k]).length;
 const TRX=['amz','disprz','enrol'],TTOT=NMOD+TRX.length,trainD=c=>nMods(c)+TRX.filter(k=>String((c.v||{})[k]||'').trim()).length;
-const dispG=(c,gi)=>gi===1&&c.v&&c.v.skipT?(()=>{const d=['amz','disprz'].filter(k=>String(c.v[k]||'').trim()).length;return {d:d,n:2,p:d/2,txt:d+'/2'}})():gi===1?{d:trainD(c),n:TTOT,p:trainD(c)/TTOT,txt:trainD(c)+'/'+TTOT}:{d:nDone(c,gi),n:GROUPS[gi].items.length,p:pctG(c,gi),txt:nDone(c,gi)+'/'+GROUPS[gi].items.length};
-const total=c=>{let d=0,t=0;GROUPS.forEach((g,gi)=>{d+=nDone(c,gi);t+=g.items.length});return d/t};
+const dispG=(c,gi)=>gi===1&&c.v&&c.v.skipT?(()=>{const d=['amz','disprz'].filter(k=>String(c.v[k]||'').trim()).length;return {d:d,n:2,p:d/2,txt:d+'/2'}})():gi===1?{d:trainD(c),n:TTOT,p:trainD(c)/TTOT,txt:trainD(c)+'/'+TTOT}:gi===3?{d:nDone(c,3)+fcN(c),n:GROUPS[3].items.length+2,p:(nDone(c,3)+fcN(c))/(GROUPS[3].items.length+2),txt:(nDone(c,3)+fcN(c))+'/'+(GROUPS[3].items.length+2)}:{d:nDone(c,gi),n:GROUPS[gi].items.length,p:pctG(c,gi),txt:nDone(c,gi)+'/'+GROUPS[gi].items.length};
+const total=c=>{let d=0,t=0;GROUPS.forEach((g,gi)=>{d+=nDone(c,gi)+(gi===3?fcN(c):0);t+=g.items.length+(gi===3?2:0)});return d/t};
 const complete=c=>GROUPS.every((g,gi)=>nDone(c,gi)===g.items.length);
 const stageFor=c=>['NEW STARTER','TRAINING','GENERATE','COMPLIANCE','LANDING'][Math.max(0,GROUPS.findIndex((g,gi)=>nDone(c,gi)<g.items.length))];
 const STG_BY_GRP=['ONBOARDING','TRAINING','GENERATE','COMPLIANCE','LANDING'];
