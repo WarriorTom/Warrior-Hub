@@ -959,24 +959,51 @@ const mk=(name,status,osm,site,phone,email,note,p,dbs)=>{const c={id:'r'+Math.ra
 
 function demoPeople(){
   const D=864e5,now=Date.now(),ph=n=>'07700 900'+String(100+n*7).slice(-3),em=n=>n.toLowerCase().replace(/[^a-z]+/g,'.')+'@example.com';
+  const iso=d=>new Date(now-d*D).toLocaleDateString('en-CA');
+  const uu=n=>{const h=x=>('00000000'+(x*2654435761>>>0).toString(16)).slice(-8);const a=h(n+11),b=h(n+23),c=h(n+37),e=h(n+51);return a+'-'+b.slice(0,4)+'-4'+b.slice(5,8)+'-8'+c.slice(1,4)+'-'+c.slice(4)+e};
+  const PHO='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#CBD0DA"/><circle cx="40" cy="31" r="14" fill="#7C8497"/><path d="M12 80c2-22 16-30 28-30s26 8 28 30z" fill="#7C8497"/></svg>');
+  /* [name,status,osm,site,note,[onb,train,gen,comp,land fractions],dbs,ageDays,extra] */
   const rows=[
    ['Alex Morgan','NEW STARTER','TOM','DLS4','Referred by a current driver',[0,0,0,0,0],'',1],
-   ['Priya Shah','NEW STARTER','JORDAN','HSA7','',[0,0,0,0,0],'',2],
-   ['Marcus Bell','ONBOARDING','TOM','DLS4','Onboarding link sent',[1,0,0,0,0],'',3],
-   ['Chloe Turner','ONBOARDING','JORDAN','DLS4','',[1,0,0,0,0],'DRAFT',4],
-   ['Daniel Okafor','TRAINING','TOM','DLS4','Modules going well',[1,.45,0,0,0],'PENDING',6],
-   ['Emma Walsh','TRAINING','TOM','HSA7','',[1,.2,0,0,0],'',5],
-   ['Ryan Cooper','TRAINING','JORDAN','JDL1','',[1,.8,0,0,0],'PENDING',8],
+   ['Priya Shah','NEW STARTER','JORDAN','HSA7','',[.34,0,0,0,0],'',2],
+   ['Marcus Bell','ONBOARDING','TOM','DLS4','Onboarding link sent',[.67,0,0,0,0],'DRAFT',3],
+   ['Chloe Turner','ONBOARDING','JORDAN','DLS4','Waiting on background check',[.67,0,0,0,0],'PENDING',4],
+   ['Emma Walsh','TRAINING','TOM','HSA7','',[1,.2,0,0,0],'COMPLETE',5],
+   ['Daniel Okafor','TRAINING','TOM','DLS4','Modules going well',[1,.55,0,0,0],'COMPLETE',6],
+   ['Ryan Cooper','TRAINING','JORDAN','DLS4','',[1,.85,0,0,0],'COMPLETE',8],
+   ['Jack Turner','GENERATE','TOM','DLS4','Experienced DA - skips training',[1,1,.34,0,0],'COMPLETE',9,{xda:1}],
+   ['Liam Hughes','GENERATE','JORDAN','DLS4','Cortex number added - needs confirming',[1,1,.84,0,0],'COMPLETE',12,{cxun:1}],
    ['Sophie Grant','GENERATE','TOM','DLS4','',[1,1,.5,0,0],'COMPLETE',11],
-   ['Liam Hughes','GENERATE','JORDAN','DLS4','Waiting on Transporter ID',[1,1,.3,0,0],'COMPLETE',12],
    ['Aisha Khan','COMPLIANCE','TOM','HSA7','',[1,1,1,.55,0],'COMPLETE',15],
-   ['Ben Fraser','LANDING','TOM','DLS4','',[1,1,1,1,.8],'COMPLETE',17],
-   ['Hannah Price','ACTIVE','TOM','DLS4','Ride along complete',[1,1,1,1,1],'COMPLETE',24],
-   ['Tom Reid','ACTIVE','JORDAN','HSA7','',[1,1,1,1,1],'COMPLETE',30],
-   ['Zara Ahmed','ACTIVE','TOM','DLS4','',[1,1,1,1,1],'COMPLETE',41],
-   ['Callum Boyd','REJECTED','JORDAN','DLS4','Failed background check',[1,.1,0,0,0],'FAILED',9]
+   ['Ben Fraser','LANDING','TOM','DLS4','',[1,1,1,1,.6],'COMPLETE',17],
+   ['Hannah Price','ACTIVE','TOM','DLS4','Ride along complete',[1,1,1,1,1],'COMPLETE',24,{w:'W11159',ai:12}],
+   ['Tom Reid','ACTIVE','JORDAN','HSA7','',[1,1,1,1,1],'COMPLETE',30,{w:'W11160',ai:16}],
+   ['Zara Ahmed','ACTIVE','TOM','DLS4','',[1,1,1,1,1],'COMPLETE',41,{w:'W11161',ai:21}],
+   ['Callum Boyd','REJECTED','JORDAN','DLS4','Failed background check',[.67,0,0,0,0],'FAILED',9]
   ];
-  return rows.map((r,i)=>{const c=mk(r[0],r[1],r[2],r[3],ph(i),em(r[0]),r[4],r[5],r[6]);const age=r[7];c.created=now-age*D;if(r[1]!=='NEW STARTER')c.onb=new Date(now-(age-1)*D).toLocaleDateString('en-CA');c.id='demo'+i;return c});
+  return rows.map((r,i)=>{
+    const ex=r[8]||{};const hs=r[3]==='HSA7';
+    const c=mk(r[0],r[1],r[2],r[3],ph(i),em(r[0]),r[4],r[5],r[6]);const age=r[7];
+    c.created=now-age*D;c.by=r[2]==='TOM'?'Tom Jackson':'Jordan Arnold';c.id='demo'+i;
+    /* onboarding links must pass the link checks */
+    if(r[5][0]>0){c.v.onblink='https://logistics.amazon.co.uk/account-management/delivery-associates/detail/amzn1.flex.provider.v1.'+uu(i);c.onb=iso(age-1);
+      if(!hs&&r[5][0]>=.67){c.v.opslink='https://ops.connectyourworkforce.com/onboard/'+uu(i+40);c.v.opsent=true}}
+    /* DBS status with dates */
+    if(r[6]){c.dbsAt={};const seq=['NONE','DRAFT','PENDING','COMPLETE'];const k=seq.indexOf(r[6]);for(let q=0;q<=k;q++)c.dbsAt[seq[q]]=iso(Math.max(0,age-1-q))}
+    if(r[6]==='FAILED'){c.dbsAt={DRAFT:iso(age-1),PENDING:iso(age-3),FAILED:iso(age-5)};c.dbsRej=0}
+    /* cortex number only counts once ticked */
+    if(c.v.cortex)c.v.cortexOk=ex.cxun?false:true;
+    /* experienced DA: no training modules, just Amazon name + learning ID */
+    if(ex.xda){c.xda=true;c.v.skipT=true;Object.keys(c.v).forEach(k=>{if(/^m\d+$/.test(k))delete c.v[k]});c.v.amz=c.name;c.v.disprz=c.v.disprz||'EXPDA'+uu(i).slice(0,6).toUpperCase()}
+    /* folders count in compliance once the bundle + DVLA folder are filled and ticked */
+    if(r[5][3]>=1||r[1]==='COMPLIANCE'){c.folder='https://drive.google.com/drive/folders/'+uu(i).replace(/-/g,'').slice(0,28);c.folderAt=iso(Math.max(0,age-3));c.v.dvla=true;c.dvla={folder:'https://drive.google.com/drive/folders/'+uu(i+7).replace(/-/g,'').slice(0,28),folderAt:iso(Math.max(0,age-3))}}
+    if(r[1]==='COMPLIANCE'){Object.keys(c.v).forEach(k=>{if(['rtw','bg','dvlac','fcc','selfie'].includes(k))delete c.v[k]})}
+    /* confirm every finished section so the automatic status follows the page */
+    c.mc={};c.mcd={};r[5].forEach((f,gi)=>{if(f>=1&&!(gi===0&&!c.dbs)){c.mc[gi]=true;c.mcd[gi]=iso(Math.max(0,age-gi-1))}});
+    if(r[1]==='ACTIVE'||r[1]==='LANDING'){c.v.trid='TR'+uu(i).slice(0,6).toUpperCase().replace(/[^0-9A-F]/g,'7');c.v.h100='100'+String(40000+i*137).slice(0,5)}
+    if(r[1]==='ACTIVE'){c.photo=PHO;c.badge={at:iso(ex.ai?ex.ai+1:2)};c.wno=ex.w;c.activeAt=c.created+(ex.ai||14)*D}
+    if(r[1]==='LANDING'){c.photo=PHO}
+    return c});
 }
 const SEED=[];
 let L; try{L=JSON.parse(lsGet(KEY)||'null')}catch(e){L=null} if(!Array.isArray(L)){L=window.WL_DEMO?demoPeople():SEED;save()} const byFromOsm=c=>{if(c.by)return;const o=String(c.osm||'').trim().toUpperCase();if(o==='TOM')c.by='Tom Jackson';else if(o==='JORDAN'||o==='JORDON')c.by='Jordan Arnold'};

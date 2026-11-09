@@ -2444,9 +2444,20 @@ function mkVan(reg,type,vin){const id=normReg(reg);return{id,reg:showReg(reg),ty
 function undoAuto(){if(lsGet('wl_pave_undoauto'))return;lsSet('wl_pave_undoauto','1');Object.values(S.v).forEach(v=>{if(!v.typeLock&&v.type==='Rental'){v.type=(CFG.types||[])[0]||'Armada';v.unsynced=true}})}
 function clearOnce(){if(lsGet('wl_pave_clear1'))return;lsSet('wl_pave_clear1','1');Object.values(S.v).forEach(v=>{v.insp=[];v.pend=null;put(v)});lsSet('wl_pave_ptd','0');S.ptdemo=false}
 function fillVins(){clearOnce();if(!lsGet('wl_pave_seed2')){SEED.forEach(r=>{const id=normReg(r);if(!S.v[id]){const v=mkVan(r,'',SEEDVIN[id]);v.unsynced=true;S.v[id]=v}});lsSet('wl_pave_seed2','1')}Object.values(S.v).forEach(v=>{if(!v.vin&&SEEDVIN[v.id]){v.vin=SEEDVIN[v.id];v.unsynced=true}})}
+function demoInsp(){if(lsGet('wl_pave_demo2'))return;lsSet('wl_pave_demo2','1');lsSet('wl_pave_clear1','1');
+  const ids=Object.keys(S.v),ym=S.ym||today().slice(0,7),y=+ym.slice(0,4),m=+ym.slice(5,7),py=m===1?y-1:y,pm=m===1?12:m-1,pym=py+'-'+String(pm).padStart(2,'0');
+  const pat=[[5,0,0,0,0],[5,0,0,1,0],[4,1,0,0,1],[5,0,0,0,0],[3,1,2,1,0],[5,0,0,0,0],[4,0,1,1,0],[5,0,0,0,0],[2,2,3,1,2],[5,0,0,0,1]];
+  const mk=(g,s,date,idx)=>({id:'i'+idx+date.replace(/-/g,''),date,ym:date.slice(0,7),grade:g,word:gword(g),front:s[0],back:s[1],left:s[2],right:s[3],total:s[0]+s[1]+s[2]+s[3],file:'demo',at:Date.now()});
+  const cfgT=(CFG.types||[]);
+  ids.forEach((id,i)=>{const v=S.v[id];if(!v)return;
+    if(i>=ids.length-6)v.type=i>=ids.length-3?'Seso':'Rental';else v.type=cfgT[0]||'Armada';
+    v.model=v.type==='Armada'?'Ford E-Transit Custom':v.type==='Rental'?'Renault Trafic':'Vauxhall Vivaro-e';v.insp=[];v.typeLock=true;
+    const q=pat[i%pat.length];v.insp.push(mk(q[0],q.slice(1),pym+'-'+String(5+(i%20)).padStart(2,'0'),i+'p'));
+    if(i<Math.round(ids.length*.62)){const q2=pat[(i*3+1)%pat.length];v.insp.push(mk(q2[0],q2.slice(1),ym+'-0'+(1+i%8),i+'c'))}
+    v.at=Date.now();v.unsynced=false;});}
 function seedIfEmpty(next){if(Object.keys(next).length||lsGet(SEEDK))return next;SEED.forEach(r=>{const v=mkVan(r,'',SEEDVIN[normReg(r)]);v.unsynced=true;next[v.id]=v});lsSet(SEEDK,'1');return next}
 async function loadCloud(){
-  if(demo()){seedIfEmpty(S.v);fillVins();undoAuto();saveLocal();setSync('Demo mode - saved on this browser only',1);paint();return}
+  if(demo()){seedIfEmpty(S.v);demoInsp();fillVins();undoAuto();saveLocal();setSync('Demo mode - saved on this browser only',1);paint();return}
   try{const{fs,db}=await fb(),sn=await fs.getDocs(fs.collection(db,COL)),cloud={};
     sn.forEach(d=>{const x=d.data();if(!x)return;if(d.id==='__cfg'){if(x.cfg){CFG=Object.assign({},DEFCFG,x.cfg);CFG.types=[...new Set((CFG.types||[]).map(t=>String(t).toLowerCase()==='seso'?'Seso':t))];if(!(CFG.types||[]).some(t=>String(t).toLowerCase()==='seso'))CFG.types=(CFG.types||[]).concat('Seso');lsSet(CFGK,JSON.stringify(CFG))}return}cloud[d.id]={id:d.id,reg:x.reg||d.id,type:String(x.type||'').toLowerCase()==='seso'?'Seso':(x.type||''),vin:x.vin||'',model:x.model||'',img:x.img||'',shots:x.shots||null,insp:x.insp||[],at:x.at||0,typeLock:!!x.typeLock}});
     const next={};Object.keys(cloud).forEach(k=>next[k]=cloud[k]);
