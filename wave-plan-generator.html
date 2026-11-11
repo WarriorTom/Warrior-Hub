@@ -2277,7 +2277,50 @@ function cleanOcrName(raw){
   while(t.length > 1 && t[t.length-1].length < 2) t.pop();
   while(t.length > 1 && t[0].length < 2 && !/^[A-Za-z]$/.test(t[0])) t.shift();
   t = t.map(w => /^[Il|1]gba[Il|1i]$/i.test(w) ? 'Iqbal' : w);  // OCR reads the q in Iqbal as g
-  return t.join(' ');
+  return crossFixName(t.join(' '));
+}
+/* Cross-check a read name against names we KNOW are right: the driver names in the Routes file,
+   plus every name confirmed on the check screen before (kept in this browser). Fixes the OCR slips
+   (capital I dropped/misread, letters swapped) by snapping to the closest known name. */
+const WP_NAMES_KEY = 'wl_wp_names';
+function knownNamePool(){
+  const out = [];
+  try{ (lastRoutesRows || []).forEach(r => String(r.raw_driver || '').split('|').forEach(n => { n = n.trim(); if(n) out.push(n); })); }catch(e){}
+  try{ out.push(...JSON.parse(localStorage.getItem(WP_NAMES_KEY) || '[]')); }catch(e){}
+  return out.map(n => String(n).toLowerCase().replace(/[^a-z'’\-\s]/g, ' ').split(/\s+/).filter(Boolean)).filter(a => a.length);
+}
+function crossFixName(name){
+  try{
+    const ts = String(name || '').toLowerCase().split(/\s+/).filter(Boolean);
+    if(!ts.length) return name;
+    let best = null, second = 0;
+    for(const kt of knownNamePool()){
+      if(kt.length < ts.length) continue;
+      const used = new Set(), pick = []; let sum = 0, exact = 0, ok = true;
+      for(const w of ts){
+        let bi = -1, bs = 0;
+        kt.forEach((k, i) => { if(used.has(i)) return; const sc = tokenSimilarity(w, k); if(sc > bs) { bs = sc; bi = i; } });
+        if(bi < 0 || bs < .5) { ok = false; break; }
+        used.add(bi); pick.push(kt[bi]); sum += bs; if(bs === 1) exact++;
+      }
+      if(!ok) continue;
+      const mean = sum / ts.length;
+      if(mean < .75 || (!exact && mean < .85)) continue;
+      if(kt.length !== ts.length) continue;
+      if(!best || mean > best.mean){ if(best) second = Math.max(second, best.mean); best = {mean, pick}; }
+      else second = Math.max(second, mean);
+    }
+    if(!best || best.mean === 1) return name;
+    if(second && best.mean - second < .05) return name;
+    return normalizeDriverName(best.pick.join(' '));
+  }catch(e){ return name; }
+}
+function rememberNames(list){
+  try{
+    const have = JSON.parse(localStorage.getItem(WP_NAMES_KEY) || '[]'), set = new Set(have.map(n => n.toLowerCase()));
+    (list || []).forEach(n => { n = (n || '').trim(); if(n && n.split(' ').length > 1 && !set.has(n.toLowerCase())){ set.add(n.toLowerCase()); have.push(n); } });
+    localStorage.setItem(WP_NAMES_KEY, JSON.stringify(have.slice(-600)));
+  }catch(e){}
 }
 // van numbers must rise from card to card: pick the highest-voted rising sequence
 function resolveVanSequence(cands){
@@ -2295,7 +2338,7 @@ function resolveVanSequence(cands){
   return best ? best.path : cands.map(() => null);
 }
 async function readVanNumberVotes(worker, canvas, plate){
-  const votes = new Map(), bx = plate.x + plate.w + plate.w * .06, bw = plate.w * .8;
+  const votes = new Map(), bx = plate.x + plate.w + plate.w * .06, bw = plate.w * .5; /* narrow: a wider crop also catches the C1 badge and breaks single-digit vans */
   const bands = [[.24, .41], [.22, .44]];
   for(const [f0, f1] of bands) for(const [sc, thr] of [[6, 60], [6, 80], [8, 70], [5, 90]]){
     const c = ocrCrop(canvas, bx, plate.y + plate.h * f0, bw, plate.h * (f1 - f0), sc, thr, true);
@@ -2328,10 +2371,19 @@ async function parseImageVanRoster(file){
       const p = plates[i];
       ocrToast(`DECODING CARD ${i + 1} OF ${plates.length}`, 15 + 70 * i / plates.length, {card: i + 1, total: plates.length});
       const regRaw = (await ocrText(worker, ocrCrop(canvas, p.x + p.w * .04, p.y + p.h * .1, p.w * .92, p.h * .8, 3, 110, false), 7, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ')).text;
-      const nameRaw = (await ocrText(worker, ocrCrop(canvas, p.x + p.w + p.w * .06, p.y - 4, p.w * 2, p.h * .38, 3, 0, true), 7, '')).text;
+      /* read the name three ways (plain / two sharpened sizes) and take the one most reads agree on */
+      const nameReads = [];
+      for(const [nsc, nthr] of [[4, 110], [3, 0], [5, 110]]){
+        const t = (await ocrText(worker, ocrCrop(canvas, p.x + p.w + p.w * .06, p.y - 4, p.w * 2, p.h * .38, nsc, nthr, true), 7, '')).text;
+        const cn = cleanOcrName(t); if(cn) nameReads.push(cn);
+      }
+      const nameTally = new Map(); nameReads.forEach(n => nameTally.set(n.toLowerCase(), (nameTally.get(n.toLowerCase()) || 0) + 1));
+      let nameRaw = nameReads[0] || '', nameBest = 0;
+      nameReads.forEach(n => { const v = nameTally.get(n.toLowerCase()); if(v > nameBest){ nameBest = v; nameRaw = n; } });
+      const nameAgree = nameBest >= 2;
       const votes = await readVanNumberVotes(worker, canvas, p);
       const rg = fixReg(regRaw);
-      cards.push({plate: p, reg: rg, regFlag: !rg.ok || rg.changed, name: cleanOcrName(nameRaw), votes});
+      cards.push({plate: p, reg: rg, regFlag: !rg.ok || rg.changed, name: cleanOcrName(nameRaw), nameAgree, votes});
     }
     const seq = resolveVanSequence(cards.map(c => c.votes));
     cards.forEach((c, i) => {
@@ -2339,7 +2391,7 @@ async function parseImageVanRoster(file){
       const total = [...c.votes.values()].reduce((a, b) => a + b, 0), mine = c.votes.get(c.van) || 0;
       const top = [...c.votes.entries()].sort((a, b) => b[1] - a[1])[0];
       c.vanFlag = c.van == null || mine < total * .6 || (top && top[0] !== c.van);
-      c.nameFlag = c.name.split(' ').length < 2;
+      c.nameFlag = c.name.split(' ').length < 2 || !c.nameAgree || c.name.split(' ').some(w => (w.length <= 2 && !/^md$/i.test(w)) || !/[aeiouy]/i.test(w) && !/^md$/i.test(w));
     });
 
     ocrToast('RESOLVING STATION & DATE', 86);
@@ -2352,6 +2404,8 @@ async function parseImageVanRoster(file){
       const dm = (hd.text || '').match(/(\d{1,2})\s+([A-Za-z]{3,9})\s+(20\d{2})/);
       if(dm){ const mi = MON.indexOf(dm[2].slice(0, 3).toLowerCase()); if(mi >= 0) date = `${String(dm[1]).padStart(2,'0')}/${String(mi+1).padStart(2,'0')}/${dm[3].slice(2)}`; }
     }catch(e){ /* header is optional */ }
+    if(!station){ try{ const ft = await ocrText(worker, ocrCrop(canvas, 0, Math.max(0, canvas.height - 140), canvas.width, 140, 3, 0, true), 6, ''); const fm = (ft.text || '').match(/WARRIOR\s+LOGISTICS\s*[^A-Za-z0-9]{0,4}\s*((?:[A-Z]\s?){2,4}\d)\s*$/im); if(fm) station = fm[1].replace(/\s/g, '').toUpperCase(); }catch(e){} }
+    if(!station){ try{ const h2 = await ocrText(worker, ocrCrop(canvas, canvas.width * .5, 0, canvas.width * .5, Math.min(canvas.height, plates[0].y * .22), 3, 60, true), 6, ''); const s2 = (h2.text || '').match(/STATION\s+((?:[A-Z]\s?){2,4}\d)/i); if(s2) station = s2[1].replace(/\s/g, '').toUpperCase(); }catch(e){} }
     // ---- "N DRIVERS DEPLOYED" cross-check
     try{
       const bd = await ocrText(worker, ocrCrop(canvas, 0, Math.max(0, plates[0].y - plates[0].h * .95), canvas.width, plates[0].h * .9, 3, 0, true), 6, '');
@@ -2382,16 +2436,19 @@ async function parseImageVanRoster(file){
     let standby = [];
     const words = (tail.words || []).filter(w => w.text && w.confidence > 30);
     const lines = (tail.lines || []);
-    const sbIdx = lines.findIndex(l => /STANDBY/i.test(l.text));
-    const nameLine = sbIdx > 0 ? lines[sbIdx - 1] : null;
-    if(nameLine && !/Van\s*\d/i.test(nameLine.text)){
-      const ws = (nameLine.words || []).filter(w => /[A-Za-z]/.test(w.text)).sort((a, b) => a.bbox.x0 - b.bbox.x0);
+    const namesOfLine = ln => {
+      const ws = (ln.words || []).filter(w => /[A-Za-z]/.test(w.text)).sort((a, b) => a.bbox.x0 - b.bbox.x0);
       const grp = []; let cur = [];
       ws.forEach((w, i) => { if(i && w.bbox.x0 - ws[i-1].bbox.x1 > 40 * 3){ grp.push(cur); cur = []; } cur.push(w); });
       if(cur.length) grp.push(cur);
-      standby = grp.map(g => cleanOcrName(g.map(w => w.text).join(' '))).filter(n => n.split(' ').length >= 2);
-    }
-
+      return grp.map(g => cleanOcrName(g.map(w => w.text).join(' '))).filter(n => n.split(' ').length >= 2);
+    };
+    /* standby is a grid of cards (several rows): every row of names is followed by a row of STANDBY badges,
+       so each badge-only row marks the name row just above it (no matter how many rows there are) */
+    const isBadgeRow = t => /^[^A-Za-z]*(STAND\s*BY[^A-Za-z]*)+$/i.test((t || '').trim());
+    lines.forEach((ln, i) => { if(i > 0 && isBadgeRow(ln.text) && !isBadgeRow(lines[i-1].text) && !/Van\s*\d|RIDE|TRAINER/i.test(lines[i-1].text)) standby.push(...namesOfLine(lines[i-1])); });
+    { const hm = ((lines.find(l => /\d+\s*ON\s*STAND/i.test(l.text)) || {text: ''}).text.match(/(\d+)\s*ON\s*STAND/i) || [])[1];
+      if(hm && +hm !== standby.length) warnings.push(`The sheet says ${hm} on standby but ${standby.length} names were read — check the standby list below.`); }
     if(!standby.length && /STANDBY/i.test(tail.text || '')) warnings.push('A STANDBY section was seen but no names could be read from it — add them below if needed.');
     const roster = cards.map(c => ({
       van: c.van, driver: normalizeDriverName(c.name), reg: c.reg.reg,
@@ -2415,6 +2472,7 @@ async function parseImageVanRoster(file){
     confirmed = await confirmOcrRoster(result);
     if(!confirmed) throw new Error('Roster image not confirmed.');
   }
+  if(!window.__ocrSkipConfirm) rememberNames([...confirmed.roster.map(r => r.driver), ...confirmed.roster.map(r => r.ride_along_trainee), ...confirmed.standby]);
   const entry = {roster: confirmed.roster, station: result.station, date: result.date, standby: confirmed.standby};
   if(!window.__ocrSkipConfirm) _ocrRosterCache.set(key, entry);
   lastPdfStation = result.station; lastPdfExportDate = result.date; lastPdfStandby = confirmed.standby.slice(); lastPdfNoVan = [];
@@ -5683,6 +5741,7 @@ document.getElementById('routesFile').addEventListener('change', async (e) => {
     }else{
       setPill('routesPill', true, `${rows.length} ROUTES`);
       lastRoutesRows = rows;
+      try{ if(typeof lastRoster !== 'undefined' && lastRoster) lastRoster.forEach(r => { if(r.driver) r.driver = crossFixName(r.driver); if(r.ride_along_trainee) r.ride_along_trainee = crossFixName(r.ride_along_trainee); }); }catch(e){}
     }
     updatePreGenerateValidation();
     updateStepper();
@@ -5811,8 +5870,8 @@ function init(){document.querySelectorAll('.review-table-wrap,.wp-side,.review-e
 init();new MutationObserver(init).observe(document.documentElement,{childList:true,subtree:true});
 })();</script>
 <script>/*sample-rail*/(function(){
-var IC={ca:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/>',dt:'<circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',wp:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',rc:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',dv:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h4"/>',po:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',ki:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',nr:'<rect x="3" y="7.5" width="18" height="11" rx="3"/><circle cx="12" cy="13" r="3"/><path d="M12 7.5V4.5M9 4.5h6"/><circle cx="17.6" cy="10.6" r=".7" fill="currentColor" stroke="none"/>',pf:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/>',pv:'<path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',mt:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="m8.5 14 2.5 2.5 4.5-5"/>'};
-var P=[['dt','Daily Tasks','daily-tasks.html'],['ca','Calendar','calendar.html'],['wp','Wave Plan','wave-plan-generator.html'],['nr','Netradyne','netradyne.html'],['rc','Recruitment','recruitment.html'],['pv','PAVE','pave.html'],['pf','Performance','performance.html'],['po','Posters','posters.html']];
+var IC={ca:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/>',dt:'<circle cx="12" cy="12" r="10"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',wp:'<path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',rc:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',dv:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 10h5M13 14h4"/>',po:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',ki:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',nr:'<rect x="3" y="7.5" width="18" height="11" rx="3"/><circle cx="12" cy="13" r="3"/><path d="M12 7.5V4.5M9 4.5h6"/><circle cx="17.6" cy="10.6" r=".7" fill="currentColor" stroke="none"/>',pf:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/>',pv:'<path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',tl:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18.5h.01M12 18.5h.01M16 18.5h.01"/>',mt:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="m8.5 14 2.5 2.5 4.5-5"/>'};
+var P=[['dt','Daily Tasks','daily-tasks.html'],['ca','Calendar','calendar.html'],['wp','Wave Plan','wave-plan-generator.html'],['nr','Netradyne','netradyne.html'],['rc','Recruitment','recruitment.html'],['pv','PAVE','pave.html'],['pf','Performance','performance.html'],['tl','Tools','tools.html'],['po','Posters','posters.html']];
 var RW={1:88,2:76,3:88,4:176,5:88,6:88};
 function sv(k,s){return '<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+IC[k]+'</svg>'}
 var rv=2,act='wp';
