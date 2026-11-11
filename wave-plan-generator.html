@@ -1005,7 +1005,12 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
 .upload-progress .upload-progress-label{padding:0 0 .08em!important;line-height:1!important}
 .export-tile .upload-progress .upload-progress-label,#pageResults .upload-progress .upload-progress-label,#quickListModal .upload-progress .upload-progress-label{padding:0!important}
 #pageResults .export-tile .upload-progress,#quickListModal .export-tile .upload-progress{height:36px!important;box-sizing:border-box}
-</style></head>
+</style><style id="ROSTERLOCK">
+#rosterPanel.rlocked .dropzone{opacity:.45!important;pointer-events:none!important;filter:grayscale(1)!important}
+#rosterPanel.rlocked .dz-hint:after{content:" · LOCKED"!important}
+#rosterPanel.rlocked #rosterFile{pointer-events:none!important;cursor:not-allowed!important}
+</style>
+</head>
 <body>
 <div class="wl-topline"></div>
 <nav class="wl-rail" id="wlRail" aria-label="Pages"></nav>
@@ -1059,14 +1064,14 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
     </div>
   </div>
   <div class="wp-in"><div class="sb-h">Checklist</div><div class="sb-card"><div class="sb-bar"><i id="wpBar"></i></div><div class="stepper" id="topStepper">
-      <div class="step-item" id="stepRoster">
+      <div class="step-item" id="stepRoutes">
         <span class="step-dot"><span class="num">1</span><svg class="check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
-        <span class="sp-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></svg></span><span class="step-label">VANS</span><span class="spbar"><i></i></span>
+        <span class="sp-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a3 3 0 000-6h-4a3 3 0 010-6h6"/></svg></span><span class="step-label">ROUTES</span><span class="spbar"><i></i></span>
       </div>
       <span class="step-line"></span>
-      <div class="step-item" id="stepRoutes">
+      <div class="step-item" id="stepRoster">
         <span class="step-dot"><span class="num">2</span><svg class="check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
-        <span class="sp-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a3 3 0 000-6h-4a3 3 0 010-6h6"/></svg></span><span class="step-label">ROUTES</span><span class="spbar"><i></i></span>
+        <span class="sp-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/></svg></span><span class="step-label">VANS</span><span class="spbar"><i></i></span>
       </div>
       <span class="step-line"></span>
       <div class="step-item" id="stepDetails">
@@ -1127,31 +1132,6 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
         <div class="panel">
           <div class="panel-head">
             <span class="label-with-info">
-              <h2>VAN ALLOCATION</h2>
-              <button type="button" class="info-icon" data-info-target="info-van-roster" aria-label="Where to get this">i</button>
-              <div class="info-popover" id="info-van-roster">Exported from Warrior Ops — go to the Day of Ops segment, right-click the van list export and save it as a PDF. Upload that raw PDF here and let the magic happen.</div>
-            </span>
-            <span class="pill" id="rosterPill">EMPTY</span>
-          </div>
-          <div class="dropzone">
-            <input type="file" id="rosterFile" accept=".csv,.xlsx,.xls,.pdf,.png,.jpg,.jpeg">
-            <div class="dz-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-            </div>
-            <div>
-              <div class="dz-text">DROP TODAY'S VAN ALLOCATION HERE</div>
-              <div class="dz-hint mono">.PNG (WARRIOR OPS EXPORT)</div>
-            </div>
-          </div>
-          <div class="upload-progress" id="rosterProgress">
-            <div class="upload-progress-fill" id="rosterProgressFill"></div>
-            <span class="upload-progress-label" id="rosterProgressLabel">0%</span>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-head">
-            <span class="label-with-info">
               <h2>ROUTES</h2>
               <button type="button" class="info-icon" data-info-target="info-routes" aria-label="Where to get this">i</button>
               <div class="info-popover" id="info-routes">Exported from Cortex — on the Routes segment page, click the download arrow and upload the file here.</div>
@@ -1171,6 +1151,31 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
           <div class="upload-progress" id="routesProgress">
             <div class="upload-progress-fill" id="routesProgressFill"></div>
             <span class="upload-progress-label" id="routesProgressLabel">0%</span>
+          </div>
+        </div>
+
+        <div class="panel" id="rosterPanel">
+          <div class="panel-head">
+            <span class="label-with-info">
+              <h2>VAN ALLOCATION</h2>
+              <button type="button" class="info-icon" data-info-target="info-van-roster" aria-label="Where to get this">i</button>
+              <div class="info-popover" id="info-van-roster">Exported from Warrior Ops — go to the Day of Ops segment, right-click the van list export and save it as a PDF. Upload that raw PDF here and let the magic happen.</div>
+            </span>
+            <span class="pill" id="rosterPill">EMPTY</span>
+          </div>
+          <div class="dropzone">
+            <input type="file" id="rosterFile" accept=".csv,.xlsx,.xls,.pdf,.png,.jpg,.jpeg" multiple>
+            <div class="dz-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            </div>
+            <div>
+              <div class="dz-text" id="rosterDzText">DROP TODAY'S VAN ALLOCATION HERE</div>
+              <div class="dz-hint mono">.PNG (WARRIOR OPS EXPORT)</div>
+            </div>
+          </div>
+          <div class="upload-progress" id="rosterProgress">
+            <div class="upload-progress-fill" id="rosterProgressFill"></div>
+            <span class="upload-progress-label" id="rosterProgressLabel">0%</span>
           </div>
         </div>
 
@@ -1928,8 +1933,29 @@ function finishOcrBar(ids, parseError){
   if(l) l.textContent = parseError ? 'COULD NOT READ IMAGE' : 'EXTRACTED 100%';
 }
 
+
+/* Van allocation stays locked until the Routes file is in: the route list is what fixes the names read off the picture */
+function updateRosterLock(){
+  const ok = !!(typeof lastRoutesRows !== 'undefined' && lastRoutesRows && lastRoutesRows.length);
+  const pn = document.getElementById('rosterPanel'), inp = document.getElementById('rosterFile'), t = document.getElementById('rosterDzText');
+  if(!pn || !inp) return;
+  pn.classList.toggle('rlocked', !ok); inp.disabled = !ok;
+  if(t) t.textContent = ok ? "DROP TODAY'S VAN ALLOCATION HERE" : 'UPLOAD ROUTES FIRST';
+  pn.title = ok ? '' : 'Upload the Routes file first';
+}
+setTimeout(updateRosterLock, 0);
+async function stitchImages(files){
+  const bms = await Promise.all(files.map(f => createImageBitmap(f)));
+  const W = Math.max(...bms.map(b => b.width)), H = bms.reduce((a, b) => a + b.height + 24, 0);
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'); g.fillStyle = '#f6f4f3'; g.fillRect(0, 0, W, H);
+  let y = 0; bms.forEach(b => { g.drawImage(b, 0, y); y += b.height + 24; });
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  return new File([blob], files[0].name.replace(/\.\w+$/, '') + '_joined.png', {type: 'image/png'});
+}
 document.getElementById('rosterFile').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
+  let file = e.target.files[0];
+  if(e.target.files.length > 1){ const fl = [...e.target.files]; if(fl.every(f => /^image\//.test(f.type) || /\.(png|jpe?g|webp)$/i.test(f.name))){ try{ file = await stitchImages(fl); }catch(err){} } }
   updateGenerateButtonState();
   if(!file){ setPill('rosterPill', false, 'EMPTY'); lastRoster = null; updateStepper(); updatePreGenerateValidation(); return; }
   setPill('rosterPill', false, 'EMPTY'); // clear any earlier ERROR / count while this file loads
@@ -2291,6 +2317,7 @@ function knownNamePool(){
 }
 function crossFixName(name){
   try{
+    if(/…\s*$/.test(String(name || ''))) return completeTruncName(name);
     const ts = String(name || '').toLowerCase().split(/\s+/).filter(Boolean);
     if(!ts.length) return name;
     let best = null, second = 0;
@@ -2314,6 +2341,41 @@ function crossFixName(name){
     if(second && best.mean - second < .05) return name;
     return normalizeDriverName(best.pick.join(' '));
   }catch(e){ return name; }
+}
+
+/* The grid sheet cuts long names short ("singh Panesar Kh…"). Complete them from the known names
+   (Routes file + remembered names): every word we can see must match a known word (the cut word by its
+   start), allowing one stray word on either side (a surname the Routes file leaves out, or a first name
+   that was cut off). If nothing fits, the name keeps its "…" so it shows up flagged on the check screen. */
+function completeTruncName(name){
+  const raw = String(name || '').replace(/[….]+\s*$/, '').trim();
+  const mark = raw ? normalizeDriverName(raw) + '…' : name;
+  try{
+    const ts = raw.toLowerCase().replace(/[^a-z'’\-\s]/g, ' ').split(/\s+/).filter(Boolean);
+    if(!ts.length) return mark;
+    const last = ts.length - 1;
+    let best = null, tie = false;
+    for(const kt of knownNamePool()){
+      const mapK = new Array(kt.length).fill(null), mapO = new Array(ts.length).fill(null);
+      ts.forEach((w, oi) => {
+        let bi = -1, bs = 0;
+        kt.forEach((k, ki) => {
+          if(mapK[ki] !== null) return;
+          const sc = oi === last ? (k.startsWith(w) ? 1 : (w.length >= 3 && k.startsWith(w.slice(0, -1)) ? .8 : tokenSimilarity(w, k))) : tokenSimilarity(w, k);
+          if(sc > bs){ bs = sc; bi = ki; }
+        });
+        if(bi >= 0 && bs >= .8){ mapK[bi] = oi; mapO[oi] = bi; }
+      });
+      const matched = mapO.filter(v => v !== null).length, unO = ts.length - matched, missK = kt.length - matched;
+      if(matched < 2 || unO > 1 || missK > 1 || mapO[last] === null) continue;
+      const out = ts.map((w, oi) => mapO[oi] !== null ? kt[mapO[oi]] : w);
+      kt.forEach((k, ki) => { if(mapK[ki] === null) out.push(k); });
+      const score = matched * 2 - unO - missK, text = normalizeDriverName(out.join(' '));
+      if(!best || score > best.score){ best = {score, text}; tie = false; }
+      else if(score === best.score && text.toLowerCase() !== best.text.toLowerCase()) tie = true;
+    }
+    return best && !tie ? best.text : mark;
+  }catch(e){ return mark; }
 }
 function rememberNames(list){
   try{
@@ -2348,6 +2410,106 @@ async function readVanNumberVotes(worker, canvas, plate){
   }
   return votes;
 }
+
+/* ---------- light "grid" roster sheet (36 DRIVERS DEPLOYED, 6 cards per row, STANDBY strip) ---------- */
+function isLightSheet(canvas){
+  const d = canvas.getContext('2d').getImageData(0, 0, Math.min(40, canvas.width), Math.min(40, canvas.height)).data;
+  let sum = 0, n = 0; for(let i = 0; i < d.length; i += 4){ sum += d[i] + d[i+1] + d[i+2]; n += 3; }
+  return sum / n > 170;
+}
+// generic connected-block finder: pred(r,g,b) marks pixels, then keep blocks that pass accept(w,h,fill)
+function findColourBlocks(canvas, pred, accept){
+  const W = canvas.width, H = canvas.height, px = canvas.getContext('2d').getImageData(0, 0, W, H).data;
+  const mask = new Uint8Array(W * H);
+  for(let i = 0, j = 0; i < px.length; i += 4, j++) mask[j] = pred(px[i], px[i+1], px[i+2]) ? 1 : 0;
+  const boxes = [], stack = new Int32Array(W * H);
+  for(let s = 0; s < mask.length; s++){
+    if(mask[s] !== 1) continue;
+    let sp = 0, x0 = W, x1 = 0, y0 = H, y1 = 0, n = 0; stack[sp++] = s; mask[s] = 2;
+    while(sp){
+      const k = stack[--sp], x = k % W, y = (k / W) | 0; n++;
+      if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y;
+      if(x > 0 && mask[k-1] === 1){ mask[k-1] = 2; stack[sp++] = k-1; }
+      if(x < W-1 && mask[k+1] === 1){ mask[k+1] = 2; stack[sp++] = k+1; }
+      if(y > 0 && mask[k-W] === 1){ mask[k-W] = 2; stack[sp++] = k-W; }
+      if(y < H-1 && mask[k+W] === 1){ mask[k+W] = 2; stack[sp++] = k+W; }
+    }
+    const w = x1 - x0 + 1, h = y1 - y0 + 1;
+    if(accept(w, h, n / (w * h))) boxes.push({x: x0, y: y0, w, h});
+  }
+  boxes.sort((a, b) => a.y - b.y);
+  const rows = [];
+  boxes.forEach(b => { const r = rows.find(r => Math.abs(r[0].y - b.y) < b.h * .5); if(r) r.push(b); else rows.push([b]); });
+  return rows.flatMap(r => r.sort((a, b) => a.x - b.x));
+}
+async function readNameVotes(worker, canvas, x, y, w, h){
+  const reads = [];
+  for(const [sc, thr] of [[4, 140], [3, 0], [5, 140]]){
+    const t = (await ocrText(worker, ocrCrop(canvas, x, y, w, h, sc, thr, false), 7, '')).text || '';
+    const cn = cleanOcrName(t); if(cn) reads.push({name: cn, trunc: /(\.{2,}|…|_{2,})\s*$/.test(t.trim())});
+  }
+  const tally = new Map(); reads.forEach(r => tally.set(r.name.toLowerCase(), (tally.get(r.name.toLowerCase()) || 0) + 1));
+  let best = reads[0] || {name: '', trunc: false}, bv = 0;
+  reads.forEach(r => { const v = tally.get(r.name.toLowerCase()); if(v > bv){ bv = v; best = r; } });
+  return {name: best.name, trunc: reads.filter(r => r.trunc).length >= 2 || (reads.some(r => r.trunc) && bv < 2), agree: bv >= 2};
+}
+async function parseLightSheet(worker, canvas){
+  const W = canvas.width, warnings = [];
+  ocrToast('LOCATING VAN CARDS', 12);
+  const squares = findColourBlocks(canvas, (r, g, b) => r + g + b < 150,
+    (w, h, f) => w >= W * .025 && w <= W * .08 && w / h > .8 && w / h < 1.25 && f > .55);
+  const pinkOnly = squares.length ? null : findColourBlocks(canvas, (r, g, b) => r > 238 && g > 212 && g < 240 && b > 220 && b < 250 && r - g >= 9 && r - g <= 32, (w, h) => w >= W * .08 && w <= W * .3 && h >= W * .025 && h <= W * .09 && w / h > 2 && w / h < 5.5);
+  if(!squares.length && !(pinkOnly && pinkOnly.length)) throw new Error('No van cards found in that image — is it the Van Deployment Sheet screenshot?');
+  const cards = [];
+  for(let i = 0; i < squares.length; i++){
+    const b = squares[i];
+    ocrToast(`DECODING CARD ${i + 1} OF ${squares.length}`, 15 + 62 * i / squares.length, {card: i + 1, total: squares.length});
+    // van number: white digits on the black square
+    const votes = new Map();
+    for(const [sc, thr, psm] of [[6, 110, 7], [6, 150, 7], [6, 200, 7], [8, 130, 7], [4, 128, 10], [3, 160, 10], [5, 200, 10]]){
+      const t = (await ocrText(worker, ocrCrop(canvas, b.x + 6, b.y + b.h * .42, b.w - 12, b.h * .42, sc, thr, true), psm, '0123456789')).text || '';
+      const m = t.replace(/\D/g, ''); if(m && +m >= 1 && +m <= 99) votes.set(+m, (votes.get(+m) || 0) + 1);
+    }
+    // reg plate: pill under the name
+    let rg = null;
+    for(const [sc, thr] of [[4, 130], [3, 0], [5, 150]]){
+      const t = (await ocrText(worker, ocrCrop(canvas, b.x + b.w + b.w * .1, b.y + b.h * .58, b.w * 2.7, b.h * .5, sc, thr, false), 7, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ')).text || '';
+      const f = fixReg(t); if(!rg || (f.ok && !rg.ok)) rg = f; if(f.ok && !f.changed) break;
+    }
+    const nm = await readNameVotes(worker, canvas, b.x + b.w + b.w * .1, b.y - b.h * .1, b.w * 2.55, b.h * .36);
+    cards.push({b, votes, reg: rg, nm});
+  }
+  const seq = resolveVanSequence(cards.map(c => c.votes));
+  const roster = cards.map((c, i) => {
+    const van = seq[i], total = [...c.votes.values()].reduce((a, b) => a + b, 0), mine = c.votes.get(van) || 0;
+    const top = [...c.votes.entries()].sort((a, b) => b[1] - a[1])[0];
+    let name = c.nm.name, trunc = c.nm.trunc;
+    if(trunc) name = completeTruncName(name + '…');
+    const full = !/…$/.test(name);
+    const nameFlag = !full || name.split(' ').length < 2 || (!trunc && !c.nm.agree) || name.split(' ').some(w => (w.length <= 2 && !/^md$/i.test(w)) || (!/[aeiouy…]/i.test(w) && !/^md$/i.test(w)));
+    return {van, driver: /…$/.test(name) ? name : normalizeDriverName(name), reg: c.reg.reg, ride_along_trainee: null, ride_along_day: 1,
+      _flags: {van: van == null || mine < total * .6 || (top && top[0] !== van), reg: !c.reg.ok || c.reg.changed, name: nameFlag}};
+  });
+  // header count cross-check
+  if(squares.length) try{
+    const y0 = Math.max(0, squares[0].y - squares[0].h * 2.2);
+    const hd = await ocrText(worker, ocrCrop(canvas, 0, y0, W, squares[0].y - y0 - squares[0].h * .3, 3, 0, false), 6, '');
+    const m = (hd.text || '').match(/(\d+)\s*DRIVERS?\s*DEPLOYED/i);
+    if(m && +m[1] !== roster.length) warnings.push(`The sheet says ${m[1]} drivers deployed but ${roster.length} cards were found — a card may have been missed.`);
+  }catch(e){}
+  // standby strip: pink cards with an initial circle, name and a STANDBY tag
+  ocrToast('READING STANDBY', 90);
+  const pink = findColourBlocks(canvas, (r, g, b) => r > 238 && g > 212 && g < 240 && b > 220 && b < 250 && r - g >= 9 && r - g <= 32,
+    (w, h, f) => w >= W * .08 && w <= W * .3 && h >= W * .025 && h <= W * .09 && w / h > 2 && w / h < 5.5);
+  const standby = [];
+  for(const c of pink){
+    const x = c.x + c.h * .9, w = c.w - c.h * .9 - c.h * .1;
+    const nm = await readNameVotes(worker, canvas, x, c.y + c.h * .08, w, c.h * .46);
+    let name = nm.trunc ? completeTruncName(nm.name + '…') : nm.name;
+    if(name) standby.push(/…$/.test(name) ? name : normalizeDriverName(name));
+  }
+  return {roster, station: null, date: null, standby, warnings, rideCount: 0};
+}
 // Warm up the text reader shortly after the page loads so the first image scan starts instantly.
 setTimeout(() => { try{ getOcrWorker().catch(() => {}); }catch(e){} }, 2500);
 async function parseImageVanRoster(file){
@@ -2363,6 +2525,8 @@ async function parseImageVanRoster(file){
   try{
     const worker = await getOcrWorker();
     const canvas = await fileToCanvas(file);
+    if(isLightSheet(canvas)){ result = await parseLightSheet(worker, canvas); }
+    else{
     ocrToast('LOCATING VEHICLE CARDS', 12);
     const plates = findPlateBoxes(canvas);
     if(!plates.length) throw new Error('No van cards found in that image — is it the Van Deployment Sheet screenshot?');
@@ -2461,6 +2625,7 @@ async function parseImageVanRoster(file){
       else warnings.push(`Ride-along: ${normalizeDriverName(ra.trainee)} is with ${normalizeDriverName(ra.trainer)}, who isn't on any van card above — type the trainee against the right driver's row.`);
     });
     result = {roster, station, date, standby: standby.map(normalizeDriverName), warnings, rideCount: rideRaw.length};
+    }
   }finally{ if(!ocrBarIds) ocrToast(null); }
 
   // Standby / Same Day lists skip the confirm pop-up and use what was read straight away.
@@ -5730,7 +5895,7 @@ function renderPreListCanvas(names, station, planDate, opts){
 document.getElementById('routesFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   updateGenerateButtonState();
-  if(!file){ setPill('routesPill', false, 'EMPTY'); refreshDetailsStatus(); lastRoutesRows = null; updatePreGenerateValidation(); return; }
+  if(!file){ setPill('routesPill', false, 'EMPTY'); refreshDetailsStatus(); lastRoutesRows = null; updateRosterLock(); updatePreGenerateValidation(); return; }
 
   let rows = null, parseError = false;
   try{
@@ -5752,10 +5917,10 @@ document.getElementById('routesFile').addEventListener('change', async (e) => {
   runUploadProgress('routesProgress', 'routesProgressFill', 'routesProgressLabel', 'UPLOADING', 'UPLOADED', 1500, () => {
     if(parseError){
       setPill('routesPill', false, 'ERROR');
-      lastRoutesRows = null;
+      lastRoutesRows = null; updateRosterLock();
     }else{
       setPill('routesPill', true, `${rows.length} ROUTES`);
-      lastRoutesRows = rows;
+      lastRoutesRows = rows; updateRosterLock();
       try{ if(typeof lastRoster !== 'undefined' && lastRoster) lastRoster.forEach(r => { if(r.driver) r.driver = crossFixName(r.driver); if(r.ride_along_trainee) r.ride_along_trainee = crossFixName(r.ride_along_trainee); }); }catch(e){}
     }
     updatePreGenerateValidation();
