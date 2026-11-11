@@ -3024,6 +3024,21 @@ function matchVan(driverName, roster){
     const score = sum/et.length;
     if(score>bestScore){ best=entry; bestScore=score; }
   }
+  if(best) return best;
+  // Last resort: the routes file often drops a double-barrelled surname ("Khushpreet Panesar" vs the
+  // roster's "Singh Panesar Khushpreet"). Match when every word of the route name is found in one roster name.
+  const tg = [...target];
+  if(tg.length >= 2){
+    let cand = [], cs = 0;
+    for(const entry of roster){
+      const et = [...nameTokens(entry.driver)];
+      if(et.length <= tg.length || !tokensFuzzySubset(tg, et)) continue;
+      let sum = 0; for(const t of tg){ let m = 0; for(const e of et) m = Math.max(m, tokenSimilarity(t, e)); sum += m; }
+      const sc = sum / tg.length;
+      if(sc > cs + .001){ cs = sc; cand = [entry]; } else if(Math.abs(sc - cs) <= .001) cand.push(entry);
+    }
+    if(cand.length === 1) return cand[0];
+  }
   return best;
 }
 
