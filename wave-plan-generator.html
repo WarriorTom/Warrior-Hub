@@ -1922,7 +1922,7 @@ async function parseRosterWithBar(file, ids){
     ocrBarIds = ids;
     phase1 = new Promise(res => runUploadProgress(ids[0], ids[1], ids[2], 'UPLOADING', 'UPLOADED', 4500, res)).then(() => ocrBarStart(ids));
   }
-  try{ roster = await parseVanRoster(file); }catch(err){ parseError = true; }
+  window.__lastOcrErr = ''; try{ roster = await parseVanRoster(file); }catch(err){ parseError = true; window.__lastOcrErr = (err && err.message) || String(err); try{ console.error('Van image read failed:', err); }catch(e){} }
   if(phase1) await phase1; // never cut the upload animation short
   ocrBarIds = null; ocrBarStop();
   return {roster, parseError, isImg};
@@ -1930,7 +1930,12 @@ async function parseRosterWithBar(file, ids){
 function finishOcrBar(ids, parseError){
   const f = document.getElementById(ids[1]), l = document.getElementById(ids[2]);
   if(f) f.style.width = parseError ? '0%' : '100%';
-  if(l) l.textContent = parseError ? 'COULD NOT READ IMAGE' : 'EXTRACTED 100%';
+  if(l){
+    const em = (window.__lastOcrErr || '').trim();
+    if(!parseError) l.textContent = 'EXTRACTED 100%';
+    else if(/not confirmed/i.test(em)) l.textContent = 'CANCELLED — DROP IMAGE TO TRY AGAIN';
+    else l.textContent = 'COULD NOT READ IMAGE' + (em ? ' — ' + em.replace(/\s+/g,' ').slice(0, 110).toUpperCase() : '');
+  }
 }
 
 
@@ -2155,19 +2160,26 @@ function sheetToRows(wb){
 const OCR_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
 let _tessLoad = null, _tessWorker = null;
 const _ocrRosterCache = new Map();
+const OCR_CDN2 = 'https://unpkg.com/tesseract.js@5/dist/tesseract.min.js';
 function loadTesseractLib(){
   if(window.Tesseract) return Promise.resolve();
   if(_tessLoad) return _tessLoad;
-  _tessLoad = new Promise((res, rej) => {
-    const s = document.createElement('script'); s.src = OCR_CDN;
-    s.onload = res; s.onerror = () => { _tessLoad = null; rej(new Error('Could not load the text-reading library — check your connection and try again.')); };
+  const tryLoad = src => new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { s.remove(); rej(new Error('load failed')); };
     document.head.appendChild(s);
   });
+  _tessLoad = tryLoad(OCR_CDN).catch(() => tryLoad(OCR_CDN2)).catch(() => { _tessLoad = null; throw new Error('Could not load the text-reading engine — check your internet connection (or ad-blocker) and try again.'); });
   return _tessLoad;
 }
 async function getOcrWorker(){
   await loadTesseractLib();
-  if(!_tessWorker) _tessWorker = await Tesseract.createWorker('eng');
+  if(!_tessWorker){
+    let lastErr;
+    for(let i = 0; i < 2 && !_tessWorker; i++){
+      try{ _tessWorker = await Tesseract.createWorker('eng'); }catch(e){ lastErr = e; _tessWorker = null; }
+    }
+    if(!_tessWorker) throw new Error('Could not start the text-reading engine — ' + ((lastErr && lastErr.message) || 'check your internet connection') );
+  }
   return _tessWorker;
 }
 let ocrBarIds = null; // when set, status messages drive that progress bar instead of a floating toast
