@@ -1029,7 +1029,7 @@ function renderMain(){
   }else if(view==='week'){
     const m=mondayOf(cursor); let h='',n=0;
     for(let i=0;i<7;i++){ const d=addDays(m,i), L=bookingsFor(d); n+=L.length; h+=`${dstrip(d,L.length,d===td?'Today · ':'',true)}<div class="dlist">${L.length?dgroups(L,d):`<div class="dgrp"><div class="dnone"><span>NO BOOKINGS</span><button type="button" data-new="${d}">+ ADD</button></div></div>`}</div>`; }
-    el.innerHTML=(n?h:'')||`<div class="wkh"><span>WEEK ${amzWeek(cursor).n}</span><u>0 BOOKINGS</u></div><div class="cempty"><b>Nothing booked this week</b>Use NEW BOOKING to add one.</div>`;
+    el.innerHTML=h;
   }else if(view==='day'){
     const L=bookingsFor(cursor);
     el.innerHTML=dstrip(cursor,L.length,'',true)+`<div class="dlist">${L.length?dgroups(L,cursor):`<div class="dgrp"><div class="dnone"><span>NO BOOKINGS</span><button type="button" data-new="${cursor}">+ ADD</button></div></div>`}</div>`+``;
