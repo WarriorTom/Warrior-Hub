@@ -11,21 +11,19 @@ Desktop web tools for the Warrior Logistics management team (DLS4 / HSA7 / DXFL 
 | Posters | `posters.html` |
 | Calendar (all diary bookings, month / week / day / agenda) | `calendar.html` |
 | Recruitment | `recruitment.html` |
-| DVLA Tracker | `dvla.html` |
 | Netradyne (violation coaching cards, weekly audit) | `netradyne.html` |
-| MOT Tracker (MOT due dates, bookings to the Calendar, VINs, spreadsheet import) | `mot-tracker.html` |
 | PAVE (monthly van condition grades, fleet % Great vs 90% target) | `pave.html` |
+| Performance (weekly NoA report generator: overview + coaching cards, saved driver ID database) | `performance.html` |
+| Tools (Max Returns, Daily DCR, Weekly DCR, Weekly POD, SPR, Weekly Netradyne calculators) | `tools.html` |
 
 Coming soon (shown greyed out on the home page and rail, not built yet): Kinesis.
 
 All pages are single HTML files with no build step. They share a left-hand rail for switching pages, so keep them in the same folder.
 
 ## Data
-- **No personal data is stored in this repository.** The Recruitment and DVLA pages ship empty; all driver data lives in the private Firebase database and is only readable by signed-in, approved managers.
-- Load a list from a private backup file with **Import data** (bottom-left of Recruitment / DVLA). Use **Export data** to take backups.
+- **No personal data is stored in this repository.** The Recruitment page ships empty; all driver data lives in the private Firebase database and is only readable by signed-in, approved managers.
+- Load a list from a private backup file with **Import data** (bottom-left of Recruitment). Use **Export data** to take backups.
 
 ## Sign-in
 - Access is by invitation only, using Firebase Authentication (email + password) plus an approved-email list in Firestore. See `FIREBASE-SETUP.md`.
 
-## MOT Tracker data
-- Vehicles are stored in the Firestore collection `mot_vehicles`; MOT bookings are written into the Calendar's `bookings` collection. The 13 current vans load automatically the first time the page is opened while `mot_vehicles` is empty.
