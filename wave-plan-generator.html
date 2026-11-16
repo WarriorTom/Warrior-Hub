@@ -8298,7 +8298,7 @@ function load(o,pairs){window.__wlVans={date:o.date,station:o.station};var lines
  try{var dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;inp.dispatchEvent(new Event('change',{bubbles:true}));B.classList.remove('on');T.value=fmt(o,pairs);last=T.value;M.style.color='';M.textContent='LOADED '+o.rows.length+' VANS'+(o.date?' FOR '+o.date:'')+(o.station?' ('+o.station+')':'')}catch(e){M.textContent='COULD NOT LOAD THE LIST: '+e.message}}
 function run(){var v=T.value;if(!v.trim()){M.textContent='';last='';return}if(v===last)return;var o=parse(v);if(!o){M.style.color='#b91c1c';M.textContent='NOT A VAN LIST FROM THE VANS BOOKMARK';return}T.value=fmt(o,{});last=T.value;
  var sp=[];o.rows.forEach(function(r,i){if(r.st==='SPRA')sp.push(i)});
- if(!sp.length||!o.ra.length){load(o,{});return}
+ if(!sp.length||!o.ra.length||(typeof CYCLE!=='undefined'&&CYCLE===2)){load(o,{});return}
  cur=o;var auto=(sp.length===1&&o.ra.length===1);
  P.innerHTML='<p class="rp-p"><b>Ride-alongs:</b> Warrior Ops does not say which trainee rides with which driver, so choose each pair.</p><div class="rp-th"><span>DRIVER</span><span>VAN</span><span>TRAINEE</span></div><div class="rp-list">'+sp.map(function(i){var r=o.rows[i];return '<div class="rp-row"><div class="rp-d"><b class="rp-nm">'+r.driver+'</b><span class="rp-vn">van '+r.van+'</span><span class="rp-reg">'+(r.reg||'')+'</span></div><i class="rp-lk">&#8644;</i><select class="rp-sel" data-i="'+i+'"><option value="">No trainee</option>'+o.ra.map(function(n){return '<option'+(auto?' selected':'')+'>'+n+'</option>'}).join('')+'</select></div>'}).join('')+'</div>';
  (function(){var S=[].slice.call(P.querySelectorAll('select'));function sync(){var used={};S.forEach(function(x){if(x.value)used[x.value]=1});S.forEach(function(x){[].slice.call(x.options).forEach(function(o){o.disabled=!!(o.value&&used[o.value]&&x.value!==o.value)})})}S.forEach(function(x){x.addEventListener('change',sync)});sync()})();
@@ -8307,6 +8307,7 @@ G.onclick=function(){if(!cur)return;var pairs={};P.querySelectorAll('select').fo
 $('wlOpsNo').onclick=function(){B.classList.remove('on');last=''};
 B.addEventListener('click',function(e){if(e.target===B){B.classList.remove('on');last=''}});
 T.addEventListener('paste',function(){setTimeout(run,0)});T.addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(run,300)});
+document.querySelectorAll('#cycleSeg button').forEach(function(x){x.addEventListener('click',function(){setTimeout(function(){if(typeof CYCLE!=='undefined'&&CYCLE===2&&T.value.trim()&&B.classList.contains('on')){B.classList.remove('on')}if(typeof CYCLE!=='undefined'&&CYCLE===2&&T.value.trim()){last='';run()}},0)})});
 var _pb=$('wlOpsBtn');if(_pb)_pb.onclick=function(){M.style.color='';
  if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(function(t){T.value=t;last='';run()}).catch(function(){T.focus();M.textContent='CLICK IN THE BOX AND PRESS CTRL+V'})}
  else{T.focus();M.textContent='CLICK IN THE BOX AND PRESS CTRL+V'}};
