@@ -2800,7 +2800,8 @@ var mv=parseInt((function(){try{return localStorage.getItem('wl_fc_mv')}catch(e)
 function mvPick(){return '<div class="mv-pick"><b>BOX STYLE</b>'+MVN.map(function(n,k){return '<button data-act="mv" data-n="'+(k+1)+'" class="'+(mv===k+1?'on':'')+'"><i>'+(k+1)+'</i>'+n+'</button>'}).join('')+'</div>'}
 function modal(title,body){var m=$('#fcModal');m.setAttribute('data-mv',2);m.removeAttribute('data-w');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';m.innerHTML='<div class="fcov" data-act="mx">'+'<div class="fcbox" role="dialog"><div class="fch"><span class="fchi">'+svg('card',18)+'</span><span class="fct">'+title+'</span><button class="fcx" data-act="mclose" aria-label="Close">×</button></div><div class="fcb">'+body+'</div></div></div>'}
 function closeM(){$('#fcModal').innerHTML='';document.documentElement.style.overflow='';document.body.style.overflow=''}
-function cardForm(c){var n=!c;c=c||{number:'',pin:'',site:site!=='ALL'?site:'DLS4',no:cards.reduce(function(m,x){return x.manager?m:Math.max(m,+x.no||0)},0)+1};
+function nextNo(st){return cards.reduce(function(m,x){return x.manager||x.site!==st?m:Math.max(m,+x.no||0)},0)+1}
+function cardForm(c){var n=!c;c=c||{number:'',pin:'',site:site!=='ALL'?site:'DLS4',no:nextNo(site!=='ALL'?site:'DLS4')};
  var opt=function(arr,sel){return arr.map(function(o){return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>'}).join('')};
  var f=function(ic,lb,inner,cls){return '<label class="cf-f '+(cls||'')+'"><span class="cf-i">'+svg(ic,20,'currentColor')+'</span><span class="cf-m"><small>'+lb+'</small>'+inner+'</span></label>'};
  modal((n?'ADD FUEL CARD':'EDIT CARD')+cfPick(),'<div class="cf cf'+cfv+'"><div class="cf-g">'
@@ -2811,7 +2812,7 @@ function cardForm(c){var n=!c;c=c||{number:'',pin:'',site:site!=='ALL'?site:'DLS
  +f('card','CARD TYPE','<select id="fType">'+Object.keys(TY).map(function(k){return '<option value="'+k+'"'+(k===typeOf(c)?' selected':'')+'>'+TY[k].n+'</option>'}).join('')+'</select>')
  +f('user','MANAGER (OPTIONAL)','<input id="fMgr" autocomplete="off" placeholder="Leave blank" value="'+esc(c.manager||'')+'">')
  +'</div><div class="fc-hint">Add a manager name to keep this card with them permanently. Manager cards have no card number and won\'t appear in the give-out list.</div><div class="cf-bar">'+(n?'':'<button class="fc-b bad" data-act="cdel" data-id="'+c.id+'">DELETE CARD</button>')+'<button class="fc-b ghost" data-act="mclose">CANCEL</button><button class="fc-b ac" data-act="csave" data-id="'+(c.id||'')+'">SAVE</button></div></div>');
- setTimeout(function(){var e=$('#fNum');e&&e.focus()},30)}
+ setTimeout(function(){var e=$('#fNum');e&&e.focus();if(n){var fs=$('#fSite'),fn=$('#fNo');if(fn&&fs){fs.onchange=function(){fn.value=nextNo(fs.value)};fs.oninput=fs.onchange}}},30)}
 var cfv=1;
 function cfPick(){return ''}
 function linkForm(x){var n=!x;x=x||{name:'',url:''};modal(n?'ADD LINK':'EDIT LINK','<label>NAME<input id="lName" placeholder="e.g. Shell Card Online" value="'+esc(x.name)+'"></label><label>WEBSITE ADDRESS<input id="lUrl" placeholder="e.g. www.shell.co.uk" value="'+esc(x.url)+'"></label><div class="fcr">'+(n?'':'<button class="fc-b bad" data-act="ldel" data-id="'+x.id+'">DELETE</button>')+'<button class="fc-b ghost" data-act="mclose">CANCEL</button><button class="fc-b ac" data-act="lsave" data-id="'+(x.id||'')+'">SAVE</button></div>');setTimeout(function(){var e=$('#lName');e&&e.focus()},30)}
@@ -2852,7 +2853,7 @@ function onClick(e){if(e.target.closest('.xtd input'))return;var t=e.target.clos
  if(a==='csave'){var num=digits($('#fNum').value),pin=$('#fPin').value.trim(),st=$('#fSite').value,no=digits($('#fNo').value),ty=$('#fType').value,mg=$('#fMgr').value.trim();if(num.length!==4){toast('Enter the last 4 digits of the card');return}
   var dup=cards.filter(function(x){return last4(x)===num&&x.site===st&&typeOf(x)===ty&&x.id!==id})[0];if(dup){toast('That card is already saved');return}
   if(!no&&!mg){toast('Enter the card number (1, 2, 3…)');return}
-  if(no&&!mg){var dn=cards.filter(function(x){return !x.manager&&String(x.no)===no&&x.id!==id})[0];if(dn){toast('Card no. '+no+' is already used');return}}
+  if(no&&!mg){var dn=cards.filter(function(x){return !x.manager&&x.site===st&&String(x.no)===no&&x.id!==id})[0];if(dn){toast('Card no. '+no+' is already used at '+st);return}}
   var c2=id?cardById(id):{id:uid(),created:new Date().toISOString()};if(mg&&openLoan(c2)){toast('Mark the card returned before assigning it to a manager');return}c2.number=num;c2.pin=pin;c2.site=st;c2.type=ty;if(no&&!mg)c2.no=no;else delete c2.no;if(mg)c2.manager=mg;else delete c2.manager;saveCard(c2);closeM();render();toast('Card saved');return}
  if(a==='sv'){sv=+t.dataset.n||1;try{localStorage.setItem('wl_fc_sv',String(sv))}catch(x){}render();return}
  if(a==='sx'){sx=+t.dataset.n||1;try{localStorage.setItem('wl_fc_sx',String(sx))}catch(x){}render();return}
