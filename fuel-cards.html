@@ -2582,8 +2582,30 @@ fx();new MutationObserver(fx).observe(document.body,{childList:true,subtree:true
 :root:root:root #fcModal .ab3 .rb-bar .fc-b.bad{background:#DC2626;color:#fff}
 #fcModal input::-webkit-calendar-picker-indicator,.fc-give input::-webkit-calendar-picker-indicator{display:none!important}
 
-:root:root:root .fc-tab.lk{opacity:.4;cursor:not-allowed;pointer-events:none}
-:root:root:root .fc-tab.lk .blb:after{content:"SOON";margin-left:10px;font:800 9px Inter,sans-serif;letter-spacing:.14em;padding:3px 6px;border-radius:3px;background:rgba(255,255,255,.18);vertical-align:middle}
+:root:root:root .fc-tab.lk{cursor:default;pointer-events:none}
+
+/* add/edit card form */
+:root:root:root #fcModal .cf{display:grid;gap:14px}
+:root:root:root #fcModal .cf-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+:root:root:root #fcModal .cf-f{display:flex;align-items:center;gap:12px;box-sizing:border-box;min-height:64px;padding:10px 12px 10px 14px;border-radius:4px;background:#fff;color:#1E2023;position:relative;margin:0}
+:root:root:root #fcModal .cf-i{flex:none;display:grid;place-items:center;color:var(--accent)}
+:root:root:root #fcModal .cf-m{flex:1;min-width:0;display:grid;gap:3px}
+:root:root:root #fcModal .cf-m small{font:800 10px Inter,sans-serif;letter-spacing:.14em;color:#5B6372;text-transform:uppercase}
+:root:root:root #fcModal .cf-m input,:root:root:root #fcModal .cf-m select{all:unset!important;box-sizing:border-box!important;width:100%!important;height:26px!important;font:600 16px Inter,sans-serif!important;color:#1E2023!important;border-bottom:1px dashed #6B7280!important;cursor:text}
+:root:root:root #fcModal .cf-m select{cursor:pointer!important;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231E2023' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 2px center!important}
+:root:root:root #fcModal .cf-m input::placeholder{color:#8B93A3}
+:root:root:root #fcModal .cf-bar{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;background:#E9EBF0;margin:0 -22px -22px;padding:16px 22px}
+:root:root:root #fcModal .cf-bar .fc-b{flex:0 0 auto;height:48px;padding:0 24px;border-radius:3px;border:0;font:800 12px Inter,sans-serif;letter-spacing:.1em}
+:root:root:root #fcModal .cf-bar .fc-b.ghost{background:#1E2023;color:#fff}:root:root:root #fcModal .cf-bar .fc-b.ac{background:var(--accent);color:#fff}:root:root:root #fcModal .cf-bar .fc-b.bad{background:#DC2626;color:#fff;margin-right:auto}
+/* base = refined outline */
+:root:root:root #fcModal .cf-h{display:none;grid-column:1/-1;font:800 10px Inter,sans-serif;letter-spacing:.18em;color:#5B6372}
+:root:root:root #fcModal .cf-g{gap:12px}
+:root:root:root #fcModal .cf-f{border:2px solid #1E2023;border-radius:6px;min-height:72px;padding:12px 14px;gap:14px;transition:box-shadow .12s,border-color .12s}
+:root:root:root #fcModal .cf-f:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+:root:root:root #fcModal .cf-i{background:#1E2023;color:#fff;width:40px;height:40px;border-radius:4px}
+:root:root:root #fcModal .cf-m{gap:4px}
+:root:root:root #fcModal .cf-m input,:root:root:root #fcModal .cf-m select{font-size:19px!important;font-weight:700!important;height:28px!important;border-bottom:0!important}
+:root:root:root #fcModal .cf-m small{font-size:10px}
 </style>
 <script id="fcJs">(function(){
 var $=function(s,r){return (r||document).querySelector(s)};
@@ -2779,7 +2801,19 @@ function mvPick(){return '<div class="mv-pick"><b>BOX STYLE</b>'+MVN.map(functio
 function modal(title,body){var m=$('#fcModal');m.setAttribute('data-mv',2);m.removeAttribute('data-w');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';m.innerHTML='<div class="fcov" data-act="mx">'+'<div class="fcbox" role="dialog"><div class="fch"><span class="fchi">'+svg('card',18)+'</span><span class="fct">'+title+'</span><button class="fcx" data-act="mclose" aria-label="Close">×</button></div><div class="fcb">'+body+'</div></div></div>'}
 function closeM(){$('#fcModal').innerHTML='';document.documentElement.style.overflow='';document.body.style.overflow=''}
 function cardForm(c){var n=!c;c=c||{number:'',pin:'',site:site!=='ALL'?site:'DLS4',no:cards.reduce(function(m,x){return x.manager?m:Math.max(m,+x.no||0)},0)+1};
- modal(n?'ADD FUEL CARD':'EDIT CARD','<div class="fcr fc-nr"><label class="fc-nol">CARD NO.<input id="fNo" inputmode="numeric" maxlength="4" placeholder="1" value="'+esc(c.no||'')+'"></label><label>LAST 4 DIGITS<input id="fNum" inputmode="numeric" maxlength="4" placeholder="e.g. 9012" value="'+esc(last4(c)==='----'?'':last4(c))+'"></label></div><div class="fcr"><label>PIN<input id="fPin" inputmode="numeric" maxlength="8" placeholder="4 digits" value="'+esc(c.pin)+'"></label><label>SITE<select id="fSite">'+SITES.map(function(s){return '<option'+(s===c.site?' selected':'')+'>'+s+'</option>'}).join('')+'</select></label></div><div class="fcr"><label>CARD TYPE<select id="fType">'+Object.keys(TY).map(function(k){return '<option value="'+k+'"'+(k===typeOf(c)?' selected':'')+'>'+TY[k].n+'</option>'}).join('')+'</select></label><label>MANAGER CARD (OPTIONAL)<input id="fMgr" autocomplete="off" placeholder="Leave blank for a driver card" value="'+esc(c.manager||'')+'"></label></div><div class="fc-hint">Add a manager name to keep this card with them permanently. Manager cards have no card number and won\'t appear in the give-out list.</div><div class="fcr">'+(n?'':'<button class="fc-b bad" data-act="cdel" data-id="'+c.id+'">DELETE CARD</button>')+'<button class="fc-b ghost" data-act="mclose">CANCEL</button><button class="fc-b ac" data-act="csave" data-id="'+(c.id||'')+'">SAVE</button></div>');setTimeout(function(){var e=$('#fNum');e&&e.focus()},30)}
+ var opt=function(arr,sel){return arr.map(function(o){return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>'}).join('')};
+ var f=function(ic,lb,inner,cls){return '<label class="cf-f '+(cls||'')+'"><span class="cf-i">'+svg(ic,20,'currentColor')+'</span><span class="cf-m"><small>'+lb+'</small>'+inner+'</span></label>'};
+ modal((n?'ADD FUEL CARD':'EDIT CARD')+cfPick(),'<div class="cf cf'+cfv+'"><div class="cf-g">'
+ +f('card','CARD NO.','<input id="fNo" inputmode="numeric" maxlength="4" placeholder="1" value="'+esc(c.no||'')+'">')
+ +f('card','LAST 4 DIGITS','<input id="fNum" inputmode="numeric" maxlength="4" placeholder="e.g. 9012" value="'+esc(last4(c)==='----'?'':last4(c))+'">')
+ +f('safe','PIN','<input id="fPin" inputmode="numeric" maxlength="8" placeholder="4 digits" value="'+esc(c.pin)+'">')
+ +f('doc','SITE','<select id="fSite">'+SITES.map(function(x){return '<option'+(x===c.site?' selected':'')+'>'+x+'</option>'}).join('')+'</select>')
+ +f('card','CARD TYPE','<select id="fType">'+Object.keys(TY).map(function(k){return '<option value="'+k+'"'+(k===typeOf(c)?' selected':'')+'>'+TY[k].n+'</option>'}).join('')+'</select>')
+ +f('user','MANAGER (OPTIONAL)','<input id="fMgr" autocomplete="off" placeholder="Leave blank" value="'+esc(c.manager||'')+'">')
+ +'</div><div class="fc-hint">Add a manager name to keep this card with them permanently. Manager cards have no card number and won\'t appear in the give-out list.</div><div class="cf-bar">'+(n?'':'<button class="fc-b bad" data-act="cdel" data-id="'+c.id+'">DELETE CARD</button>')+'<button class="fc-b ghost" data-act="mclose">CANCEL</button><button class="fc-b ac" data-act="csave" data-id="'+(c.id||'')+'">SAVE</button></div></div>');
+ setTimeout(function(){var e=$('#fNum');e&&e.focus()},30)}
+var cfv=1;
+function cfPick(){return ''}
 function linkForm(x){var n=!x;x=x||{name:'',url:''};modal(n?'ADD LINK':'EDIT LINK','<label>NAME<input id="lName" placeholder="e.g. Shell Card Online" value="'+esc(x.name)+'"></label><label>WEBSITE ADDRESS<input id="lUrl" placeholder="e.g. www.shell.co.uk" value="'+esc(x.url)+'"></label><div class="fcr">'+(n?'':'<button class="fc-b bad" data-act="ldel" data-id="'+x.id+'">DELETE</button>')+'<button class="fc-b ghost" data-act="mclose">CANCEL</button><button class="fc-b ac" data-act="lsave" data-id="'+(x.id||'')+'">SAVE</button></div>');setTimeout(function(){var e=$('#lName');e&&e.focus()},30)}
 function secret(label,val,id){return '<div class="fc-secret"><small>'+label+'</small><span id="'+id+'" data-v="'+esc(val)+'" data-h="1">••••'+(label==='PIN'?'':' •••• •••• ••••')+'</span><button data-act="eye" data-t="'+id+'">SHOW</button><button data-act="cpy" data-v="'+esc(val)+'">COPY</button></div>'}
 function rf(cls,ic,lb,mid,extra,sty){return '<div class="rf '+cls+'"'+(sty?' style="'+sty+'"':'')+'><span class="rf-i">'+svg(ic,20,'currentColor')+'</span><div class="rf-m"><small>'+lb+'</small>'+mid+'</div>'+(extra||'')+'</div>'}
