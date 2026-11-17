@@ -2609,7 +2609,7 @@ fx();new MutationObserver(fx).observe(document.body,{childList:true,subtree:true
 </style>
 <script id="fcJs">(function(){
 var $=function(s,r){return (r||document).querySelector(s)};
-var SITES=['DLS4','HSA7','DXFL','JOYL'],SC={DLS4:'#7C3AED',HSA7:'#0891B2',DXFL:'#EA580C',JOYL:'#16A34A'};
+var SITES=['DLS4','HSA7','JOYL','DXFL'],SC={DLS4:'#7C3AED',HSA7:'#0891B2',DXFL:'#EA580C',JOYL:'#16A34A'};
 var TY={SHELL:{n:'Shell',c:'#E8A800'},BP:{n:'BP',c:'#00963F'}},DEFTY={DLS4:'SHELL',HSA7:'SHELL',DXFL:'BP',JOYL:'BP'};
 function typeOf(c){return TY[c.type]?c.type:(DEFTY[c.site]||'SHELL')}
 function nol(c){return c.no&&!c.manager?'No. '+c.no:'••'+last4(c)}
@@ -2675,7 +2675,7 @@ function cardTile(c){var s=stateOf(c),b=s.k==='in'?'<span class="fc-badge b-in">
  var who=s.k==='mgr'?esc(c.manager):(s.loan?esc(s.loan.driver)+' · '+dmy(s.loan.date):'Ready to give out'),foot=s.k==='mgr'?'<div class="fc-mbar"></div><div class="fc-sub"><span>PERMANENTLY ASSIGNED</span><span>'+esc(c.manager.toUpperCase())+'</span></div>':'';
  return '<div class="fc-card ty-'+typeOf(c)+' s-'+s.k+'" data-act="card" data-id="'+c.id+'" style="--c:'+(SC[c.site]||'var(--accent)')+';--t:'+t.c+'"><div class="fc-plastic"><div class="fc-top"><span class="fc-lbl"><i class="fc-ty"></i>'+t.n.toUpperCase()+' FUEL CARD</span><span class="fc-site">'+esc(c.site)+'</span></div><div class="fc-chip"></div>'+(c.manager?'':'<div class="fc-no'+(c.no?'':' fc-no0')+'"><small>CARD</small>'+(c.no?esc(c.no):'?')+'</div>')+'<div class="fc-num">'+fmtNum(c)+'</div><div class="fc-bot"><span class="fc-who">'+who+'</span>'+b+'</div></div>'+foot+'</div>'}
 function vCards(){var l=cards.filter(function(c){return inSite(c)&&inSt(c)&&matchQ(c)});if(!l.length)return '<div class="fc-empty">'+(cards.length?'No cards match.':'No fuel cards yet — press <b>ADD CARD</b> to save your first one.')+'</div>';
- var order={over:0,out:1,in:2,mgr:3};l.sort(function(a,b){return ((+a.no||9999)-(+b.no||9999))||order[stateOf(a).k]-order[stateOf(b).k]||(a.manager||'').localeCompare(b.manager||'')||a.site.localeCompare(b.site)||last4(a).localeCompare(last4(b))});
+ var order={over:0,out:1,in:2,mgr:3};l.sort(function(a,b){return (SITES.indexOf(a.site)-SITES.indexOf(b.site))||((+a.no||9999)-(+b.no||9999))||order[stateOf(a).k]-order[stateOf(b).k]||(a.manager||'').localeCompare(b.manager||'')||a.site.localeCompare(b.site)||last4(a).localeCompare(last4(b))});
  var pool=l.filter(function(c){return !c.manager}),mg=l.filter(function(c){return c.manager});
  function sec(t,arr,col){return arr.length?'<div class="cv-sec" style="--c:'+(col||'var(--accent)')+'"><div class="cv-sh"><i></i><span>'+t+'</span><em>'+arr.length+'</em></div><div class="fc-grid">'+arr.map(cardTile).join('')+'</div></div>':''}
  function box(t,sub,ic,arr,n,body){return '<div class="cv cv1"><div class="cvh"><span class="cvh-ic">'+svg(ic,20)+'</span><b>'+t+'</b><i></i><small>'+sub+'</small><em>'+arr.length+(arr.length===1?' CARD':' CARDS')+'</em></div><div class="cv-b">'+body+'</div></div>'}
@@ -2710,7 +2710,7 @@ var lv=parseInt((function(){try{return localStorage.getItem('wl_fc_lx')}catch(e)
 var LVN=['Classic','Dark board','Site sections','Card strips','Stat tiles','Checkbox grid','Today actions','Tile history'];
 function lvPick(){return '<div class="lv-pick"><b>LAYOUT</b>'+LVN.map(function(n,i){return '<button data-act="lv" data-n="'+(i+1)+'" class="'+(lv===i+1?'on':'')+'"><i>'+(i+1)+'</i>'+n+'</button>'}).join('')+'</div>'}
 function dayNav(){return '<div class="fc-day"><button data-act="dprev">‹</button><b>'+dname(sel).slice(0,3)+' '+dmy(sel)+'</b><button data-act="dnext">›</button><button class="t" data-act="dtoday">TODAY</button></div>'}
-function drvCards(){return cards.filter(function(c){return inSite(c)&&inSt(c)&&!c.manager}).sort(function(a,b){return ((+a.no||9999)-(+b.no||9999))||a.site.localeCompare(b.site)})}
+function drvCards(){return cards.filter(function(c){return inSite(c)&&inSt(c)&&!c.manager}).sort(function(a,b){return (SITES.indexOf(a.site)-SITES.indexOf(b.site))||((+a.no||9999)-(+b.no||9999))})}
 function availC(){return drvCards().filter(function(c){return stateOf(c).k==='in'})}
 function openLoans(){return loans.filter(function(l){var c=cardById(l.cardId);return c&&!c.manager&&inSite(c)&&l.status==='out'}).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0})}
 function retToday(){return loans.filter(function(l){var c=cardById(l.cardId);return c&&!c.manager&&inSite(c)&&l.status==='returned'&&l.returnedDate===today()})}
