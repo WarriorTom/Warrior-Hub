@@ -3515,12 +3515,29 @@ function splitRoutesByCycle(rows, roster){
 }
 
 /* ---------- wave label matching (ports find_wave_label) ---------- */
+let AUTO_WAVES = {};
+/* Staging times that are not in the saved wave schedule (e.g. cycle 2, which has no baked-in times)
+   get numbered automatically, earliest first, continuing after any waves already saved. Saved
+   wave times always win; this only fills the gaps so a route never shows WAVE ? when the plan has a time for it. */
+function prepAutoWaves(stagingTimes){
+  AUTO_WAVES = {};
+  const known = new Set(Object.values(WAVE_TIMES || {}).map(h => toMinutes(h)));
+  let n = 0;
+  Object.keys(WAVE_TIMES || {}).forEach(l => { const m = String(l).match(/(\d+)\s*$/); if(m) n = Math.max(n, +m[1]); });
+  const times = [...new Set(Object.values(stagingTimes || {}).filter(t => t != null))].filter(t => !known.has(t)).sort((a,b) => a-b);
+  times.forEach(t => {
+    n++;
+    const hh = String(Math.floor(t/60)).padStart(2,'0'), mm = String(t%60).padStart(2,'0');
+    AUTO_WAVES[t] = ['WAVE ' + n, hh + ':' + mm];
+  });
+}
 function findWaveLabel(stagingMinutes, offsetMinutes=0){
   if(stagingMinutes==null) return [null,null];
   const target = ((stagingMinutes - offsetMinutes)+1440)%1440;
   for(const [label, hhmm] of Object.entries(WAVE_TIMES)){
     if(toMinutes(hhmm) === target) return [label, hhmm];
   }
+  if(offsetMinutes === 0 && AUTO_WAVES[target]) return AUTO_WAVES[target];
   return [null,null];
 }
 
@@ -3555,6 +3572,7 @@ async function runPipeline(driverOverrides={}, droppedRoutes=new Set()){
     const hvText = document.getElementById('hvText').value;
 
     const {staging, stagingTimes, serviceInfo} = parseStagingText(wpText);
+    prepAutoWaves(stagingTimes);
     const atlasCounts = parseAtlasText(hvText);
     const collectionCounts = parseHomeCollectionsText(hcText);
     log(`Staging lines matched: ${Object.keys(staging).length}`);
