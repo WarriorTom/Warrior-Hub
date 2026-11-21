@@ -1380,7 +1380,7 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
 </div>
 <div id="rcPage" data-rcv="4" data-rcf="3" hidden>
   <div class="rp-card">
-    <div class="rp-hd"><span class="rp-hic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span><b>ROSTER CHECK</b><i></i><small id="rpDate"></small><em id="rpBadge">0 / 0</em><span class="rp-sp"></span><button class="rc-b ghost" id="rpAll">TICK ALL</button><button class="rc-b ghost" id="rpReset">RESET</button><button class="rc-b ac" id="rpBack">BACK</button></div>
+    <div class="rp-hd"><span class="rp-hic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span><b>ROSTER CHECK</b><i></i><small id="rpDate"></small><em id="rpBadge">0 / 0</em><span class="rp-sp"></span><button class="rc-b ghost" id="rpSort">SORT: A-Z</button><button class="rc-b ghost" id="rpAll">TICK ALL</button><button class="rc-b ghost" id="rpReset">RESET</button><button class="rc-b ac" id="rpBack">BACK</button></div>
     <div class="rp-bd">
       <div class="rp-prog"><div class="rp-bar"><span id="rpFill"></span><em id="rpPct"></em></div><div class="rp-seg" id="rpSeg"></div><span class="rp-left" id="rpLeft"></span><b id="rpCnt">0 / 0</b></div>
       <div class="rp-filt" id="rpFilt"></div>
@@ -1526,6 +1526,7 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
 #rcPage .rp-v.ra small{font-size:9px;font-weight:800;letter-spacing:.12em;opacity:.7}
 #rcPage[data-rcv="4"] .rp-v.ra{background:#1E2023;color:#fff;font-size:22px}
 #rcPage[data-rcv="4"] .rp-r.on .rp-v.ra{background:#16A34A}
+#rcPage .rp-filt{display:none!important}#rcPage .rp-prog{padding-bottom:14px}
 </style>
 
 <div id="quickListModal" class="wave-modal" data-qxc="2" data-qev="1" data-qsw="2">
@@ -8823,7 +8824,7 @@ window.__tcRun=run;
 
 <script id="rcJs">(function(){
 var M=document.getElementById('rcModal'),IN=document.getElementById('rcIn'),ST=document.getElementById('rcStat'),PG=document.getElementById('rcPage');
-var KEY='wl_rostercheck',items=[],date='',ticks={},filt='ALL';
+var sortBy='az';var KEY='wl_rostercheck',items=[],date='',ticks={},filt='ALL';
 function sv(){try{localStorage.setItem(KEY,JSON.stringify({date:date,raw:IN.value,ticks:ticks}))}catch(e){}}
 function parse(t){
   var out=[],d='',raN=0;
@@ -8837,6 +8838,8 @@ function parse(t){
     if(/^RA$/i.test(c[0])&&c[1]){out.push({id:'RA|'+c[1].toLowerCase(),van:'RA',num:++raN,reg:'',name:c[1],code:'RA'});return}
     if(/^\d+$/.test(c[0])&&c.length>=3){out.push({id:c[0]+'|'+(c[2]||'').toLowerCase(),van:c[0],reg:c[1]||'',name:c[2]||'',code:(c[3]||'').toUpperCase()})}
   });
+  var mx=0;out.forEach(function(x){if(x.van!=='RA')mx=Math.max(mx,+x.van||0)});
+  out.filter(function(x){return x.van==='RA'}).sort(function(a,b){return a.name.trim().toLowerCase().localeCompare(b.name.trim().toLowerCase())}).forEach(function(x,i){x.num=mx+i+1});
   return {d:d,items:out};
 }
 function titleCase(s){return s.toLowerCase().replace(/(^|[\s'-])([a-z])/g,function(m,a,b){return a+b.toUpperCase()})}
@@ -8861,9 +8864,11 @@ function render(){
   var sg='';for(var q=0;q<tot;q++)sg+='<i'+(q<done?' class="on"':'')+'></i>';document.getElementById('rpSeg').innerHTML=sg;
   var pc=document.getElementById('rpPct');if(pc)pc.textContent=(tot?Math.round(done/tot*100):0)+'%';
   var lf=document.getElementById('rpLeft');if(lf)lf.textContent=(tot-done)+' LEFT';
-  var L=items.slice().sort(function(a,b){return a.name.trim().toLowerCase().localeCompare(b.name.trim().toLowerCase())}).filter(function(x){return filt==='ALL'||(filt==='TO DO'?!ticks[x.id]:x.code===filt)});
+  var S=items.slice().sort(function(a,b){if(sortBy==='az')return a.name.trim().toLowerCase().localeCompare(b.name.trim().toLowerCase());var ra=a.van==='RA'?1:0,rb=b.van==='RA'?1:0;if(ra!==rb)return ra-rb;return (ra?a.num-b.num:(+a.van)-(+b.van))});
+  S.forEach(function(x,k){x.pos=k+1});
+  var L=S.filter(function(x){return filt==='ALL'||(filt==='TO DO'?!ticks[x.id]:x.code===filt)});
   document.getElementById('rpList').innerHTML=L.map(function(x){
-    return '<button class="rp-r'+(ticks[x.id]?' on':'')+'" style="--cc:'+(CC[x.code]||'#6B7280')+'" data-i="'+esc(x.id)+'"><span class="rp-ck"></span><span class="rp-v">'+(x.van==='RA'?x.num:esc(x.van))+'</span><span class="rp-m"><div class="rp-n">'+esc(titleCase(x.name))+'</div>'+(x.reg?'<div class="rp-g">'+esc(x.reg)+'</div>':'')+'</span>'+(x.code?'<span class="rp-c '+esc(x.code)+'">'+esc(x.code)+'</span>':'')+'</button>'}).join('');
+    return '<button class="rp-r'+(ticks[x.id]?' on':'')+'" style="--cc:'+(CC[x.code]||'#6B7280')+'" data-i="'+esc(x.id)+'"><span class="rp-ck"></span><span class="rp-v">'+x.pos+'</span><span class="rp-m"><div class="rp-n">'+esc(titleCase(x.name))+'</div>'+(x.van==='RA'?'':'<div class="rp-g">VAN '+esc(x.van)+(x.reg?' · '+esc(x.reg):'')+'</div>')+'</span>'+(x.code?'<span class="rp-c '+esc(x.code)+'">'+esc(x.code)+'</span>':'')+'</button>'}).join('');
 }
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function open(){M.classList.add('open')}
@@ -8876,9 +8881,10 @@ document.getElementById('rcGo').onclick=function(){
   var p=parse(IN.value);if(!p.items.length)return;
   var same=p.d===date&&JSON.stringify(p.items.map(function(x){return x.id}))===JSON.stringify(items.map(function(x){return x.id}));
   if(!same){var keep={};p.items.forEach(function(x){if(ticks[x.id]&&p.d===date)keep[x.id]=1});ticks=keep}
-  items=p.items;date=p.d;filt='ALL';
+  items=p.items;date=p.d;filt='ALL';document.getElementById('rpSort').textContent=sortBy==='num'?'SORT: NUMBER':'SORT: A-Z';
   document.getElementById('rpDate').textContent=date||'';
   close();PG.hidden=false;render();sv()};
+document.getElementById('rpSort').onclick=function(){sortBy=sortBy==='num'?'az':'num';this.textContent=sortBy==='num'?'SORT: NUMBER':'SORT: A-Z';render()};
 document.getElementById('rpBack').onclick=function(){PG.hidden=true;open()};
 document.getElementById('rpAll').onclick=function(){items.forEach(function(x){ticks[x.id]=1});render();sv()};
 document.getElementById('rpReset').onclick=function(){ticks={};render();sv()};
