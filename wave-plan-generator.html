@@ -1384,6 +1384,7 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
     <div class="rp-bd">
       <div class="rp-prog"><div class="rp-bar"><span id="rpFill"></span><em id="rpPct"></em></div><div class="rp-seg" id="rpSeg"></div><span class="rp-left" id="rpLeft"></span><b id="rpCnt">0 / 0</b></div>
       <div class="rp-filt" id="rpFilt"></div>
+      <div class="rp-sr"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="rpQ" type="text" placeholder="Search name, van, reg or code…" autocomplete="off" spellcheck="false"><button type="button" id="rpQx" aria-label="Clear search" hidden>×</button></div>
       <div class="rp-list" id="rpList"></div>
     </div>
   </div>
@@ -1527,6 +1528,14 @@ body svg[fill="currentColor"]:not([stroke]){fill:none!important;stroke:currentCo
 #rcPage[data-rcv="4"] .rp-v.ra{background:#1E2023;color:#fff;font-size:22px}
 #rcPage[data-rcv="4"] .rp-r.on .rp-v.ra{background:#16A34A}
 #rcPage .rp-filt{display:none!important}#rcPage .rp-prog{padding-bottom:14px}
+#rcPage .rp-sr{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #1E2023;border-radius:4px;padding:0 14px;height:46px;margin:0 0 14px}
+#rcPage .rp-sr:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent);border-color:var(--accent)}
+#rcPage .rp-sr svg{flex:0 0 18px;color:#5B6372}
+#rcPage .rp-sr input{all:unset;flex:1;min-width:0;font:700 15px Inter,system-ui,sans-serif;color:#1E2023}
+#rcPage .rp-sr input::placeholder{color:#8E95A5;font-weight:600}
+#rcPage .rp-sr button{all:unset;cursor:pointer;font:900 22px/1 Inter,sans-serif;color:#5B6372;padding:0 4px}
+#rcPage .rp-sr button[hidden]{display:none}
+#rcPage .rp-none{padding:30px 10px;text-align:center;font:800 13px Inter,sans-serif;letter-spacing:.08em;color:#5B6372;column-span:all}
 </style>
 
 <div id="quickListModal" class="wave-modal" data-qxc="2" data-qev="1" data-qsw="2">
@@ -8867,7 +8876,9 @@ function render(){
   var S=items.slice().sort(function(a,b){if(sortBy==='az')return a.name.trim().toLowerCase().localeCompare(b.name.trim().toLowerCase());var ra=a.van==='RA'?1:0,rb=b.van==='RA'?1:0;if(ra!==rb)return ra-rb;return (ra?a.num-b.num:(+a.van)-(+b.van))});
   S.forEach(function(x,k){x.pos=k+1});
   var L=S.filter(function(x){return filt==='ALL'||(filt==='TO DO'?!ticks[x.id]:x.code===filt)});
-  document.getElementById('rpList').innerHTML=L.map(function(x){
+  var q=(document.getElementById('rpQ').value||'').trim().toLowerCase().replace(/\s+/g,' ');document.getElementById('rpQx').hidden=!q;
+  if(q){var qn=q.replace(/ /g,'');L=L.filter(function(x){return (x.name+' '+x.van+' '+x.pos+' '+x.reg+' '+x.code).toLowerCase().indexOf(q)>=0||(x.reg||'').toLowerCase().replace(/ /g,'').indexOf(qn)>=0})}
+  document.getElementById('rpList').innerHTML=(L.length?'':'<div class="rp-none">NO MATCHES</div>')+L.map(function(x){
     return '<button class="rp-r'+(ticks[x.id]?' on':'')+'" style="--cc:'+(CC[x.code]||'#6B7280')+'" data-i="'+esc(x.id)+'"><span class="rp-ck"></span><span class="rp-v">'+x.pos+'</span><span class="rp-m"><div class="rp-n">'+esc(titleCase(x.name))+'</div>'+(x.van==='RA'?'':'<div class="rp-g">VAN '+esc(x.van)+(x.reg?' · '+esc(x.reg):'')+'</div>')+'</span>'+(x.code?'<span class="rp-c '+esc(x.code)+'">'+esc(x.code)+'</span>':'')+'</button>'}).join('');
 }
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -8881,10 +8892,12 @@ document.getElementById('rcGo').onclick=function(){
   var p=parse(IN.value);if(!p.items.length)return;
   var same=p.d===date&&JSON.stringify(p.items.map(function(x){return x.id}))===JSON.stringify(items.map(function(x){return x.id}));
   if(!same){var keep={};p.items.forEach(function(x){if(ticks[x.id]&&p.d===date)keep[x.id]=1});ticks=keep}
-  items=p.items;date=p.d;filt='ALL';document.getElementById('rpSort').textContent=sortBy==='num'?'SORT: NUMBER':'SORT: A-Z';
+  items=p.items;date=p.d;filt='ALL';document.getElementById('rpQ').value='';document.getElementById('rpSort').textContent=sortBy==='num'?'SORT: NUMBER':'SORT: A-Z';
   document.getElementById('rpDate').textContent=date||'';
   close();PG.hidden=false;render();sv()};
 document.getElementById('rpSort').onclick=function(){sortBy=sortBy==='num'?'az':'num';this.textContent=sortBy==='num'?'SORT: NUMBER':'SORT: A-Z';render()};
+document.getElementById('rpQ').addEventListener('input',render);
+document.getElementById('rpQx').onclick=function(){var q=document.getElementById('rpQ');q.value='';render();q.focus()};
 document.getElementById('rpBack').onclick=function(){PG.hidden=true;open()};
 document.getElementById('rpAll').onclick=function(){items.forEach(function(x){ticks[x.id]=1});render();sv()};
 document.getElementById('rpReset').onclick=function(){ticks={};render();sv()};
